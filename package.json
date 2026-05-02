@@ -35,7 +35,19 @@
     "build:quickapp-webview": "uni build -p quickapp-webview",
     "build:quickapp-webview-huawei": "uni build -p quickapp-webview-huawei",
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "build:sit:h5": "uni build --mode sit",
+    "build:sit:mp-weixin": "uni build -p mp-weixin --mode sit",
+    "build:sit:mp-alipay": "uni build -p mp-alipay --mode sit",
+    "build:sit:mp-baidu": "uni build -p mp-baidu --mode sit",
+    "build:sit:mp-qq": "uni build -p mp-qq --mode sit",
+    "build:sit:mp-toutiao": "uni build -p mp-toutiao --mode sit",
+    "build:prod:h5": "uni build --mode production",
+    "build:prod:mp-weixin": "uni build -p mp-weixin --mode production",
+    "build:prod:mp-alipay": "uni build -p mp-alipay --mode production",
+    "build:prod:mp-baidu": "uni build -p mp-baidu --mode production",
+    "build:prod:mp-qq": "uni build -p mp-qq --mode production",
+    "build:prod:mp-toutiao": "uni build -p mp-toutiao --mode production"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4080420251103001",
@@ -55,7 +67,7 @@
     "@dcloudio/uni-mp-xhs": "3.0.0-4080420251103001",
     "@dcloudio/uni-quickapp-webview": "3.0.0-4080420251103001",
     "@wot-ui/ui": "^2.0.5",
-    "pinia": "^3.0.4",
+    "pinia": "^2.2.6",
     "vue": "^3.4.21",
     "vue-i18n": "^9.14.5"
   },
