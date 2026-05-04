@@ -1,8 +1,28 @@
 /**
- * 记账记录 API
+ * api/record.ts - 记账记录 API
+ * 
+ * 功能说明：
+ * - 记账记录的增删改查
+ * - 按年月分页查询记录
+ * - 获取月份收支汇总
+ * 
+ * API 端点：
+ * - POST /record - 创建记录
+ * - PUT /record/:id - 更新记录
+ * - GET /record/:id - 获取单条记录
+ * - GET /record - 获取所有记录
+ * - GET /record/page - 分页查询
+ * - GET /record/month-summary - 月份汇总
+ * - DELETE /record/:id - 删除记录
+ * 
+ * 技术栈：TypeScript + uni-app
  */
+
 import request from './request'
 
+/**
+ * 记账记录数据接口
+ */
 export interface RecordData {
   id: number
   typeId: number
@@ -13,11 +33,17 @@ export interface RecordData {
   createdAt?: string
 }
 
+/**
+ * 月份收支汇总接口
+ */
 export interface MonthSummary {
   income: number
   expense: number
 }
 
+/**
+ * 分页结果接口
+ */
 export interface PageResult<T> {
   list: T[]
   total: number
@@ -28,6 +54,7 @@ export interface PageResult<T> {
 export const recordApi = {
   /**
    * 创建记账记录
+   * @param data 记账数据
    */
   createRecord: (data: {
     typeId: number
@@ -45,6 +72,8 @@ export const recordApi = {
 
   /**
    * 更新记账记录
+   * @param id 记录 ID
+   * @param data 需要更新的数据
    */
   updateRecord: (
     id: number,
@@ -65,6 +94,7 @@ export const recordApi = {
 
   /**
    * 获取单条记账记录
+   * @param id 记录 ID
    */
   getRecord: (id: number) => {
     return request<RecordData>({
@@ -111,6 +141,7 @@ export const recordApi = {
 
   /**
    * 删除记账记录
+   * @param id 记录 ID
    */
   deleteRecord: (id: number) => {
     return request({

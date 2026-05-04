@@ -8,5 +8,10 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CustomTabbar: typeof import('./src/components/CustomTabbar.vue')['default']
+    WdCell: typeof import('@wot-ui/ui/components/wd-cell/wd-cell.vue')['default']
+    WdCellGroup: typeof import('@wot-ui/ui/components/wd-cell-group/wd-cell-group.vue')['default']
+    WdPickerView: typeof import('@wot-ui/ui/components/wd-picker-view/wd-picker-view.vue')['default']
+    WdPopup: typeof import('@wot-ui/ui/components/wd-popup/wd-popup.vue')['default']
+    WdPullRefresh: typeof import('@wot-ui/ui/components/wd-pull-refresh/wd-pull-refresh.vue')['default']
   }
 }

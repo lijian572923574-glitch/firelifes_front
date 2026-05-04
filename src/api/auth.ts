@@ -1,5 +1,28 @@
+/**
+ * api/auth.ts - 用户认证 API
+ * 
+ * 功能说明：
+ * - 发送短信验证码（注册/登录/重置密码）
+ * - 用户注册
+ * - 用户登录（密码/验证码/微信）
+ * - 获取用户信息
+ * - 用户退出登录
+ * 
+ * API 端点：
+ * - /auth/send-sms - 发送短信
+ * - /auth/register - 用户注册
+ * - /auth/login - 用户登录
+ * - /auth/me - 获取当前用户信息
+ * - /auth/logout - 退出登录
+ * 
+ * 技术栈：TypeScript + uni-app
+ */
+
 import request from './request'
 
+/**
+ * 用户信息接口
+ */
 export interface User {
   id: number
   username: string
@@ -8,11 +31,19 @@ export interface User {
   avatarUrl?: string
 }
 
+/**
+ * 认证响应接口
+ */
 export interface AuthResponse {
   token: string
   user: User
 }
 
+/**
+ * 发送短信验证码
+ * @param phone 手机号
+ * @param type 验证码类型：register-注册 login-登录 reset-password-重置密码
+ */
 export const sendSmsCode = (phone: string, type: 'register' | 'login' | 'reset-password' = 'login') => {
   return request({
     url: '/auth/send-sms',
@@ -22,6 +53,10 @@ export const sendSmsCode = (phone: string, type: 'register' | 'login' | 'reset-p
   })
 }
 
+/**
+ * 用户注册
+ * @param data 注册数据（手机号、验证码、密码、昵称）
+ */
 export const register = (data: {
   phone: string
   code: string
@@ -36,6 +71,10 @@ export const register = (data: {
   })
 }
 
+/**
+ * 用户登录
+ * @param data 登录数据（支持密码、验证码、微信登录）
+ */
 export const login = (data: {
   phone: string
   password?: string
@@ -51,6 +90,9 @@ export const login = (data: {
   })
 }
 
+/**
+ * 获取当前登录用户信息
+ */
 export const getUserInfo = () => {
   return request({
     url: '/auth/me',
@@ -58,6 +100,9 @@ export const getUserInfo = () => {
   })
 }
 
+/**
+ * 用户退出登录
+ */
 export const logout = () => {
   return request({
     url: '/auth/logout',

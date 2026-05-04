@@ -1,68 +1,59 @@
 <template>
   <view class="transaction-form">
-    <!-- 金额显示 -->
     <view class="amount-display">
       <text class="currency">¥</text>
       <text class="amount">{{ displayAmount || '0.00' }}</text>
     </view>
 
-    <!-- 备注输入 -->
-    <view class="remark-input" @click="showRemarkInput = true">
+    <view class="remark-input" @tap="showRemarkInput = true">
       <text class="remark-label">备注：</text>
       <text class="remark-placeholder" v-if="!remark">点击填写备注</text>
       <text class="remark-text" v-else>{{ remark }}</text>
     </view>
 
-    <!-- 金额键盘 -->
     <view class="keyboard">
       <view class="keyboard-row">
-        <view class="key-item" @click="inputAmount('7')"><text>7</text></view>
-        <view class="key-item" @click="inputAmount('8')"><text>8</text></view>
-        <view class="key-item" @click="inputAmount('9')"><text>9</text></view>
-        <view class="key-item function" @click="toggleDatePicker">
+        <view class="key-item" @tap="inputAmount('7')"><text>7</text></view>
+        <view class="key-item" @tap="inputAmount('8')"><text>8</text></view>
+        <view class="key-item" @tap="inputAmount('9')"><text>9</text></view>
+        <view class="key-item function" @tap="toggleDatePicker">
           <text class="date-text">{{ formattedDate }}</text>
         </view>
       </view>
       <view class="keyboard-row">
-        <view class="key-item" @click="inputAmount('4')"><text>4</text></view>
-        <view class="key-item" @click="inputAmount('5')"><text>5</text></view>
-        <view class="key-item" @click="inputAmount('6')"><text>6</text></view>
-        <view class="key-item function" @click="inputAmount('+')"><text>+</text></view>
+        <view class="key-item" @tap="inputAmount('4')"><text>4</text></view>
+        <view class="key-item" @tap="inputAmount('5')"><text>5</text></view>
+        <view class="key-item" @tap="inputAmount('6')"><text>6</text></view>
+        <view class="key-item function" @tap="inputAmount('+')"><text>+</text></view>
       </view>
       <view class="keyboard-row">
-        <view class="key-item" @click="inputAmount('1')"><text>1</text></view>
-        <view class="key-item" @click="inputAmount('2')"><text>2</text></view>
-        <view class="key-item" @click="inputAmount('3')"><text>3</text></view>
-        <view class="key-item function" @click="inputAmount('-')"><text>-</text></view>
+        <view class="key-item" @tap="inputAmount('1')"><text>1</text></view>
+        <view class="key-item" @tap="inputAmount('2')"><text>2</text></view>
+        <view class="key-item" @tap="inputAmount('3')"><text>3</text></view>
+        <view class="key-item function" @tap="inputAmount('-')"><text>-</text></view>
       </view>
       <view class="keyboard-row">
-        <view class="key-item" @click="inputAmount('.')"><text>.</text></view>
-        <view class="key-item" @click="inputAmount('0')"><text>0</text></view>
-        <view class="key-item function" @click="deleteDigit"><text>⌫</text></view>
-        <view class="key-item confirm" @click="handleComplete">
+        <view class="key-item" @tap="inputAmount('.')"><text>.</text></view>
+        <view class="key-item" @tap="inputAmount('0')"><text>0</text></view>
+        <view class="key-item function" @tap="deleteDigit"><text>⌫</text></view>
+        <view class="key-item confirm" @tap="handleComplete">
           <text>完成</text>
         </view>
       </view>
     </view>
 
-    <!-- 备注输入弹窗 -->
-    <view v-if="showRemarkInput" class="popup-overlay" @click="showRemarkInput = false">
-      <view class="popup-content" @click.stop>
+    <WdPopup position="center" v-model="showRemarkInput">
+      <view class="popup-content" @tap.stop>
         <view class="popup-header">
           <text class="popup-title">填写备注</text>
-          <text class="popup-close" @click="showRemarkInput = false">×</text>
+          <text class="popup-close" @tap="showRemarkInput = false">×</text>
         </view>
-        <textarea
-          v-model="remark"
-          class="remark-textarea"
-          placeholder="请输入备注"
-          rows="4"
-        ></textarea>
+        <WdTextarea v-model="remark" placeholder="请输入备注" :autosize />
         <view class="popup-footer">
-          <view class="popup-button" @click="showRemarkInput = false">确定</view>
+          <WdButton block type="primary" @tap="showRemarkInput = false">确定</WdButton>
         </view>
       </view>
-    </view>
+    </WdPopup>
   </view>
 </template>
 
@@ -85,13 +76,9 @@ const emit = defineEmits<{
 const displayAmount = ref('')
 const remark = ref('')
 const showRemarkInput = ref(false)
-
-// 当前显示的日期
 const currentDate = ref(new Date())
-// 是否选择了非今天的日期
 const hasSelectedDate = ref(false)
 
-// 格式化日期显示
 const formattedDate = computed(() => {
   if (!hasSelectedDate.value) {
     return '今天'
@@ -102,12 +89,10 @@ const formattedDate = computed(() => {
   return `${year}/${month}/${day}`
 })
 
-// 监听props.date变化，更新当前日期
 watch(() => props.date, (newDate) => {
   if (newDate) {
     const date = new Date(newDate)
     currentDate.value = date
-    // 判断是否为今天
     const today = new Date()
     const isToday = date.toDateString() === today.toDateString()
     hasSelectedDate.value = !isToday
@@ -115,7 +100,6 @@ watch(() => props.date, (newDate) => {
 }, { immediate: true })
 
 watch(() => props.transactionType, () => {
-  // 切换交易类型时重置金额
   displayAmount.value = ''
   emit('update:amount', '')
 })
@@ -129,7 +113,6 @@ const inputAmount = (digit: string) => {
       displayAmount.value += '.'
     }
   } else if (digit === '+' || digit === '-') {
-    // 处理正负号逻辑
     if (displayAmount.value.startsWith('-')) {
       displayAmount.value = displayAmount.value.substring(1)
     } else {
@@ -138,7 +121,6 @@ const inputAmount = (digit: string) => {
   } else if (digit === '0' && displayAmount.value === '0') {
     return
   } else {
-    // 限制小数位数为2位
     if (displayAmount.value.includes('.')) {
       const parts = displayAmount.value.split('.')
       if (parts[1].length >= 2) return
@@ -154,7 +136,6 @@ const deleteDigit = () => {
 }
 
 const handleComplete = () => {
-  // 确保支出金额为负数，收入金额为正数
   let finalAmount = displayAmount.value
   if (props.transactionType === 'expense' && !finalAmount.startsWith('-')) {
     finalAmount = '-' + finalAmount
@@ -162,6 +143,7 @@ const handleComplete = () => {
     finalAmount = finalAmount.substring(1)
   }
   emit('update:amount', finalAmount)
+  emit('update:remark', remark.value)
   emit('complete')
 }
 
@@ -210,13 +192,13 @@ const toggleDatePicker = () => {
 .currency {
   font-size: 36rpx;
   font-weight: 600;
-  color: #5C6B7A;
+  color: #5c6b7a;
 }
 
 .amount {
   font-size: 72rpx;
   font-weight: 700;
-  color: #2D3436;
+  color: #2d3436;
   letter-spacing: -1rpx;
   transition: all 0.2s ease;
 }
@@ -240,26 +222,26 @@ const toggleDatePicker = () => {
 
 .remark-label {
   font-size: 28rpx;
-  color: #7B8794;
+  color: #7b8794;
   margin-right: 12rpx;
   font-weight: 500;
 }
 
 .remark-placeholder {
   font-size: 28rpx;
-  color: #B2BEC3;
+  color: #b2bec3;
   font-weight: 400;
 }
 
 .remark-text {
   font-size: 28rpx;
-  color: #2D3436;
+  color: #2d3436;
   flex: 1;
   font-weight: 500;
 }
 
 .keyboard {
-  background: linear-gradient(180deg, #F8F9FA 0%, #F1F2F6 100%);
+  background: linear-gradient(180deg, #f8f9fa 0%, #f1f2f6 100%);
   border-radius: 24rpx;
   padding: 20rpx;
   backdrop-filter: blur(10rpx);
@@ -285,7 +267,7 @@ const toggleDatePicker = () => {
   margin: 0 8rpx;
   font-size: 40rpx;
   font-weight: 600;
-  color: #2D3436;
+  color: #2d3436;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
   border: 1rpx solid rgba(255, 255, 255, 0.8);
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -307,17 +289,17 @@ const toggleDatePicker = () => {
 }
 
 .key-item.function {
-  background: linear-gradient(135deg, #E8F4F8 0%, #D4E9F0 100%);
+  background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f0 100%);
   font-size: 28rpx;
-  color: #5C6B7A;
+  color: #5c6b7a;
 }
 
 .key-item.function:active {
-  background: linear-gradient(135deg, #D4E9F0 0%, #C0D8E0 100%);
+  background: linear-gradient(135deg, #d4e9f0 0%, #c0d8e0 100%);
 }
 
 .key-item.confirm {
-  background: linear-gradient(135deg, #FFD166 0%, #FFC145 100%);
+  background: linear-gradient(135deg, #ffd166 0%, #ffc145 100%);
   color: #fff;
   font-size: 32rpx;
   font-weight: 600;
@@ -329,39 +311,10 @@ const toggleDatePicker = () => {
   box-shadow: 0 4rpx 12rpx rgba(255, 209, 102, 0.3);
 }
 
-.date-icon {
-  font-size: 24rpx;
-  margin-right: 5rpx;
-}
-
 .date-text {
   font-size: 22rpx;
-  color: #5C6B7A;
+  color: #5c6b7a;
   font-weight: 500;
-}
-
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(5rpx);
-  animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .popup-content {
@@ -397,57 +350,22 @@ const toggleDatePicker = () => {
 .popup-title {
   font-size: 32rpx;
   font-weight: 600;
-  color: #2D3436;
+  color: #2d3436;
 }
 
 .popup-close {
   font-size: 44rpx;
-  color: #9CA3AF;
+  color: #9ca3af;
   line-height: 1;
   transition: all 0.2s ease;
 }
 
 .popup-close:active {
-  color: #6B7280;
+  color: #6b7280;
   transform: scale(0.9);
 }
 
-.remark-textarea {
-  width: 100%;
-  border: 2rpx solid rgba(229, 231, 235, 0.8);
-  border-radius: 16rpx;
-  padding: 18rpx;
-  font-size: 28rpx;
-  min-height: 220rpx;
-  margin-bottom: 24rpx;
-  background: rgba(255, 255, 255, 0.8);
-  color: #2D3436;
-  transition: all 0.3s ease;
-}
-
-.remark-textarea:focus {
-  border-color: #FFD166;
-  background: rgba(255, 255, 255, 1);
-}
-
 .popup-footer {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.popup-button {
-  padding: 16rpx 48rpx;
-  background: linear-gradient(135deg, #FFD166 0%, #FFC145 100%);
-  color: #fff;
-  border-radius: 20rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  box-shadow: 0 4rpx 12rpx rgba(255, 209, 102, 0.3);
-  transition: all 0.2s ease;
-}
-
-.popup-button:active {
-  transform: scale(0.95);
-  box-shadow: 0 2rpx 8rpx rgba(255, 209, 102, 0.2);
+  margin-top: 24rpx;
 }
 </style>

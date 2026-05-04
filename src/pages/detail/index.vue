@@ -1,22 +1,19 @@
 <!--
-  pages/detail/index.vue - Detail Page
-  Function: Display transaction details with layout matching the provided screenshot
-  Tech: Vue3 + TypeScript
+  pages/detail/index.vue - 账单明细页面
+  功能：展示记账记录，按月份筛选，下拉刷新、上拉加载
+  技术：Vue3 + TypeScript + uni-app + Wot Design
 -->
 <template>
   <view class="page">
-    <!-- 顶部标题区 -->
     <view class="header">
       <view class="header-top">
         <text class="app-title">鲨鱼记账</text>
       </view>
       <view class="header-content">
-        <!-- 年月选择器 -->
         <view class="date-selector" @tap="showDatePicker">
           <text class="year-text" :key="currentYear">{{ currentYear }}年</text>
           <text class="month-text" :key="currentMonth">{{ currentMonth }}月</text>
         </view>
-        <!-- 收入支出金额 -->
         <view class="header-amounts">
           <view class="amount-item">
             <text class="amount-label">收入</text>
@@ -31,27 +28,15 @@
       </view>
     </view>
 
-    <!-- 年月选择弹窗 -->
-    <view v-if="showPicker" class="picker-overlay" @tap="hideDatePicker">
-      <view class="picker-content" @tap.stop>
-        <picker-view
-          class="picker-view"
-          :value="pickerValue"
-          :indicator-style="{ height: '80rpx' }"
-          :item-height="80"
-          @change="onDateChange"
-        >
-          <picker-view-column class="picker-column">
-            <view v-for="year in yearList" :key="year" class="picker-item">{{ year }}年</view>
-          </picker-view-column>
-          <picker-view-column class="picker-column">
-            <view v-for="m in 12" :key="m" class="picker-item">{{ m.toString().padStart(2, '0') }}月</view>
-          </picker-view-column>
-        </picker-view>
+    <WdPopup position="bottom" v-model="showPicker" custom-style="border-radius: 24rpx 24rpx 0 0">
+      <view class="picker-header">
+        <view class="picker-cancel" @tap="hideDatePicker">取消</view>
+        <view class="picker-title">选择日期</view>
+        <view class="picker-confirm" @tap="confirmDate">确定</view>
       </view>
-    </view>
+      <WdPickerView :model-value="pickerValue" :columns="pickerColumns" @change="onPickerChange" custom-style="height: 400rpx" />
+    </WdPopup>
 
-    <!-- 功能入口区 -->
     <view class="function-bar">
       <view class="function-item">
         <view class="function-icon">📄</view>
@@ -75,61 +60,54 @@
       </view>
     </view>
 
-    <!-- 加载状态 -->
     <view v-if="loading && sortedDates.length === 0" class="loading-state">
       <text class="loading-text">加载中...</text>
     </view>
 
-    <!-- 账单明细区 -->
-    <scroll-view
-      class="bill-list"
-      scroll-y
-      :refresher-enabled="true"
-      :refresher-triggered="isRefreshing"
-      @refresherrefresh="handlePullDownRefresh"
-      @scrolltolower="handleReachBottom"
-    >
-      <view :class="['bill-content', transitionDirection]" :key="currentYear + '-' + currentMonth">
-        <!-- 空状态 -->
-        <view v-if="!loading && sortedDates.length === 0" class="empty-state">
-          <text class="empty-text">暂无记账记录</text>
-          <text class="empty-hint">点击下方按钮开始记账</text>
-        </view>
-
-        <!-- 按日期分组的账单列表 -->
-        <view v-for="date in sortedDates" :key="date" class="bill-section">
-          <view class="bill-date">
-            <text class="date-text">{{ formatDate(date) }}</text>
-            <view class="day-totals">
-              <text class="day-income">收入: {{ getDayIncome(date) }}</text>
-              <text class="day-expense">支出: {{ getDayExpense(date) }}</text>
-            </view>
+    <view class="bill-wrapper">
+      <scroll-view scroll-y class="bill-scroll" @scrolltoupper="handlePullDownRefresh">
+        <view :class="['bill-content', transitionDirection]" :key="currentYear + '-' + currentMonth">
+          <view v-if="!loading && sortedDates.length === 0" class="empty-state">
+            <text class="empty-text">暂无记账记录</text>
+            <text class="empty-hint">点击下方按钮开始记账</text>
           </view>
-          <view class="bill-items">
-            <view v-for="record in getDateRecords(date)" :key="record.id" class="bill-item">
-              <view class="item-left">
-                <view class="item-icon">{{ getCategoryInfo(record.typeId).icon }}</view>
-                <text class="item-category">{{ getCategoryInfo(record.typeId).name }}</text>
+
+          <view v-for="date in sortedDates" :key="date" class="bill-section">
+            <WdCellGroup custom-style="border-radius: 16rpx; overflow: hidden;">
+              <view class="bill-date">
+                <text class="date-text">{{ formatDate(date) }}</text>
+                <view class="day-totals">
+                  <text class="day-income">收入: {{ getDayIncome(date) }}</text>
+                  <text class="day-expense">支出: {{ getDayExpense(date) }}</text>
+                </view>
               </view>
-              <text :class="['item-amount', record.type]">
-                {{ record.type === 'expense' ? '-' : '+' }}{{ formatAmount(record.amount) }}
-              </text>
-            </view>
+              <view v-for="record in getDateRecords(date)" :key="record.id" class="bill-item-wrapper">
+                <WdCell :title="getCategoryInfo(record.typeId).name" :value="`${record.type === 'expense' ? '-' : '+'}${formatAmount(record.amount)}`">
+                  <template #icon>
+                    <view class="item-icon">{{ getCategoryInfo(record.typeId).icon }}</view>
+                  </template>
+                  <template #value>
+                    <text :class="['item-amount', record.type]">
+                      {{ record.type === 'expense' ? '-' : '+' }}{{ formatAmount(record.amount) }}
+                    </text>
+                  </template>
+                </WdCell>
+              </view>
+            </WdCellGroup>
+          </view>
+
+          <view v-if="sortedDates.length > 0" class="load-more">
+            <text class="load-more-text">{{ loadMoreText }}</text>
           </view>
         </view>
-
-        <!-- 加载更多 -->
-        <view v-if="sortedDates.length > 0" class="load-more">
-          <text class="load-more-text">{{ loadMoreText }}</text>
-        </view>
-      </view>
-    </scroll-view>
+      </scroll-view>
+    </view>
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
-import { onShow, onPullDownRefresh, onReachBottom } from '@dcloudio/uni-app'
+import { onShow, onReachBottom } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
 import { categoryApi, type CategoryGroup } from '../../api/category'
 
@@ -152,13 +130,31 @@ interface DatePageData {
 
 const categories = ref<CategoryGroup[]>([])
 const userIconsMap = ref<Map<number, string>>(new Map())
-const hasNextMonthData = ref<boolean>(true) // 是否有下一个月的数据
-const transitionDirection = ref<'next' | 'prev'>('next') // 切换方向
+const hasNextMonthData = ref<boolean>(true)
+const transitionDirection = ref<'next' | 'prev'>('next')
 
-const currentYear = ref('2026')
-const currentMonth = ref('04')
+// 使用当前日期初始化，避免硬编码导致的问题
+const today = new Date()
+const currentYear = ref(today.getFullYear().toString())
+const currentMonth = ref((today.getMonth() + 1).toString().padStart(2, '0'))
 const showPicker = ref(false)
 const yearList = ref<number[]>([])
+
+const pickerColumns = computed(() => {
+  return [
+    {
+      values: yearList.value,
+      defaultIndex: yearList.value.indexOf(parseInt(currentYear.value)),
+      format: (label: number) => `${label}年`
+    },
+    {
+      values: Array.from({ length: 12 }, (_, i) => i + 1),
+      defaultIndex: parseInt(currentMonth.value) - 1,
+      format: (label: number) => `${label.toString().padStart(2, '0')}月`
+    }
+  ]
+})
+
 const pickerValue = ref([0, 0])
 
 const monthIncome = ref(0)
@@ -197,10 +193,13 @@ const hideDatePicker = () => {
   showPicker.value = false
 }
 
-const onDateChange = (e: any) => {
-  const [yearIndex, monthIndex] = e.detail.value
+const onPickerChange = (e: any) => {
+  const [yearIndex, monthIndex] = e.modelValue
   currentYear.value = yearList.value[yearIndex].toString()
   currentMonth.value = (monthIndex + 1).toString().padStart(2, '0')
+}
+
+const confirmDate = () => {
   showPicker.value = false
   loadMonthData()
 }
@@ -218,9 +217,7 @@ const getCategoryInfo = (typeId: number): { name: string; icon: string } => {
 }
 
 const sortedDates = computed(() => {
-  return Array.from(pageData.keys()).sort((a, b) =>
-    new Date(b).getTime() - new Date(a).getTime()
-  )
+  return Array.from(pageData.keys()).sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
 })
 
 const getDateRecords = (date: string): RecordItem[] => {
@@ -229,17 +226,13 @@ const getDateRecords = (date: string): RecordItem[] => {
 
 const getDayIncome = (dateStr: string) => {
   const dayRecords = getDateRecords(dateStr)
-  const income = dayRecords
-    .filter(r => r.type === 'income')
-    .reduce((sum, r) => sum + Math.abs(r.amount), 0)
+  const income = dayRecords.filter((r) => r.type === 'income').reduce((sum, r) => sum + Math.abs(r.amount), 0)
   return income.toFixed(2)
 }
 
 const getDayExpense = (dateStr: string) => {
   const dayRecords = getDateRecords(dateStr)
-  const expense = dayRecords
-    .filter(r => r.type === 'expense')
-    .reduce((sum, r) => sum + Math.abs(r.amount), 0)
+  const expense = dayRecords.filter((r) => r.type === 'expense').reduce((sum, r) => sum + Math.abs(r.amount), 0)
   return expense.toFixed(2)
 }
 
@@ -301,7 +294,7 @@ const loadFirstPageDates = async () => {
     if (res.success && res.data) {
       const { list, total } = res.data
       const dateGroups = new Map<string, RecordItem[]>()
-      list.forEach(record => {
+      list.forEach((record) => {
         const dateStr = record.date
         if (!dateGroups.has(dateStr)) {
           dateGroups.set(dateStr, [])
@@ -330,11 +323,7 @@ const loadFirstPageDates = async () => {
 const loadMonthData = async () => {
   loading.value = true
   try {
-    await Promise.all([
-      loadCategories(),
-      loadMonthSummary(),
-      loadFirstPageDates()
-    ])
+    await Promise.all([loadCategories(), loadMonthSummary(), loadFirstPageDates()])
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
@@ -343,36 +332,27 @@ const loadMonthData = async () => {
 }
 
 const handlePullDownRefresh = async () => {
-  isRefreshing.value = true
-  console.log('[detail] 下拉刷新，尝试切换到下一个月')
-  
-  // 尝试切换到下一个月
   let year = parseInt(currentYear.value)
   let month = parseInt(currentMonth.value)
-  
+
   month++
   if (month > 12) {
     month = 1
     year++
   }
-  
+
   const nextYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
-  
-  // 先检查下一个月是否有数据
+
   try {
     const checkRes = await recordApi.getRecordsByMonth(nextYearMonth, 1, 1)
-    
+
     if (checkRes.success && checkRes.data && checkRes.data.list.length > 0) {
-      // 有数据，切换到下一个月
       transitionDirection.value = 'next'
-      await new Promise(resolve => setTimeout(resolve, 50))
+      await new Promise((resolve) => setTimeout(resolve, 50))
       currentYear.value = year.toString()
       currentMonth.value = month.toString().padStart(2, '0')
-      console.log('[detail] 切换到下一个月', currentYear.value, currentMonth.value)
       await loadMonthData()
     } else {
-      // 没有数据，提示用户
-      console.log('[detail] 下一个月没有数据，刷新当前月份')
       uni.showToast({
         title: '已经是最新月份了',
         icon: 'none'
@@ -384,42 +364,34 @@ const handlePullDownRefresh = async () => {
     await loadMonthData()
   } finally {
     isRefreshing.value = false
-    uni.stopPullDownRefresh()
   }
 }
 
 const handleReachBottom = async () => {
   if (isLoadingMore.value) return
-  
-  // 如果没有更多数据了，切换到上一个月
+
   if (!hasMoreData.value) {
-    console.log('[detail] 没有更多数据了，切换到上一个月')
     let year = parseInt(currentYear.value)
     let month = parseInt(currentMonth.value)
-    
+
     month--
     if (month < 1) {
       month = 12
       year--
     }
-    
+
     const prevYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
-    
-    // 先检查上一个月是否有数据
+
     try {
       const checkRes = await recordApi.getRecordsByMonth(prevYearMonth, 1, 1)
-      
+
       if (checkRes.success && checkRes.data && checkRes.data.list.length > 0) {
-        // 有数据，切换到上一个月
         transitionDirection.value = 'prev'
-        await new Promise(resolve => setTimeout(resolve, 50))
+        await new Promise((resolve) => setTimeout(resolve, 50))
         currentYear.value = year.toString()
         currentMonth.value = month.toString().padStart(2, '0')
-        console.log('[detail] 切换到上一个月', currentYear.value, currentMonth.value)
         await loadMonthData()
       } else {
-        // 没有数据，提示用户
-        console.log('[detail] 上一个月没有数据')
         uni.showToast({
           title: '已经到底了，没有更多数据了',
           icon: 'none'
@@ -442,7 +414,7 @@ const handleReachBottom = async () => {
     if (res.success && res.data) {
       const { list, total } = res.data
       const dateGroups = new Map<string, RecordItem[]>()
-      list.forEach(record => {
+      list.forEach((record) => {
         const dateStr = record.date
         if (!dateGroups.has(dateStr)) {
           dateGroups.set(dateStr, [])
@@ -473,18 +445,11 @@ const handleReachBottom = async () => {
 }
 
 onMounted(() => {
-  const now = new Date()
-  currentYear.value = now.getFullYear().toString()
-  currentMonth.value = (now.getMonth() + 1).toString().padStart(2, '0')
   loadMonthData()
 })
 
 onShow(() => {
   loadMonthData()
-})
-
-onPullDownRefresh(() => {
-  handlePullDownRefresh()
 })
 
 onReachBottom(() => {
@@ -508,7 +473,7 @@ onReachBottom(() => {
 }
 
 .header {
-  background: linear-gradient(135deg, #FFD166 0%, #FFBB00 100%);
+  background: linear-gradient(135deg, #ffd166 0%, #ffbb00 100%);
   padding: 40rpx 30rpx 30rpx;
   color: #333;
   flex-shrink: 0;
@@ -581,11 +546,11 @@ onReachBottom(() => {
 }
 
 .amount-value.income {
-  color: #19BE6B;
+  color: #19be6b;
 }
 
 .amount-value.expense {
-  color: #FA3534;
+  color: #fa3534;
 }
 
 .amount-divider {
@@ -595,43 +560,34 @@ onReachBottom(() => {
   margin: 0 25rpx;
 }
 
-.picker-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 999;
+.picker-header {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid rgba(229, 231, 235, 0.6);
 }
 
-.picker-content {
-  background: #fff;
-  border-radius: 24rpx 24rpx 0 0;
-  padding: 30rpx;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
+.picker-cancel {
+  font-size: 28rpx;
+  color: #9ca3af;
+  font-weight: 500;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
 }
 
-.picker-view {
-  width: 100%;
-  height: 400rpx;
-}
-
-.picker-column {
-  flex: 1;
-  height: 400rpx;
-  text-align: center;
-}
-
-.picker-item {
+.picker-title {
   font-size: 32rpx;
-  line-height: 80rpx;
+  font-weight: 600;
+  color: #2d3436;
+}
+
+.picker-confirm {
+  font-size: 28rpx;
+  color: #ffb347;
+  font-weight: 600;
+  padding: 8rpx 20rpx;
+  border-radius: 12rpx;
 }
 
 .function-bar {
@@ -672,11 +628,17 @@ onReachBottom(() => {
   color: #999;
 }
 
-.bill-list {
+.bill-wrapper {
   flex: 1;
-  height: 0;
-  overflow-y: auto;
   margin: 0 20rpx;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bill-scroll {
+  flex: 1;
+  height: 100%;
 }
 
 .bill-content {
@@ -715,10 +677,7 @@ onReachBottom(() => {
 }
 
 .bill-section {
-  background-color: #fff;
-  border-radius: 16rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
 .bill-date {
@@ -726,7 +685,7 @@ onReachBottom(() => {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx;
-  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
 }
 
 .date-text {
@@ -742,34 +701,16 @@ onReachBottom(() => {
 
 .day-income {
   font-size: 24rpx;
-  color: #19BE6B;
+  color: #19be6b;
 }
 
 .day-expense {
   font-size: 24rpx;
-  color: #FA3534;
+  color: #fa3534;
 }
 
-.bill-items {
-  padding: 10rpx 0;
-}
-
-.bill-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx 30rpx;
-  transition: background-color 0.2s;
-}
-
-.bill-item:active {
-  background-color: #f9f9f9;
-}
-
-.item-left {
-  display: flex;
-  align-items: center;
-  gap: 20rpx;
+.bill-item-wrapper {
+  background: #fff;
 }
 
 .item-icon {
@@ -783,22 +724,17 @@ onReachBottom(() => {
   border-radius: 12rpx;
 }
 
-.item-category {
-  font-size: 28rpx;
-  color: #333;
-}
-
 .item-amount {
   font-size: 32rpx;
   font-weight: 500;
 }
 
 .item-amount.expense {
-  color: #FA3534;
+  color: #fa3534;
 }
 
 .item-amount.income {
-  color: #19BE6B;
+  color: #19be6b;
 }
 
 .load-more {

@@ -1,6 +1,27 @@
+/**
+ * api/request.ts - 网络请求封装
+ * 
+ * 功能说明：
+ * - 封装 uni.request 为 Promise 风格的请求方法
+ * - 自动添加 Authorization Token 到请求头
+ * - 统一处理 401 未认证错误（自动跳转登录页）
+ * - 统一处理网络错误和业务错误提示
+ * - 支持配置是否需要认证
+ * 
+ * 拦截机制：
+ * - 请求前：检查 Token 状态
+ * - 响应后：处理业务状态码
+ * - 错误时：统一错误提示
+ * 
+ * 技术栈：uni-app + TypeScript
+ */
+
 import config from '../config/index'
 import { storage } from '../utils/storage'
 
+/**
+ * 请求配置接口
+ */
 interface RequestOptions<T = any> {
   url: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
@@ -9,12 +30,20 @@ interface RequestOptions<T = any> {
   needAuth?: boolean
 }
 
+/**
+ * 响应数据接口
+ */
 interface ResponseData<T = any> {
   success: boolean
   message: string
   data: T
 }
 
+/**
+ * 统一请求方法
+ * @param options 请求配置
+ * @returns Promise<ResponseData<T>>
+ */
 const request = <T = any>(options: RequestOptions): Promise<ResponseData<T>> => {
   const { url, method = 'GET', data = {}, header = {}, needAuth = true } = options
 

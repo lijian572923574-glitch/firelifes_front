@@ -1,55 +1,23 @@
 <template>
   <view class="record-page">
-    <!-- 标题区 - 固定在顶部 -->
     <view class="header">
       <view class="header-bottom">
         <view class="header-left">
-          <text
-            class="type-btn"
-            :class="{ active: transactionType === 'expense' }"
-            @click="switchType('expense')"
-          >支出</text>
+          <text class="type-btn" :class="{ active: transactionType === 'expense' }" @tap="switchType('expense')">支出</text>
           <text class="type-divider">|</text>
-          <text
-            class="type-btn"
-            :class="{ active: transactionType === 'income' }"
-            @click="switchType('income')"
-          >收入</text>
+          <text class="type-btn" :class="{ active: transactionType === 'income' }" @tap="switchType('income')">收入</text>
         </view>
-        <text class="cancel-btn" @click="handleCancel">取消</text>
+        <text class="cancel-btn" @tap="handleCancel">取消</text>
       </view>
     </view>
 
-    <!-- 可滚动内容区域 -->
     <view class="content" :class="{ 'has-form': selectedCategory }">
-      <!-- 分类选择区 -->
-      <CategorySelector
-        ref="categorySelectorRef"
-        :transactionType="transactionType"
-        :selectedCategoryId="selectedCategory?.id || 0"
-        @select="selectCategory"
-      />
+      <CategorySelector ref="categorySelectorRef" :transactionType="transactionType" :selectedCategoryId="selectedCategory?.id || 0" @select="selectCategory" />
 
-      <!-- 记账输入区 - 只有选择分类后才显示 -->
-      <TransactionForm
-        v-if="selectedCategory"
-        :date="selectedDate"
-        :transactionType="transactionType"
-        @update:date="selectedDate = $event"
-        @update:amount="displayAmount = $event"
-        @update:remark="remark = $event"
-        @complete="handleComplete"
-        @toggleDatePicker="showDatePicker = true"
-      />
+      <TransactionForm v-if="selectedCategory" :date="selectedDate" :transactionType="transactionType" @update:date="selectedDate = $event" @update:amount="displayAmount = $event" @update:remark="remark = $event" @complete="handleComplete" @toggleDatePicker="showDatePicker = true" />
     </view>
 
-    <!-- 日期选择器 -->
-    <DatePicker
-      :visible="showDatePicker"
-      :date="selectedDate"
-      @update:date="selectedDate = $event"
-      @close="showDatePicker = false"
-    />
+    <DatePicker :visible="showDatePicker" :date="selectedDate" @update:date="selectedDate = $event" @close="showDatePicker = false" />
   </view>
 </template>
 
@@ -120,14 +88,14 @@ const handleComplete = async () => {
 
   try {
     const amount = parseFloat(displayAmount.value)
-    const finalAmount = transactionType.value === 'expense' ? -amount : amount
+    const finalAmount = transactionType.value === 'expense' ? -Math.abs(amount) : Math.abs(amount)
 
     const res = await recordApi.createRecord({
       typeId: selectedCategory.value.id,
       type: transactionType.value,
       amount: finalAmount,
       remark: remark.value,
-      date: selectedDate.value,
+      date: selectedDate.value
     })
 
     if (res.success) {
@@ -151,12 +119,12 @@ const handleComplete = async () => {
 <style>
 .record-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #FAF9F6 0%, #F5F3EF 100%);
+  background: linear-gradient(135deg, #faf9f6 0%, #f5f3ef 100%);
   padding-top: 120rpx;
 }
 
 .header {
-  background: linear-gradient(135deg, #FFD166 0%, #FFC145 100%);
+  background: linear-gradient(135deg, #ffd166 0%, #ffc145 100%);
   padding: 20rpx 30rpx;
   color: #333;
   position: fixed;
