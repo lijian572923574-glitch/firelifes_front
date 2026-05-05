@@ -69,7 +69,7 @@
 				"pagePath": "pages/statistics/index",
 				"iconPath": "static/logo.png",
 				"selectedIconPath": "static/logo.png",
-				"text": "图表"
+				"text": "统计"
 			},
 			{
 				"pagePath": "pages/record/index",
@@ -81,7 +81,7 @@
 				"pagePath": "pages/analysis/index",
 				"iconPath": "static/logo.png",
 				"selectedIconPath": "static/logo.png",
-				"text": "发现"
+				"text": "资产"
 			},
 			{
 				"pagePath": "pages/my/index",

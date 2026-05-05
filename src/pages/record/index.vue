@@ -11,11 +11,29 @@
       </view>
     </view>
 
-    <view class="content" :class="{ 'has-form': selectedCategory }">
+    <view class="content">
       <CategorySelector ref="categorySelectorRef" :transactionType="transactionType" :selectedCategoryId="selectedCategory?.id || 0" @select="selectCategory" />
-
-      <TransactionForm v-if="selectedCategory" :date="selectedDate" :transactionType="transactionType" @update:date="selectedDate = $event" @update:amount="displayAmount = $event" @update:remark="remark = $event" @complete="handleComplete" @toggleDatePicker="showDatePicker = true" />
     </view>
+
+    <WdPopup
+      position="bottom"
+      v-model="showTransactionForm"
+      :z-index="1000"
+      :modal="true"
+      :close-on-click-modal="true"
+      custom-style="border-radius: 32rpx 32rpx 0 0; background: transparent;"
+      @close="handleCloseTransactionForm"
+    >
+      <TransactionForm
+        :date="selectedDate"
+        :transactionType="transactionType"
+        @update:date="selectedDate = $event"
+        @update:amount="displayAmount = $event"
+        @update:remark="remark = $event"
+        @complete="handleComplete"
+        @toggleDatePicker="showDatePicker = true"
+      />
+    </WdPopup>
 
     <DatePicker :visible="showDatePicker" :date="selectedDate" @update:date="selectedDate = $event" @close="showDatePicker = false" />
   </view>
@@ -35,15 +53,14 @@ const displayAmount = ref('')
 const remark = ref('')
 const selectedDate = ref(new Date().toISOString().split('T')[0])
 const showDatePicker = ref(false)
+const showTransactionForm = ref(false)
 const isSubmitting = ref(false)
 const categorySelectorRef = ref()
 
 onMounted(() => {
-  uni.hideTabBar()
 })
 
 onUnmounted(() => {
-  uni.showTabBar()
 })
 
 onShow(() => {
@@ -66,6 +83,11 @@ const switchType = (type: 'income' | 'expense') => {
 
 const selectCategory = (category: { id: number; name: string; icon: string }) => {
   selectedCategory.value = category
+  showTransactionForm.value = true
+}
+
+const handleCloseTransactionForm = () => {
+  showTransactionForm.value = false
 }
 
 const handleCancel = () => {
@@ -131,7 +153,7 @@ const handleComplete = async () => {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 80;
   box-shadow: 0 4rpx 20rpx rgba(255, 209, 102, 0.3);
   backdrop-filter: blur(10rpx);
 }

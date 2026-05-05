@@ -42,7 +42,7 @@
       </view>
     </view>
 
-    <WdPopup position="center" v-model="showRemarkInput">
+    <WdPopup position="center" v-model="showRemarkInput" :z-index="1001" :modal="true" :close-on-click-modal="true">
       <view class="popup-content" @tap.stop>
         <view class="popup-header">
           <text class="popup-title">填写备注</text>
@@ -78,6 +78,9 @@ const remark = ref('')
 const showRemarkInput = ref(false)
 const currentDate = ref(new Date())
 const hasSelectedDate = ref(false)
+const firstOperand = ref<string>('')
+const operator = ref<string>('')
+const waitingForSecondOperand = ref(false)
 
 const formattedDate = computed(() => {
   if (!hasSelectedDate.value) {
@@ -101,22 +104,40 @@ watch(() => props.date, (newDate) => {
 
 watch(() => props.transactionType, () => {
   displayAmount.value = ''
+  firstOperand.value = ''
+  operator.value = ''
+  waitingForSecondOperand.value = false
   emit('update:amount', '')
 })
 
 const inputAmount = (digit: string) => {
+  if (digit === '+' || digit === '-') {
+    if (displayAmount.value === '') return
+    
+    if (firstOperand.value && operator.value && !waitingForSecondOperand.value) {
+      const result = calculate(parseFloat(firstOperand.value), parseFloat(displayAmount.value), operator.value)
+      displayAmount.value = formatNumber(result)
+      firstOperand.value = displayAmount.value
+    } else {
+      firstOperand.value = displayAmount.value
+    }
+    
+    operator.value = digit
+    waitingForSecondOperand.value = true
+    return
+  }
+
+  if (waitingForSecondOperand.value) {
+    displayAmount.value = ''
+    waitingForSecondOperand.value = false
+  }
+
   if (digit === '.') {
     if (displayAmount.value.includes('.')) return
     if (displayAmount.value === '') {
       displayAmount.value = '0.'
     } else {
       displayAmount.value += '.'
-    }
-  } else if (digit === '+' || digit === '-') {
-    if (displayAmount.value.startsWith('-')) {
-      displayAmount.value = displayAmount.value.substring(1)
-    } else {
-      displayAmount.value = '-' + displayAmount.value
     }
   } else if (digit === '0' && displayAmount.value === '0') {
     return
@@ -125,23 +146,41 @@ const inputAmount = (digit: string) => {
       const parts = displayAmount.value.split('.')
       if (parts[1].length >= 2) return
     }
-    displayAmount.value += digit
+    if (displayAmount.value === '0' && digit !== '.') {
+      displayAmount.value = digit
+    } else {
+      displayAmount.value += digit
+    }
   }
   emit('update:amount', displayAmount.value)
 }
 
+const calculate = (a: number, b: number, op: string): number => {
+  if (op === '+') return a + b
+  if (op === '-') return a - b
+  return b
+}
+
+const formatNumber = (num: number): string => {
+  if (Number.isInteger(num)) {
+    return num.toString()
+  }
+  return num.toFixed(2).replace(/\.?0+$/, '')
+}
+
 const deleteDigit = () => {
+  if (waitingForSecondOperand.value) return
   displayAmount.value = displayAmount.value.substring(0, displayAmount.value.length - 1)
   emit('update:amount', displayAmount.value)
 }
 
 const handleComplete = () => {
-  let finalAmount = displayAmount.value
-  if (props.transactionType === 'expense' && !finalAmount.startsWith('-')) {
-    finalAmount = '-' + finalAmount
-  } else if (props.transactionType === 'income' && finalAmount.startsWith('-')) {
-    finalAmount = finalAmount.substring(1)
+  if (firstOperand.value && operator.value && !waitingForSecondOperand.value) {
+    const result = calculate(parseFloat(firstOperand.value), parseFloat(displayAmount.value), operator.value)
+    displayAmount.value = formatNumber(result)
   }
+  
+  const finalAmount = Math.abs(parseFloat(displayAmount.value || '0')).toString()
   emit('update:amount', finalAmount)
   emit('update:remark', remark.value)
   emit('complete')
@@ -154,19 +193,12 @@ const toggleDatePicker = () => {
 
 <style scoped>
 .transaction-form {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 32rpx 32rpx 0 0;
   padding: 24rpx 20rpx;
-  box-shadow: 0 -8rpx 30rpx rgba(0, 0, 0, 0.08);
-  z-index: 99;
   padding-bottom: 100rpx;
   backdrop-filter: blur(20rpx);
   border-top: 1rpx solid rgba(255, 255, 255, 0.5);
-  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes slideUp {
@@ -289,13 +321,13 @@ const toggleDatePicker = () => {
 }
 
 .key-item.function {
-  background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f0 100%);
+  background: rgba(245, 246, 250, 0.9);
   font-size: 28rpx;
   color: #5c6b7a;
 }
 
 .key-item.function:active {
-  background: linear-gradient(135deg, #d4e9f0 0%, #c0d8e0 100%);
+  background: rgba(235, 236, 240, 1);
 }
 
 .key-item.confirm {

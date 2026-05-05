@@ -1,16 +1,29 @@
 <template>
-  <WdPopup position="bottom" v-model="localVisible" custom-style="border-radius: 32rpx 32rpx 0 0">
+  <WdPopup
+    position="bottom"
+    v-model="showPicker"
+    :z-index="1001"
+    :modal="true"
+    :close-on-click-modal="true"
+    custom-style="border-radius: 32rpx 32rpx 0 0; background: #fff;"
+    @close="handleClose"
+  >
     <view class="picker-header">
-      <view class="picker-cancel" @tap="close">取消</view>
+      <view class="picker-cancel" @tap="handleCancel">取消</view>
       <view class="picker-title">选择日期</view>
-      <view class="picker-confirm" @tap="confirm">确定</view>
+      <view class="picker-confirm" @tap="confirmDate">确定</view>
     </view>
-    <WdPickerView :model-value="pickerValue" :columns="pickerColumns" @change="onPickerChange" custom-style="height: 420rpx" />
+    <WdDatetimePickerView
+      v-if="showPicker"
+      type="date"
+      v-model="currentDate"
+      custom-style="height: 420rpx"
+    />
   </WdPopup>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 const props = defineProps<{
   visible: boolean
@@ -22,113 +35,61 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const localVisible = computed({
-  get: () => props.visible,
-  set: (val) => {
-    if (!val) emit('close')
+const showPicker = ref(false)
+const currentDate = ref('')
+
+const getTodayDate = () => {
+  return new Date().getTime()
+}
+
+const timestampToDateString = (timestamp: number | string) => {
+  if (!timestamp) return ''
+  const date = new Date(Number(timestamp))
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
+const dateStringToTimestamp = (dateStr: string) => {
+  if (!dateStr) return new Date().getTime()
+  return new Date(dateStr).getTime()
+}
+
+const confirmDate = () => {
+  let dateStr = timestampToDateString(currentDate.value)
+  if (!dateStr) {
+    dateStr = timestampToDateString(getTodayDate())
   }
-})
+  emit('update:date', dateStr)
+  showPicker.value = false
+  emit('close')
+}
 
-const today = new Date()
-const years = computed(() => {
-  const result = []
-  const currentYear = today.getFullYear()
-  for (let i = currentYear - 10; i <= currentYear + 10; i++) {
-    result.push(i)
-  }
-  return result
-})
+const handleCancel = () => {
+  showPicker.value = false
+  emit('close')
+}
 
-const months = computed(() => {
-  const result = []
-  for (let i = 1; i <= 12; i++) {
-    result.push(i)
-  }
-  return result
-})
+const handleClose = () => {
+  showPicker.value = false
+  emit('close')
+}
 
-const selectedYear = ref(today.getFullYear())
-const selectedMonth = ref(today.getMonth() + 1)
-const selectedDay = ref(today.getDate())
-
-const days = computed(() => {
-  const result = []
-  const daysInMonth = new Date(selectedYear.value, selectedMonth.value, 0).getDate()
-  for (let i = 1; i <= daysInMonth; i++) {
-    result.push(i)
-  }
-  return result
-})
-
-const pickerColumns = computed(() => {
-  return [
-    {
-      values: years.value,
-      defaultIndex: years.value.indexOf(selectedYear.value),
-      format: (label: number) => `${label}年`
-    },
-    {
-      values: months.value,
-      defaultIndex: months.value.indexOf(selectedMonth.value),
-      format: (label: number) => `${label.toString().padStart(2, '0')}月`
-    },
-    {
-      values: days.value,
-      defaultIndex: days.value.indexOf(selectedDay.value),
-      format: (label: number) => `${label.toString().padStart(2, '0')}日`
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    if (props.date) {
+      currentDate.value = dateStringToTimestamp(props.date)
+    } else {
+      currentDate.value = getTodayDate()
     }
-  ]
-})
-
-const pickerValue = ref([0, 0, 0])
-
-const updatePickerValue = () => {
-  const yearIndex = years.value.indexOf(selectedYear.value)
-  const monthIndex = months.value.indexOf(selectedMonth.value)
-  const dayIndex = days.value.indexOf(selectedDay.value)
-  pickerValue.value = [yearIndex >= 0 ? yearIndex : 0, monthIndex >= 0 ? monthIndex : 0, dayIndex >= 0 ? dayIndex : 0]
-}
-
-const onPickerChange = (e: any) => {
-  const [yearIndex, monthIndex, dayIndex] = e.modelValue
-  selectedYear.value = years.value[yearIndex]
-  selectedMonth.value = months.value[monthIndex]
-  const daysInMonth = new Date(selectedYear.value, selectedMonth.value, 0).getDate()
-  selectedDay.value = Math.min(days.value[dayIndex] || 1, daysInMonth)
-}
-
-const formatDate = () => {
-  const year = selectedYear.value
-  const month = String(selectedMonth.value).padStart(2, '0')
-  const day = String(selectedDay.value).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-const confirm = () => {
-  emit('update:date', formatDate())
-  emit('close')
-}
-
-const close = () => {
-  emit('close')
-}
-
-watch(() => props.date, (newDate) => {
-  if (newDate) {
-    const date = new Date(newDate)
-    selectedYear.value = date.getFullYear()
-    selectedMonth.value = date.getMonth() + 1
-    selectedDay.value = date.getDate()
-    setTimeout(updatePickerValue, 50)
+    showPicker.value = newVal
+  } else {
+    showPicker.value = newVal
   }
 }, { immediate: true })
 
-watch([selectedYear, selectedMonth], () => {
-  const daysInMonth = new Date(selectedYear.value, selectedMonth.value, 0).getDate()
-  if (selectedDay.value > daysInMonth) {
-    selectedDay.value = daysInMonth
+onMounted(() => {
+  if (!currentDate.value) {
+    currentDate.value = getTodayDate()
   }
-  setTimeout(updatePickerValue, 0)
 })
 </script>
 
@@ -139,6 +100,7 @@ watch([selectedYear, selectedMonth], () => {
   align-items: center;
   padding: 24rpx 32rpx;
   border-bottom: 1rpx solid rgba(229, 231, 235, 0.6);
+  background: #fff;
 }
 
 .picker-cancel {

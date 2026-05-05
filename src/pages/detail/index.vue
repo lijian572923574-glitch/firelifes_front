@@ -28,15 +28,6 @@
       </view>
     </view>
 
-    <WdPopup position="bottom" v-model="showPicker" custom-style="border-radius: 24rpx 24rpx 0 0">
-      <view class="picker-header">
-        <view class="picker-cancel" @tap="hideDatePicker">取消</view>
-        <view class="picker-title">选择日期</view>
-        <view class="picker-confirm" @tap="confirmDate">确定</view>
-      </view>
-      <WdPickerView :model-value="pickerValue" :columns="pickerColumns" @change="onPickerChange" custom-style="height: 400rpx" />
-    </WdPopup>
-
     <view class="function-bar">
       <view class="function-item">
         <view class="function-icon">📄</view>
@@ -102,6 +93,15 @@
         </view>
       </scroll-view>
     </view>
+
+    <WdPopup position="bottom" v-model="showPicker" :z-index="1000" custom-style="border-radius: 24rpx 24rpx 0 0;">
+      <view class="picker-header">
+        <view class="picker-cancel" @tap="hideDatePicker">取消</view>
+        <view class="picker-title">选择日期</view>
+        <view class="picker-confirm" @tap="confirmDate">确定</view>
+      </view>
+      <WdPickerView :model-value="pickerValue" :columns="pickerColumns" @change="onPickerChange" custom-style="height: 400rpx" />
+    </WdPopup>
   </view>
 </template>
 
@@ -459,17 +459,10 @@ onReachBottom(() => {
 
 <style>
 .page {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
-  overflow: hidden;
-  height: 100vh;
-  z-index: 1;
 }
 
 .header {
