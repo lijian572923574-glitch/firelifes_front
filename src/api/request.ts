@@ -40,6 +40,28 @@ interface ResponseData<T = any> {
 }
 
 /**
+ * 处理401未认证的统一函数
+ */
+const handle401Error = () => {
+  console.log('[request] 处理401错误')
+  
+  storage.remove(config.tokenKey)
+  storage.remove(config.userKey)
+  
+  uni.showToast({
+    title: '登录已过期，请重新登录',
+    icon: 'none',
+    duration: 2000
+  })
+  
+  setTimeout(() => {
+    uni.redirectTo({
+      url: '/pages/login/index'
+    })
+  }, 1500)
+}
+
+/**
  * 统一请求方法
  * @param options 请求配置
  * @returns Promise<ResponseData<T>>
@@ -53,15 +75,7 @@ const request = <T = any>(options: RequestOptions): Promise<ResponseData<T>> => 
   // 如果需要认证但没有token，直接拦截跳转
   if (needAuth && !token) {
     console.log('[request] 没有token，直接跳转到登录页')
-    uni.showToast({
-      title: '请先登录',
-      icon: 'none'
-    })
-    setTimeout(() => {
-      uni.redirectTo({
-        url: '/pages/login/index'
-      })
-    }, 1500)
+    handle401Error()
     return Promise.reject({ success: false, message: '请先登录' })
   }
   
@@ -84,17 +98,7 @@ const request = <T = any>(options: RequestOptions): Promise<ResponseData<T>> => 
         
         // 处理401未认证
         if (res.statusCode === 401) {
-          storage.remove(config.tokenKey)
-          storage.remove(config.userKey)
-          uni.showToast({
-            title: '登录已过期，请重新登录',
-            icon: 'none'
-          })
-          setTimeout(() => {
-            uni.redirectTo({
-              url: '/pages/login/index'
-            })
-          }, 1500)
+          handle401Error()
           reject(res)
           return
         }
@@ -105,20 +109,12 @@ const request = <T = any>(options: RequestOptions): Promise<ResponseData<T>> => 
         if (!result.success && (
           result.message?.includes('未登录') || 
           result.message?.includes('令牌') || 
-          result.message?.includes('登录已过期')
+          result.message?.includes('登录已过期') ||
+          result.message?.includes('token') ||
+          result.message?.includes('Token')
         )) {
           console.log('[request] 业务返回未登录，清除token')
-          storage.remove(config.tokenKey)
-          storage.remove(config.userKey)
-          uni.showToast({
-            title: '请重新登录',
-            icon: 'none'
-          })
-          setTimeout(() => {
-            uni.redirectTo({
-              url: '/pages/login/index'
-            })
-          }, 1500)
+          handle401Error()
           reject(result)
           return
         }

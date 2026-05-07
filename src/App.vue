@@ -4,7 +4,7 @@
   技术：Vue3 + TypeScript + uni-app
 -->
 <script setup lang="ts">
-import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
+import { onLaunch, onShow, onHide, onError } from "@dcloudio/uni-app";
 import { useI18n } from 'vue-i18n';
 import config from './config/index';
 import { storage } from './utils/storage';
@@ -17,6 +17,14 @@ onLaunch(() => {
   const token = storage.get(config.tokenKey);
   const user = storage.get(config.userKey);
   console.log('[app] 初始状态', { token: token ? '有' : '无', user: user ? user.phone : '无' });
+  
+  // 全局错误监听
+  if (typeof window !== 'undefined') {
+    window.addEventListener('unhandledrejection', (event) => {
+      console.error('[app] 未处理的Promise拒绝:', event.reason);
+      event.preventDefault();
+    });
+  }
 });
 
 // 应用显示时触发
@@ -27,6 +35,16 @@ onShow(() => {
 // 应用隐藏时触发
 onHide(() => {
   console.log('[app] 应用隐藏', t('app.hide'));
+});
+
+// 应用发生错误时触发
+onError((err) => {
+  console.error('[app] 应用发生错误:', err);
+  uni.showToast({
+    title: '发生错误，请刷新重试',
+    icon: 'none',
+    duration: 2000
+  });
 });
 </script>
 

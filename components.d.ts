@@ -15,7 +15,6 @@ declare module 'vue' {
     WdLoading: typeof import('@wot-ui/ui/components/wd-loading/wd-loading.vue')['default']
     WdPickerView: typeof import('@wot-ui/ui/components/wd-picker-view/wd-picker-view.vue')['default']
     WdPopup: typeof import('@wot-ui/ui/components/wd-popup/wd-popup.vue')['default']
-    WdPullRefresh: typeof import('@wot-ui/ui/components/wd-pull-refresh/wd-pull-refresh.vue')['default']
     WdTextarea: typeof import('@wot-ui/ui/components/wd-textarea/wd-textarea.vue')['default']
   }
 }
