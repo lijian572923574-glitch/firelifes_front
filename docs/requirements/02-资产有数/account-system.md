@@ -1,17 +1,26 @@
 # 账户体系
-> 文件：`account-system.md` | 所属模块：资产有数 | 页面路径：`pages/my/account-setting/account-list` → `pages/my/account-setting/account-edit`
+> 文件：`account-system.md` | 所属模块：资产有数（我的页面子模块）
+> 页面路径：
+> ```
+> pages/my/
+> ├── index.vue                          # 我的页面（入口）
+> └── account-setting/                   # 账户设置模块文件夹
+>     ├── account-list.vue               # 账户列表页
+>     └── account-edit.vue               # 账户编辑页（新增/修改）
+> ```
 
-> 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
+> 版本：v1.2 | 状态：✅设计完成 | 最后更新：2026-05-09
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
 | v1.0 | 2026-05-09 | 初始版本 | AI |
 | v1.1 | 2026-05-09 | 调整入口至【我的】页面，更新路由结构 | AI |
+| v1.2 | 2026-05-09 | 完善账户编辑页需求：页面模式、字段验证、交互细节、删除流程 | AI |
 
 ---
 
-> 最后更新：2026-05-09
+> 📌 **路径规范说明**：所有【我的】页面下的子功能，统一在 `pages/my/` 下建立一级模块文件夹，再放置具体功能页面。后续其他模块（如通知设置、偏好设置等）均遵循此规范。
 
 ---
 
@@ -406,4 +415,135 @@ type AccountIcon =
 ```typescript
 // GET /api/accounts - 获取账户列表
 // GET /api/accounts?type=asset|liability - 按类型筛选
-// GET /api/accounts?subType=cash|investment|fixed|depreciat
+// GET /api/accounts?subType=cash|investment|fixed|depreciating - 按子类型筛选
+// GET /api/accounts?visible=true - 仅获取显示在总览的账户
+interface GetAccountsResponse {
+  code: number;
+  data: {
+    accounts: Account[];
+    summary: {
+      totalAssets: number;           // 资产总计
+      totalCash: number;              // 现金类总额
+      totalInvestment: number;        // 投资类市值总额
+      totalFixed: number;             // 固定资产净权益总额
+      totalDepreciating: number;      // 折旧资产当前价值总额
+      totalLiabilities: number;      // 负债总计
+      netAssets: number;              // 净资产
+    };
+  };
+  message?: string;
+}
+
+// POST /api/accounts - 创建账户
+interface CreateAccountRequest {
+  name: string;
+  icon: AccountIcon;
+  type: 'asset' | 'liability';
+  subType: AssetAccountSubType | LiabilityAccountSubType;
+  initialBalance?: number;
+  // 根据 subType 添加字段
+  costBasis?: number;
+  marketValue?: number;
+  purchasePrice?: number;
+  currentValue?: number;
+  fixedAssetCategory?: string;
+  linkedLiabilityAccountId?: string;
+  depreciatingCategory?: DepreciatingCategory;
+  depreciationMethod?: DepreciationMethod;
+  expectedLifeMonths?: number;
+  residualValue?: number;
+  billDay?: number;
+  repayDay?: number;
+  creditLimit?: number;
+  loanAmount?: number;
+  loanTermMonths?: number;
+  interestRate?: number;
+  lender?: string;
+  loanDate?: string;
+  dueDate?: string;
+  currency?: string;
+}
+
+interface CreateAccountResponse {
+  code: number;
+  data: {
+    account: Account;
+  };
+}
+
+// PUT /api/accounts/:id - 更新账户
+interface UpdateAccountRequest {
+  name?: string;
+  icon?: AccountIcon;
+  initialBalance?: number;
+  // 根据 subType 添加字段
+  costBasis?: number;
+  marketValue?: number;
+  purchasePrice?: number;
+  currentValue?: number;
+  fixedAssetCategory?: string;
+  linkedLiabilityAccountId?: string;
+  // ... 其他字段
+}
+
+// PUT /api/accounts/:id/valuation - 更新投资类账户市值
+interface UpdateValuationRequest {
+  marketValue: number;
+}
+
+interface UpdateValuationResponse {
+  code: number;
+  data: {
+    account: Account;
+    profitLoss: number;             // 盈亏金额
+    profitLossRate: number;          // 盈亏率
+  };
+}
+
+// DELETE /api/accounts/:id - 删除账户
+interface DeleteAccountResponse {
+  code: number;
+  data: {
+    affectedRecordsCount: number;    // 受影响的记账记录数
+  };
+}
+```
+
+## 与现有功能的关联
+
+### 依赖关系
+- **依赖**：无（基础模块）
+- **被依赖**：F3 record-account-linkage、F5 asset-overview、F7 fire-report
+
+### 需要修改的文件
+- `src/pages/my/index.vue` - 添加"账户设置"菜单项
+- `src/pages/my/account-setting/account-list.vue` - 新增：账户列表页
+- `src/pages/my/account-setting/account-edit.vue` - 新增：新增/修改账户页
+- `src/api/account.js` - 更新 API 接口
+- `src/store/modules/account.js` - 更新状态管理
+
+### 需要删除的文件
+- `src/pages/account/index.vue` - 原账户管理页（已迁移）
+- `src/pages/account/edit.vue` - 原账户编辑页（已迁移）
+
+## 边界情况
+
+1. **投资类账户市值未更新**
+   - 超过24小时未更新显示提醒
+   - 净资产计算使用最新市值
+
+2. **固定资产关联的负债账户余额变化**
+   - 固定资产详情页实时查询关联负债余额
+   - 资产总览页也需实时查询
+
+3. **折旧资产与账户的关联**
+   - 折旧资产可独立创建（记账时），也可从账户页创建
+   - 折旧资产的余额自动计算
+
+4. **删除有处置资产的折旧账户**
+   - 提示：该账户关联折旧资产，删除后资产保留
+   - 折旧资产的关联账户置空
+
+5. **账户余额为负（信用卡/借款）**
+   - 信用卡：正常，未还金额为负
+   - 借款：正常，应还金额为负
