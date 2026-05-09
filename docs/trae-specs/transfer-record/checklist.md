@@ -1,0 +1,22 @@
+# 转账记账 - 验收清单
+
+- [ ] Checkpoint 1: 转账 API 模块创建完成
+- [ ] Checkpoint 2: POST /api/records (type=transfer) 接口正常工作
+- [ ] Checkpoint 3: GET /api/accounts/:id/balance 接口正常返回
+- [ ] Checkpoint 4: TypeTabs 组件创建完成
+- [ ] Checkpoint 5: 记账页显示三个 Tab
+- [ ] Checkpoint 6: Tab 切换功能正常
+- [ ] Checkpoint 7: 当前 Tab 高亮显示
+- [ ] Checkpoint 8: 转账 Tab 显示转出账户选择
+- [ ] Checkpoint 9: 转账 Tab 显示转入账户选择
+- [ ] Checkpoint 10: 转出账户选择功能正常
+- [ ] Checkpoint 11: 转入账户选择功能正常
+- [ ] Checkpoint 12: 显示转出账户余额
+- [ ] Checkpoint 13: 显示转入账户余额
+- [ ] Checkpoint 14: 金额输入功能正常
+- [ ] Checkpoint 15: 箭头图标正确显示
+- [ ] Checkpoint 16: 选择相同账户时提示错误
+- [ ] Checkpoint 17: 转账金额为0时禁止提交
+- [ ] Checkpoint 18: 转账提交成功
+- [ ] Checkpoint 19: 转账记录不影响收支统计
+- [ ] Checkpoint 20: 转账后账户余额更新正确

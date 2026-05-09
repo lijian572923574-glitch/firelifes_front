@@ -1,0 +1,29 @@
+# 记账模板 - 验收清单
+
+- [ ] Checkpoint 1: 模板 API 模块创建完成
+- [ ] Checkpoint 2: GET /api/templates 接口正常返回
+- [ ] Checkpoint 3: POST /api/templates 接口正常工作
+- [ ] Checkpoint 4: PUT /api/templates/:id 接口正常工作
+- [ ] Checkpoint 5: DELETE /api/templates/:id 接口正常工作
+- [ ] Checkpoint 6: 记账页右上角显示"模板"按钮
+- [ ] Checkpoint 7: 点击按钮弹出模板列表页面
+- [ ] Checkpoint 8: 模板按类型分组显示
+- [ ] Checkpoint 9: 支出模板显示在"支出"分组
+- [ ] Checkpoint 10: 收入模板显示在"收入"分组
+- [ ] Checkpoint 11: 模板项显示名称
+- [ ] Checkpoint 12: 模板项显示分类
+- [ ] Checkpoint 13: 模板项显示金额
+- [ ] Checkpoint 14: 点击模板填充表单
+- [ ] Checkpoint 15: 填充后关闭列表
+- [ ] Checkpoint 16: "新建模板"按钮可点击
+- [ ] Checkpoint 17: 模板编辑页正常显示
+- [ ] Checkpoint 18: 模板名称输入功能正常
+- [ ] Checkpoint 19: 类型选择功能正常
+- [ ] Checkpoint 20: 分类选择功能正常
+- [ ] Checkpoint 21: 金额输入功能正常
+- [ ] Checkpoint 22: 备注输入功能正常
+- [ ] Checkpoint 23: 账户选择功能正常
+- [ ] Checkpoint 24: 保存功能正常
+- [ ] Checkpoint 25: 删除功能正常
+- [ ] Checkpoint 26: 删除前显示确认
+- [ ] Checkpoint 27: 模板数量限制50个

@@ -1,0 +1,21 @@
+# 主题色替换：卡布里蓝 - 验收清单
+
+- [ ] Checkpoint 1: 记账页 Header 背景为卡布里蓝渐变(#00BFFF → #0099CC)
+- [ ] Checkpoint 2: 记账页 Header 阴影为蓝色调 rgba(0,191,255,0.3)
+- [ ] Checkpoint 3: 分类选择器分组标题下划线为 #00BFFF
+- [ ] Checkpoint 4: 分类选择器选中图标背景为卡布里蓝渐变
+- [ ] Checkpoint 5: 分类选择器选中图标阴影为蓝色调
+- [ ] Checkpoint 6: 金额表单完成按钮为卡布里蓝渐变
+- [ ] Checkpoint 7: 金额表单完成按钮阴影为蓝色调
+- [ ] Checkpoint 8: 日期选择器确认按钮文字为 #00BFFF
+- [ ] Checkpoint 9: 日期选择器确认按钮按压态背景为 rgba(0,191,255,0.15)
+- [ ] Checkpoint 10: 明细首页 Header 背景为卡布里蓝渐变
+- [ ] Checkpoint 11: 明细首页日期选择器确认色为 #00BFFF
+- [ ] Checkpoint 12: pages.json TabBar selectedColor 为 #00BFFF
+- [ ] Checkpoint 13: CustomTabbar.vue 选中文字色为 #00BFFF
+- [ ] Checkpoint 14: 全局搜索 #FFD166 无残留（src/ 目录）
+- [ ] Checkpoint 15: 全局搜索 #FFC145 无残留
+- [ ] Checkpoint 16: 全局搜索 #FFBB00 无残留
+- [ ] Checkpoint 17: 全局搜索 #ffb347 无残留
+- [ ] Checkpoint 18: 全局搜索 #3cc51f 无残留
+- [ ] Checkpoint 19: 支出红(#FA3534)和收入绿(#19BE6B)未被误改

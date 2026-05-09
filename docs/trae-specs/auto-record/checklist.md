@@ -1,0 +1,25 @@
+# 定时自动记账 - 验收清单
+
+- [ ] Checkpoint 1: 自动记账 API 模块创建完成（预留）
+- [ ] Checkpoint 2: 自动记账列表页创建完成
+- [ ] Checkpoint 3: 页面显示 VIP 标识
+- [ ] Checkpoint 4: 非 VIP 用户显示 VIP 引导
+- [ ] Checkpoint 5: 模板列表正常显示
+- [ ] Checkpoint 6: 显示模板类型（支出/收入/转账）
+- [ ] Checkpoint 7: 显示模板名称
+- [ ] Checkpoint 8: 显示模板金额
+- [ ] Checkpoint 9: 显示下次执行时间
+- [ ] Checkpoint 10: 暂停按钮功能正常
+- [ ] Checkpoint 11: 恢复按钮功能正常
+- [ ] Checkpoint 12: 删除功能正常
+- [ ] Checkpoint 13: 创建入口可点击
+- [ ] Checkpoint 14: 模板编辑页正常显示
+- [ ] Checkpoint 15: 类型选择功能正常
+- [ ] Checkpoint 16: 分类选择功能正常
+- [ ] Checkpoint 17: 金额输入功能正常
+- [ ] Checkpoint 18: 备注输入功能正常
+- [ ] Checkpoint 19: 账户选择功能正常
+- [ ] Checkpoint 20: 周期选择功能正常（每天/每周/每月/自定义）
+- [ ] Checkpoint 21: 日期选择功能正常
+- [ ] Checkpoint 22: 保存功能正常
+- [ ] Checkpoint 23: 表单验证完整
