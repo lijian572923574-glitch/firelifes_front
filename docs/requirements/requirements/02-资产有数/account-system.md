@@ -1,5 +1,5 @@
 # 账户体系
-> 文件：`account-system.md` | 所属模块：资产有数 | 页面路径：`pages/my/account-list` → `pages/my/account-edit`
+> 文件：`account-system.md` | 所属模块：资产有数 | 页面路径：`pages/my/account-setting/account-list` → `pages/my/account-setting/account-edit`
 
 > 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
 
@@ -26,7 +26,7 @@
 ### 页面结构
 
 ```
-账户列表页 (src/pages/my/account-list.vue)
+账户列表页 (src/pages/my/account-setting/account-list.vue)
 ┌────────────────────────────────────┐
 │  ← 我的账户                    [+] │
 ├────────────────────────────────────┤
@@ -70,7 +70,7 @@
 │  └────────────────────────────────┘ │
 └────────────────────────────────────┘
 
-账户编辑页 (src/pages/my/account-edit.vue)
+账户编辑页 (src/pages/my/account-setting/account-edit.vue)
 ┌────────────────────────────────────┐
 │  ← 新建账户                  [保存] │
 ├────────────────────────────────────┤
@@ -454,8 +454,8 @@ interface DeleteAccountResponse {
 
 ### 需要修改的文件
 - `src/pages/my/index.vue` - 添加"账户设置"菜单项
-- `src/pages/my/account-list.vue` - 新增：账户列表页
-- `src/pages/my/account-edit.vue` - 新增：新增/修改账户页
+- `src/pages/my/account-setting/account-list.vue` - 新增：账户列表页
+- `src/pages/my/account-setting/account-edit.vue` - 新增：新增/修改账户页
 - `src/api/account.js` - 更新 API 接口
 - `src/store/modules/account.js` - 更新状态管理
 

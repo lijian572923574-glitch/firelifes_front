@@ -25,7 +25,7 @@
 ### 页面结构
 
 ```
-账户详情页 (src/pages/my/account-detail.vue)
+账户详情页 (src/pages/my/account-setting/account-detail.vue)
 ┌────────────────────────────────────┐
 │  ←                    [...]   [编辑]│
 ├────────────────────────────────────┤
@@ -222,9 +222,9 @@ interface AdjustmentRecord {
 - **被依赖**：无
 
 ### 需要修改的文件
-- `src/pages/my/account-list.vue` - 账户列表页（更新点击进入详情逻辑）
-- `src/pages/my/account-detail.vue` - 账户详情页（新增）
-- `src/pages/my/account-edit.vue` - 账户编辑页（新增，与account-list配合）
+- `src/pages/my/account-setting/account-list.vue` - 账户列表页（更新点击进入详情逻辑）
+- `src/pages/my/account-setting/account-detail.vue` - 账户详情页（新增）
+- `src/pages/my/account-setting/account-edit.vue` - 账户编辑页（新增，与account-list配合）
 
 ### 新增文件
 - `src/components/BalanceChangeItem.vue` - 余额变动项组件
