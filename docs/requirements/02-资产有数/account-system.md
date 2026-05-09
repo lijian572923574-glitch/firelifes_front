@@ -1,4 +1,5 @@
-# 功能名称
+# 账户体系
+> 文件：`account-system.md` | 所属模块：资产有数 | 页面路径：`pages/my/account-setting/account-list` → `pages/my/account-setting/account-edit`
 
 > 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
 
@@ -6,6 +7,7 @@
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
 | v1.0 | 2026-05-09 | 初始版本 | AI |
+| v1.1 | 2026-05-09 | 调整入口至【我的】页面，更新路由结构 | AI |
 
 ---
 
@@ -24,7 +26,7 @@
 ### 页面结构
 
 ```
-账户管理页 (src/pages/account/index.vue)
+账户列表页 (src/pages/my/account-setting/account-list.vue)
 ┌────────────────────────────────────┐
 │  ← 我的账户                    [+] │
 ├────────────────────────────────────┤
@@ -68,7 +70,7 @@
 │  └────────────────────────────────┘ │
 └────────────────────────────────────┘
 
-账户编辑页 (src/pages/account/edit.vue)
+账户编辑页 (src/pages/my/account-setting/account-edit.vue)
 ┌────────────────────────────────────┐
 │  ← 新建账户                  [保存] │
 ├────────────────────────────────────┤
@@ -192,13 +194,67 @@
 - 长按/滑动显示删除选项
 - 拖拽调整排序
 
-#### 2. 账户编辑页
-- 输入账户名称（必填，最多20字符）
-- 选择账户类型（资产类/负债类，再选子类型）
-- 根据子类型显示不同字段
-- 选择账户图标（预设图标或自定义）
-- 根据子类型填写对应字段
-- 点击保存
+#### 2. 账户编辑页（核心需求）
+
+##### 2.1 页面模式
+- **新增模式**：标题显示"新建账户"，所有字段为空，保存后创建新账户
+- **编辑模式**：标题显示"编辑账户"，自动填充已有账户数据，保存后更新
+
+##### 2.2 表单字段与验证
+
+| 字段 | 必填 | 验证规则 | 说明 |
+|------|------|---------|------|
+| 账户名称 | ✅ | 1-20字符 | 重复账户名提示"已有同名账户，是否继续？" |
+| 账户大类 | ✅ | 二选一 | 资产类 / 负债类 |
+| 账户子类型 | ✅ | 单选 | 根据大类显示对应选项 |
+| 账户图标 | ⭕ | 默认选中第一个 | 预设图标列表，新增模式默认选中 |
+| 初始余额 | ⭕（现金/投资） | ≥0数字 | 编辑模式下只展示不可修改（保护历史数据） |
+| 【投资类】持仓成本 | ✅ | ≥0数字 | 编辑模式可修改 |
+| 【固定资产】购入价 | ✅ | ≥0数字 | 编辑模式可修改 |
+| 【固定资产】品类 | ✅ | 单选 | 房产 / 车位 / 商铺 / 其他 |
+| 【固定资产】关联负债账户 | ⭕ | 下拉选择 | 关联后自动计算净权益 |
+| 【折旧资产】购入价 | ✅ | ≥0数字 | 编辑模式可修改 |
+| 【折旧资产】品类标签 | ✅ | 单选 | 手机 / 电脑 / 相机 / 家电 / 鞋服 / 家具 / 包袋 / 运动 / 其他 |
+| 【折旧资产】折旧方法 | ✅ | 单选 | 直线法 / 双倍余额递减法 |
+| 【折旧资产】计划使用月数 | ✅ | 1-120整数 | 默认 36个月 |
+| 【折旧资产】预期残值 | ⭕ | ≥0数字 | 默认 0 |
+| 【信用卡】账单日 | ✅ | 1-28整数 | 避免月末 |
+| 【信用卡】还款日 | ✅ | 1-28整数 | 必须晚于账单日 |
+| 【房贷/车贷】贷款总额 | ✅ | >0数字 | 编辑模式可修改 |
+| 【房贷/车贷】贷款期限 | ✅ | 1-360整数 | 单位：月 |
+| 【借款】出借人 | ✅ | 1-20字符 | 个人/机构名称 |
+| 【借款】借款日期 | ✅ | 日期选择 | 默认今天 |
+| 【借款】到期日期 | ✅ | 日期选择 | 必须晚于借款日期 |
+
+##### 2.3 交互细节
+- **动态字段显示**：切换账户子类型时，实时显示/隐藏对应字段，已填写的临时内容保留
+- **默认值填充**：选中子类型后，自动填充合理默认值（如折旧36月、信用卡账单日1号还款日15号）
+- **数据保护**：编辑模式下，"初始余额"字段置灰不可编辑（避免影响历史记账）
+- **实时计算**：输入字段时实时显示计算结果（如折旧资产的当前价值预览）
+- **保存按钮**：必填项未填时置灰不可点击，校验通过后高亮
+- **保存反馈**：点击后显示loading，成功后toast提示并自动返回列表页
+
+##### 2.4 删除功能（仅编辑模式）
+- 位置：页面底部独立按钮（红色文字，与保存按钮有明显间距）
+- 流程：点击 → 弹窗确认 → 校验是否有关联记账记录
+  - 无关联：直接删除并返回
+  - 有关联：提示"该账户有 X 笔关联记录，删除后记录保留账户快照"，确认后软删除
+
+##### 2.5 字段联动逻辑
+```
+账户大类选择
+├── 资产类
+│   ├── 现金类 → 显示：账户名称 + 图标 + 初始余额
+│   ├── 投资类 → 显示：账户名称 + 图标 + 初始余额 + 持仓成本
+│   ├── 固定资产 → 显示：账户名称 + 图标 + 购入价 + 品类 + 关联负债账户
+│   └── 折旧资产 → 显示：账户名称 + 图标 + 购入价 + 品类 + 折旧方法 + 使用月数 + 残值
+└── 负债类
+    ├── 信用卡 → 显示：账户名称 + 图标 + 初始余额 + 账单日 + 还款日
+    ├── 花呗白条 → 显示：账户名称 + 图标 + 初始余额 + 信用额度
+    ├── 房贷 → 显示：账户名称 + 图标 + 初始余额 + 贷款总额 + 期限
+    ├── 车贷 → 显示：账户名称 + 图标 + 初始余额 + 贷款总额 + 期限
+    └── 借款 → 显示：账户名称 + 图标 + 初始余额 + 出借人 + 借款日期 + 到期日期
+```
 
 #### 3. 删除账户
 - 点击删除按钮
@@ -350,130 +406,4 @@ type AccountIcon =
 ```typescript
 // GET /api/accounts - 获取账户列表
 // GET /api/accounts?type=asset|liability - 按类型筛选
-// GET /api/accounts?subType=cash|investment|fixed|depreciating - 按子类型筛选
-// GET /api/accounts?visible=true - 仅获取显示在总览的账户
-interface GetAccountsResponse {
-  code: number;
-  data: {
-    accounts: Account[];
-    summary: {
-      totalAssets: number;           // 资产总计
-      totalCash: number;              // 现金类总额
-      totalInvestment: number;        // 投资类市值总额
-      totalFixed: number;             // 固定资产净权益总额
-      totalDepreciating: number;      // 折旧资产当前价值总额
-      totalLiabilities: number;      // 负债总计
-      netAssets: number;              // 净资产
-    };
-  };
-  message?: string;
-}
-
-// POST /api/accounts - 创建账户
-interface CreateAccountRequest {
-  name: string;
-  icon: AccountIcon;
-  type: 'asset' | 'liability';
-  subType: AssetAccountSubType | LiabilityAccountSubType;
-  initialBalance?: number;
-  // 根据 subType 添加字段
-  costBasis?: number;
-  marketValue?: number;
-  purchasePrice?: number;
-  currentValue?: number;
-  fixedAssetCategory?: string;
-  linkedLiabilityAccountId?: string;
-  depreciatingCategory?: DepreciatingCategory;
-  depreciationMethod?: DepreciationMethod;
-  expectedLifeMonths?: number;
-  residualValue?: number;
-  billDay?: number;
-  repayDay?: number;
-  creditLimit?: number;
-  loanAmount?: number;
-  loanTermMonths?: number;
-  interestRate?: number;
-  lender?: string;
-  loanDate?: string;
-  dueDate?: string;
-  currency?: string;
-}
-
-interface CreateAccountResponse {
-  code: number;
-  data: {
-    account: Account;
-  };
-}
-
-// PUT /api/accounts/:id - 更新账户
-interface UpdateAccountRequest {
-  name?: string;
-  icon?: AccountIcon;
-  initialBalance?: number;
-  // 根据 subType 添加字段
-  costBasis?: number;
-  marketValue?: number;
-  purchasePrice?: number;
-  currentValue?: number;
-  fixedAssetCategory?: string;
-  linkedLiabilityAccountId?: string;
-  // ... 其他字段
-}
-
-// PUT /api/accounts/:id/valuation - 更新投资类账户市值
-interface UpdateValuationRequest {
-  marketValue: number;
-}
-
-interface UpdateValuationResponse {
-  code: number;
-  data: {
-    account: Account;
-    profitLoss: number;             // 盈亏金额
-    profitLossRate: number;          // 盈亏率
-  };
-}
-
-// DELETE /api/accounts/:id - 删除账户
-interface DeleteAccountResponse {
-  code: number;
-  data: {
-    affectedRecordsCount: number;    // 受影响的记账记录数
-  };
-}
-```
-
-## 与现有功能的关联
-
-### 依赖关系
-- **依赖**：无（基础模块）
-- **被依赖**：F3 record-account-linkage、F5 asset-overview、F7 fire-report
-
-### 需要修改的文件
-- `src/pages/account/index.vue` - 更新账户列表，4类资产分组展示
-- `src/pages/account/edit.vue` - 更新编辑页，支持9种子类型
-- `src/api/account.js` - 更新 API 接口
-- `src/store/modules/account.js` - 更新状态管理
-
-## 边界情况
-
-1. **投资类账户市值未更新**
-   - 超过24小时未更新显示提醒
-   - 净资产计算使用最新市值
-
-2. **固定资产关联的负债账户余额变化**
-   - 固定资产详情页实时查询关联负债余额
-   - 资产总览页也需实时查询
-
-3. **折旧资产与账户的关联**
-   - 折旧资产可独立创建（记账时），也可从账户页创建
-   - 折旧资产的余额自动计算
-
-4. **删除有处置资产的折旧账户**
-   - 提示：该账户关联折旧资产，删除后资产保留
-   - 折旧资产的关联账户置空
-
-5. **账户余额为负（信用卡/借款）**
-   - 信用卡：正常，未还金额为负
-   - 借款：正常，应还金额为负
+// GET /api/accounts?subType=cash|investment|fixed|depreciat
