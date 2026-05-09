@@ -2,7 +2,7 @@
 > 文件：`account-list.md` | 中文名称：账户列表 | 所属模块：系统配置（我的页面子模块）
 > 页面路径：`pages/my/account-setting/account-list.vue`
 
-> 版本：v1.2 | 状态：✅设计完成 | 最后更新：2026-05-09
+> 版本：v1.3 | 状态：✅设计完成 | 最后更新：2026-05-09
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -10,6 +10,7 @@
 | v1.0 | 2026-05-09 | 从 account-system.md 拆分，账户列表页独立需求 | AI |
 | v1.1 | 2026-05-09 | 简化字段：只保留名称、类型、余额、说明、图标 | AI |
 | v1.2 | 2026-05-09 | 添加默认账户：现金、折旧资产、固定资产 | AI |
+| v1.3 | 2026-05-09 | 固定账户类型为5种：现金类、投资类、固定资产类、折旧资产类、负债类 | AI |
 
 ---
 
@@ -37,10 +38,10 @@
 │  🏠 固定资产         ¥200,000.00 >    │
 │     房产、车位等高价值物品            │
 │  ─────────────────────────────────  │
-│  🏦 储蓄卡           ¥12,345.67 >    │
-│     招商银行卡                       │
+│  📈 股票投资         ¥50,000.00 >    │
+│     股票投资账户                      │
 │  ─────────────────────────────────  │
-│  � 信用卡           ¥-2,345.00 >    │
+│  💳 信用卡           ¥-2,345.00 >    │
 │     招商银行信用卡                   │
 │                                      │
 └────────────────────────────────────┘
@@ -52,9 +53,9 @@
 
 | 账户名称 | 图标 | 类型 | 余额 | 说明 | 排序 |
 |---------|------|------|------|------|------|
-| 现金 | 💵 | 资产类 | 0 | 日常现金备用 | 1 |
-| 折旧资产 | 📱 | 资产类 | 0 | 手机、电脑等折旧物品 | 2 |
-| 固定资产 | 🏠 | 资产类 | 0 | 房产、车位等高价值物品 | 3 |
+| 现金 | 💵 | 现金类 | 0 | 日常现金备用 | 1 |
+| 折旧资产 | 📱 | 折旧资产类 | 0 | 手机、电脑等折旧物品 | 2 |
+| 固定资产 | 🏠 | 固定资产类 | 0 | 房产、车位等高价值物品 | 3 |
 
 **注意**：默认账户不可删除，但可以编辑名称、余额和说明。
 
@@ -67,10 +68,15 @@
 - **箭头**：最右侧进入详情箭头
 
 ### 账户类型
-| 类型标识 | 中文名称 | 说明 |
-|---------|---------|------|
-| asset | 资产类 | 现金、银行卡、投资等 |
-| liability | 负债类 | 信用卡、贷款等 |
+固定5种账户类型：
+
+| 类型标识 | 中文名称 | 说明 | 余额颜色 |
+|---------|---------|------|---------|
+| cash | 现金类 | 现金、银行卡、支付宝、微信等 | 绿色 |
+| investment | 投资类 | 股票、基金、债券等 | 绿色 |
+| fixed_asset | 固定资产类 | 房产、车位、商铺等 | 绿色 |
+| depreciable_asset | 折旧资产类 | 手机、电脑、家电等 | 绿色 |
+| liability | 负债类 | 信用卡、贷款、花呗等 | 红色 |
 
 ### 交互流程
 
@@ -110,8 +116,8 @@
 - 页面背景：#FFFFFF
 - 卡片背景：#FFFFFF
 - 主色描边图标：#00BFFF
-- 资产余额：#19BE6B（绿色）
-- 负债余额：#FA3534（红色）
+- 现金类/投资类/固定资产类/折旧资产类余额：#19BE6B（绿色）
+- 负债类余额：#FA3534（红色）
 - 新增按钮：#00BFFF
 - 说明文字：#999999
 - 分割线：#F5F5F5
@@ -131,12 +137,15 @@
 
 ### 账户数据结构
 ```typescript
+// 账户类型枚举
+type AccountType = 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability';
+
 interface Account {
   id: string;                      // UUID
   userId: string;                  // 用户ID
   name: string;                    // 账户名称
   icon: string;                    // 图标类型
-  type: 'asset' | 'liability';     // 账户类型（资产/负债）
+  type: AccountType;               // 账户类型
   balance: number;                 // 余额
   description?: string;            // 说明（可选）
   isDefault?: boolean;             // 是否为默认账户
@@ -149,33 +158,39 @@ interface Account {
 }
 
 // 默认账户配置
-const DEFAULT_ACCOUNTS = [
+const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[] = [
   {
     name: '现金',
     icon: '💵',
-    type: 'asset' as const,
+    type: 'cash',
     balance: 0,
     description: '日常现金备用',
     order: 1,
-    isDefault: true
+    isDefault: true,
+    isVisible: true,
+    isDeleted: false
   },
   {
     name: '折旧资产',
     icon: '📱',
-    type: 'asset' as const,
+    type: 'depreciable_asset',
     balance: 0,
     description: '手机、电脑等折旧物品',
     order: 2,
-    isDefault: true
+    isDefault: true,
+    isVisible: true,
+    isDeleted: false
   },
   {
     name: '固定资产',
     icon: '🏠',
-    type: 'asset' as const,
+    type: 'fixed_asset',
     balance: 0,
     description: '房产、车位等高价值物品',
     order: 3,
-    isDefault: true
+    isDefault: true,
+    isVisible: true,
+    isDeleted: false
   }
 ];
 ```

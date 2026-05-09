@@ -2,7 +2,7 @@
 > 文件：`account-edit.md` | 中文名称：账户编辑 | 所属模块：系统配置（我的页面子模块）
 > 页面路径：`pages/my/account-setting/account-edit.vue`
 
-> 版本：v1.2 | 状态：✅设计完成 | 最后更新：2026-05-09
+> 版本：v1.3 | 状态：✅设计完成 | 最后更新：2026-05-09
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -10,6 +10,7 @@
 | v1.0 | 2026-05-09 | 从 account-system.md 拆分，账户编辑页独立需求 | AI |
 | v1.1 | 2026-05-09 | 简化字段：只保留名称、类型、余额、说明、图标 | AI |
 | v1.2 | 2026-05-09 | 添加默认账户：现金、折旧资产、固定资产 | AI |
+| v1.3 | 2026-05-09 | 固定账户类型为5种：现金类、投资类、固定资产类、折旧资产类、负债类 | AI |
 
 ---
 
@@ -35,7 +36,8 @@
 │                                      │
 │  账户类型                            │
 │  ┌────────────────────────────────┐ │
-│  │ ○ 资产类  ● 负债类            │ │
+│  │ ○ 现金类 ● 投资类 ○ 固定资产类  │ │
+│  │ ○ 折旧资产类 ○ 负债类          │ │
 │  └────────────────────────────────┘ │
 │                                      │
 │  账户图标                            │
@@ -73,10 +75,21 @@
 | 字段 | 必填 | 验证规则 | 说明 |
 |------|------|---------|------|
 | 账户名称 | ✅ | 1-20字符 | 重复账户名提示"已有同名账户，是否继续？" |
-| 账户类型 | ✅ | 二选一 | 资产类 / 负债类 |
+| 账户类型 | ✅ | 五选一 | 现金类 / 投资类 / 固定资产类 / 折旧资产类 / 负债类 |
 | 账户图标 | ⭕ | 默认选中第一个 | 预设图标列表，新增模式默认选中 |
-| 账户余额 | ✅ | 数字 | 资产类正数，负债类负数 |
+| 账户余额 | ✅ | 数字 | 现金类/投资类/固定资产类/折旧资产类正数，负债类负数 |
 | 账户说明 | ⭕ | 0-50字符 | 可选字段 |
+
+### 账户类型
+固定5种账户类型：
+
+| 类型标识 | 中文名称 | 说明 | 余额颜色 |
+|---------|---------|------|---------|
+| cash | 现金类 | 现金、银行卡、支付宝、微信等 | 绿色 |
+| investment | 投资类 | 股票、基金、债券等 | 绿色 |
+| fixed_asset | 固定资产类 | 房产、车位、商铺等 | 绿色 |
+| depreciable_asset | 折旧资产类 | 手机、电脑、家电等 | 绿色 |
+| liability | 负债类 | 信用卡、贷款、花呗等 | 红色 |
 
 ### 交互细节
 
@@ -130,12 +143,15 @@
 
 ### 账户数据结构
 ```typescript
+// 账户类型枚举
+type AccountType = 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability';
+
 interface Account {
   id: string;                      // UUID
   userId: string;                  // 用户ID
   name: string;                    // 账户名称（最多20字符）
   icon: string;                    // 图标类型
-  type: 'asset' | 'liability';     // 账户类型（资产/负债）
+  type: AccountType;               // 账户类型
   balance: number;                 // 账户余额
   description?: string;            // 说明（可选，最多50字符）
   isDefault?: boolean;             // 是否为默认账户
@@ -148,33 +164,39 @@ interface Account {
 }
 
 // 默认账户配置
-const DEFAULT_ACCOUNTS = [
+const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[] = [
   {
     name: '现金',
     icon: '💵',
-    type: 'asset' as const,
+    type: 'cash',
     balance: 0,
     description: '日常现金备用',
     order: 1,
-    isDefault: true
+    isDefault: true,
+    isVisible: true,
+    isDeleted: false
   },
   {
     name: '折旧资产',
     icon: '📱',
-    type: 'asset' as const,
+    type: 'depreciable_asset',
     balance: 0,
     description: '手机、电脑等折旧物品',
     order: 2,
-    isDefault: true
+    isDefault: true,
+    isVisible: true,
+    isDeleted: false
   },
   {
     name: '固定资产',
     icon: '🏠',
-    type: 'asset' as const,
+    type: 'fixed_asset',
     balance: 0,
     description: '房产、车位等高价值物品',
     order: 3,
-    isDefault: true
+    isDefault: true,
+    isVisible: true,
+    isDeleted: false
   }
 ];
 ```
