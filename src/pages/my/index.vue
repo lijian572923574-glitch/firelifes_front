@@ -1,30 +1,36 @@
 <template>
   <view class="my-container">
-    <view class="user-card" v-if="userStore.isLoggedIn()">
+    <!-- 用户信息卡片 -->
+    <view class="user-card" :class="{ 'clickable': !userStore.isLoggedIn() }" @click="handleUserCardClick">
       <view class="user-info">
-        <image class="avatar" :src="userStore.user?.avatarUrl || '/static/logo.png'" mode="aspectFill" />
+        <image 
+          class="avatar" 
+          :src="userStore.isLoggedIn() ? (userStore.user?.avatarUrl || '/static/logo.png') : '/static/logo.png'" 
+          mode="aspectFill" 
+        />
         <view class="info">
-          <text class="nickname">{{ userStore.user?.nickname || userStore.user?.username }}</text>
-          <text class="phone">{{ userStore.user?.phone }}</text>
+          <text class="nickname">
+            {{ userStore.isLoggedIn() ? (userStore.user?.nickname || userStore.user?.username || '未设置昵称') : '点击登录' }}
+          </text>
+          <text class="phone" v-if="userStore.isLoggedIn()">
+            {{ userStore.user?.phone || '' }}
+          </text>
         </view>
       </view>
     </view>
 
+    <!-- 菜单列表 -->
     <view class="menu-list">
-      <view class="menu-item">
-        <text class="menu-text">我的账单</text>
-        <text class="arrow">›</text>
-      </view>
-      <view class="menu-item">
-        <text class="menu-text">数据统计</text>
-        <text class="arrow">›</text>
-      </view>
-      <view class="menu-item">
-        <text class="menu-text">设置</text>
+      <view class="menu-item" @click="navigateToAccountList">
+        <view class="menu-left">
+          <text class="iconfont icon-zhangdan menu-icon"></text>
+          <text class="menu-text">账户设置</text>
+        </view>
         <text class="arrow">›</text>
       </view>
     </view>
 
+    <!-- 退出登录按钮 -->
     <view class="logout-btn" v-if="userStore.isLoggedIn()" @click="handleLogout">
       退出登录
     </view>
@@ -37,7 +43,24 @@ import { logout } from '../../api/auth'
 
 const userStore = useUserStore()
 
-const handleLogout = async () => {
+// 用户卡片点击事件
+const handleUserCardClick = () => {
+  if (!userStore.isLoggedIn()) {
+    uni.redirectTo({
+      url: '/pages/login/index'
+    })
+  }
+}
+
+// 跳转到账户设置
+const navigateToAccountList = () => {
+  uni.navigateTo({
+    url: '/pages/my/account-setting/account-list'
+  })
+}
+
+// 退出登录
+const handleLogout = () => {
   uni.showModal({
     title: '提示',
     content: '确定要退出登录吗？',
@@ -70,6 +93,10 @@ const handleLogout = async () => {
   padding: 80rpx 40rpx 60rpx;
 }
 
+.user-card.clickable {
+  cursor: pointer;
+}
+
 .user-info {
   display: flex;
   align-items: center;
@@ -81,6 +108,7 @@ const handleLogout = async () => {
   border-radius: 60rpx;
   border: 4rpx solid white;
   margin-right: 32rpx;
+  background: white;
 }
 
 .info {
@@ -111,12 +139,29 @@ const handleLogout = async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 32rpx 24rpx;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 0 24rpx;
+  height: 88rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  transition: transform 100ms ease;
 }
 
 .menu-item:last-child {
   border-bottom: none;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon {
+  font-size: 36rpx;
+  color: #00BFFF;
+  margin-right: 20rpx;
 }
 
 .menu-text {
@@ -132,10 +177,15 @@ const handleLogout = async () => {
 .logout-btn {
   margin: 60rpx 24rpx;
   background: white;
-  color: #ff4d4f;
+  color: #FA3534;
   text-align: center;
   padding: 32rpx;
   border-radius: 16rpx;
   font-size: 32rpx;
+  transition: transform 100ms ease;
+}
+
+.logout-btn:active {
+  transform: scale(0.98);
 }
 </style>
