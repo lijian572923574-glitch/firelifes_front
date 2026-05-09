@@ -1,5 +1,5 @@
 # 账户体系
-> 文件：`account-system.md` | 所属模块：资产有数 | 页面路径：`pages/asset/account-manage`
+> 文件：`account-system.md` | 所属模块：资产有数 | 页面路径：`pages/my/account-list` → `pages/my/account-edit`
 
 > 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
 
@@ -7,6 +7,7 @@
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
 | v1.0 | 2026-05-09 | 初始版本 | AI |
+| v1.1 | 2026-05-09 | 调整入口至【我的】页面，更新路由结构 | AI |
 
 ---
 
@@ -25,7 +26,7 @@
 ### 页面结构
 
 ```
-账户管理页 (src/pages/account/index.vue)
+账户列表页 (src/pages/my/account-list.vue)
 ┌────────────────────────────────────┐
 │  ← 我的账户                    [+] │
 ├────────────────────────────────────┤
@@ -69,7 +70,7 @@
 │  └────────────────────────────────┘ │
 └────────────────────────────────────┘
 
-账户编辑页 (src/pages/account/edit.vue)
+账户编辑页 (src/pages/my/account-edit.vue)
 ┌────────────────────────────────────┐
 │  ← 新建账户                  [保存] │
 ├────────────────────────────────────┤
@@ -452,10 +453,15 @@ interface DeleteAccountResponse {
 - **被依赖**：F3 record-account-linkage、F5 asset-overview、F7 fire-report
 
 ### 需要修改的文件
-- `src/pages/account/index.vue` - 更新账户列表，4类资产分组展示
-- `src/pages/account/edit.vue` - 更新编辑页，支持9种子类型
+- `src/pages/my/index.vue` - 添加"账户设置"菜单项
+- `src/pages/my/account-list.vue` - 新增：账户列表页
+- `src/pages/my/account-edit.vue` - 新增：新增/修改账户页
 - `src/api/account.js` - 更新 API 接口
 - `src/store/modules/account.js` - 更新状态管理
+
+### 需要删除的文件
+- `src/pages/account/index.vue` - 原账户管理页（已迁移）
+- `src/pages/account/edit.vue` - 原账户编辑页（已迁移）
 
 ## 边界情况
 
