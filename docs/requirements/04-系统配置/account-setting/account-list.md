@@ -1,8 +1,8 @@
 # 账户列表页
-> 文件：`account-list.md` | 中文名称：账户列表 | 所属模块：系统配置（我的页面子模块）
-> 页面路径：`pages/my/account-setting/account-list.vue`
+&gt; 文件：`account-list.md` | 中文名称：账户管理列表页 | 所属模块：系统配置（我的页面子模块）
+&gt; 页面路径：`pages/my/account-setting/account-list.vue`
 
-> 版本：v1.3 | 状态：✅设计完成 | 最后更新：2026-05-09
+&gt; 版本：v1.3 | 状态：🟡设计中 | 最后更新：2026-05-09
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
