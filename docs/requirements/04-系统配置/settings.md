@@ -1,12 +1,13 @@
 # 个人中心页
 &gt; 文件：`settings.md` | 中文名称：个人中心页（我的页面） | 所属模块：系统配置 | 页面路径：`pages/my/index`
 
-&gt; 版本：v0.1 | 状态：🟡设计中 | 最后更新：2026-05-09
+&gt; 版本：v0.2 | 状态：🟡设计中 | 最后更新：2026-05-10
 
 ## 版本历史
 
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v0.2 | 2026-05-10 | 增加分类设置菜单项 | AI |
 | v0.1 | 2026-05-09 | 初始版本：我的页面基础结构（用户信息+账户设置+退出登录） | AI |
 
 ---
@@ -33,6 +34,10 @@
 │  ═════════════════════════════════  │
 │                                     │
 │  ┌─────────────────────────────┐   │
+│  │ 📂 分类设置           [→]  │   │
+│  └─────────────────────────────┘   │
+│                                     │
+│  ┌─────────────────────────────┐   │
 │  │ 🏦 账户设置           [→]  │   │
 │  └─────────────────────────────┘   │
 │                                     │
@@ -51,6 +56,8 @@
 我的页面
 ├── 用户信息卡片
 │   └── 展示头像、昵称、手机号
+├── 分类设置 [→]
+│   └── 点击跳转 → pages/my/category-group-list（分类大类列表页）
 ├── 账户设置 [→]
 │   └── 点击跳转 → pages/my/account-list（账户列表页）
 └── 退出登录
@@ -63,11 +70,16 @@
 - 显示手机号（灰色，26rpx）
 - 未登录时显示默认头像 + "点击登录"
 
-#### 2. 账户设置
+#### 2. 分类设置
+- 点击跳转到分类大类列表页（`pages/my/category-group-list`）
+- 右侧显示箭头指示
+- 在账户设置菜单项上方
+
+#### 3. 账户设置
 - 点击跳转到账户列表页（`pages/my/account-list`）
 - 右侧显示箭头指示
 
-#### 3. 退出登录
+#### 4. 退出登录
 - 点击显示确认弹窗："确定要退出登录吗？"
 - 确认后清除本地认证信息，跳转登录页
 
@@ -124,6 +136,14 @@ interface UserInfo {
 ```typescript
 // pages.json 新增
 {
+  "path": "pages/my/category-group-list",
+  "style": { "navigationBarTitleText": "分类管理" }
+},
+{
+  "path": "pages/my/category-group-edit",
+  "style": { "navigationBarTitleText": "编辑分类" }
+},
+{
   "path": "pages/my/account-list",
   "style": { "navigationBarTitleText": "账户管理" }
 },
@@ -140,9 +160,11 @@ interface UserInfo {
 - 账户设置入口依赖 account-system 模块
 
 ### 需要修改的文件
-- `src/pages/my/index.vue` — 我的页面（重构菜单结构）
+- `src/pages/my/index.vue` — 我的页面（重构菜单结构，增加分类设置入口）
 
 ### 新增文件
+- `src/pages/my/category-group-list.vue` — 分类大类列表页
+- `src/pages/my/category-group-edit.vue` — 新增/修改分类大类页
 - `src/pages/my/account-list.vue` — 账户列表页（v0.1 核心）
 - `src/pages/my/account-edit.vue` — 新增/修改账户页（v0.1 核心）
 

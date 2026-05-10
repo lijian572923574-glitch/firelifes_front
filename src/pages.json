@@ -53,6 +53,13 @@
 			}
 		},
 		{
+			"path": "pages/my/category-group-list",
+			"style": {
+				"navigationBarTitleText": "分类管理",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/my/account-setting/account-list",
 			"style": {
 				"navigationBarTitleText": "我的账户",

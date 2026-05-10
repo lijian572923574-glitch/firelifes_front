@@ -21,6 +21,13 @@
 
     <!-- 菜单列表 -->
     <view class="menu-list">
+      <view class="menu-item" @click="navigateToCategoryList">
+        <view class="menu-left">
+          <text class="iconfont icon-fenlei menu-icon"></text>
+          <text class="menu-text">分类设置</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
       <view class="menu-item" @click="navigateToAccountList">
         <view class="menu-left">
           <text class="iconfont icon-zhangdan menu-icon"></text>
@@ -52,6 +59,13 @@ const handleUserCardClick = () => {
       url: '/pages/login/index'
     })
   }
+}
+
+// 跳转到分类设置
+const navigateToCategoryList = () => {
+  uni.navigateTo({
+    url: '/pages/my/category-group-list'
+  })
 }
 
 // 跳转到账户设置

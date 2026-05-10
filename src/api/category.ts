@@ -6,12 +6,17 @@
  * - 按类型获取分类（支出/收入）
  * - 获取用户自定义分类
  * - 获取分类图标列表
+ * - 分类大类管理（增删改查）
  * 
  * API 端点：
  * - GET /category - 获取所有分类
  * - GET /category/:type - 按类型获取
  * - GET /category/user/:type - 用户自定义分类
  * - GET /user/icons - 获取图标列表
+ * - GET /category/user/groups/all - 获取用户分类大类
+ * - POST /category/user/groups - 创建分类大类
+ * - PUT /category/user/groups/:id - 更新分类大类
+ * - DELETE /category/user/groups/:id - 删除分类大类
  * 
  * 技术栈：TypeScript + uni-app
  */
@@ -60,13 +65,25 @@ export interface CategoryResponse {
   income: CategoryGroup[]
 }
 
+/**
+ * 用户分类大类接口
+ */
+export interface UserCategoryGroup {
+  id: number
+  name: string
+  sortOrder: number
+  isEnabled: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export const categoryApi = {
   /**
    * 获取所有分类（带分组）
    */
   getAllCategories: () => {
     return request<CategoryResponse>({
-      url: '/category',
+      url: '/api/category',
       method: 'GET',
     })
   },
@@ -77,7 +94,7 @@ export const categoryApi = {
    */
   getCategoriesByType: (type: 'income' | 'expense') => {
     return request<CategoryGroup[]>({
-      url: `/category/${type}`,
+      url: `/api/category/${type}`,
       method: 'GET',
     })
   },
@@ -88,7 +105,7 @@ export const categoryApi = {
    */
   getUserCategories: (type: 'income' | 'expense') => {
     return request<CategoryGroup[]>({
-      url: `/category/user/${type}`,
+      url: `/api/category/user/${type}`,
       method: 'GET',
     })
   },
@@ -100,6 +117,48 @@ export const categoryApi = {
     return request<CategoryIcon[]>({
       url: '/user/icons',
       method: 'GET',
+    })
+  },
+
+  /**
+   * 获取用户分类大类列表
+   */
+  getUserGroups: () => {
+    return request<UserCategoryGroup[]>({
+      url: '/api/category/user/groups/all',
+      method: 'GET',
+    })
+  },
+
+  /**
+   * 创建分类大类
+   */
+  createUserGroup: (data: { name: string }) => {
+    return request<UserCategoryGroup>({
+      url: '/api/category/user/groups',
+      method: 'POST',
+      data,
+    })
+  },
+
+  /**
+   * 更新分类大类
+   */
+  updateUserGroup: (id: number, data: { name: string }) => {
+    return request<UserCategoryGroup>({
+      url: `/api/category/user/groups/${id}`,
+      method: 'PUT',
+      data,
+    })
+  },
+
+  /**
+   * 删除分类大类
+   */
+  deleteUserGroup: (id: number) => {
+    return request({
+      url: `/api/category/user/groups/${id}`,
+      method: 'DELETE',
     })
   },
 }
