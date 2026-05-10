@@ -7,11 +7,13 @@
   <view class="container">
     <text class="title">{{ t('statistics.title') }}</text>
     <text class="subtitle">{{ t('statistics.subtitle') }}</text>
+    <CustomTabbar />
   </view>
 </template>
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const { t } = useI18n()
 </script>
@@ -23,6 +25,8 @@ const { t } = useI18n()
   align-items: center;
   justify-content: center;
   padding: 40rpx;
+  min-height: 100vh;
+  padding-bottom: 80px;
 }
 
 .title {

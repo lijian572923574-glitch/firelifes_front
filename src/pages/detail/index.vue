@@ -102,6 +102,7 @@
       </view>
       <WdPickerView :model-value="pickerValue" :columns="pickerColumns" @change="onPickerChange" custom-style="height: 400rpx" />
     </WdPopup>
+    <CustomTabbar />
   </view>
 </template>
 
@@ -110,6 +111,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { onShow, onReachBottom } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
 import { categoryApi, type CategoryGroup } from '../../api/category'
+import CustomTabbar from '../../components/CustomTabbar.vue'
 
 interface RecordItem {
   id: number
@@ -485,6 +487,7 @@ onReachBottom(() => {
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
+  padding-bottom: 80px;
 }
 
 .header {

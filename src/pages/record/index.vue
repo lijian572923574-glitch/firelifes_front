@@ -36,6 +36,7 @@
     </WdPopup>
 
     <DatePicker :visible="showDatePicker" :date="selectedDate" @update:date="selectedDate = $event" @close="showDatePicker = false" />
+    <CustomTabbar />
   </view>
 </template>
 
@@ -46,6 +47,7 @@ import CategorySelector from './components/CategorySelector.vue'
 import TransactionForm from './components/TransactionForm.vue'
 import DatePicker from './components/DatePicker.vue'
 import { recordApi } from '../../api/record'
+import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const transactionType = ref<'income' | 'expense'>('expense')
 const selectedCategory = ref<{ id: number; name: string; icon: string } | null>(null)
@@ -91,8 +93,7 @@ const handleCloseTransactionForm = () => {
 }
 
 const handleCancel = () => {
-  uni.showTabBar()
-  uni.switchTab({ url: '/pages/detail/index' })
+  uni.reLaunch({ url: '/pages/detail/index' })
 }
 
 const handleComplete = async () => {
@@ -121,10 +122,9 @@ const handleComplete = async () => {
     })
 
     if (res.success) {
-      uni.showTabBar()
       uni.showToast({ title: '记账成功', icon: 'success' })
       setTimeout(() => {
-        uni.switchTab({ url: '/pages/detail/index' })
+        uni.reLaunch({ url: '/pages/detail/index' })
       }, 1000)
     } else {
       uni.showToast({ title: res.message || '记账失败', icon: 'none' })
@@ -143,6 +143,7 @@ const handleComplete = async () => {
   min-height: 100vh;
   background: linear-gradient(135deg, #faf9f6 0%, #f5f3ef 100%);
   padding-top: 120rpx;
+  padding-bottom: 80px;
 }
 
 .header {

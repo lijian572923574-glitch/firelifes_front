@@ -52,7 +52,7 @@ const tabList = [
 
 const switchTab = (pagePath: string) => {
   selectedTab.value = pagePath
-  uni.switchTab({ 
+  uni.reLaunch({ 
     url: '/' + pagePath,
     success: () => {
       console.log('Tab切换成功:', pagePath)

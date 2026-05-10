@@ -34,12 +34,14 @@
     <view class="logout-btn" v-if="userStore.isLoggedIn()" @click="handleLogout">
       退出登录
     </view>
+    <CustomTabbar />
   </view>
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '../../stores/user'
 import { logout } from '../../api/auth'
+import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const userStore = useUserStore()
 
@@ -86,6 +88,7 @@ const handleLogout = () => {
 .my-container {
   min-height: 100vh;
   background: #f5f5f5;
+  padding-bottom: 80px;
 }
 
 .user-card {

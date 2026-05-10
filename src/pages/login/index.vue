@@ -147,7 +147,7 @@ const handleLogin = async () => {
       icon: 'success'
     })
     setTimeout(() => {
-      uni.switchTab({
+      uni.reLaunch({
         url: '/pages/detail/index'
       })
     }, 1000)

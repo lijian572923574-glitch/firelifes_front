@@ -51,46 +51,23 @@
 			"style": {
 				"navigationBarTitleText": "My"
 			}
+		},
+		{
+			"path": "pages/my/account-setting/account-list",
+			"style": {
+				"navigationBarTitleText": "我的账户",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/my/account-setting/account-edit",
+			"style": {
+				"navigationBarTitleText": "编辑账户",
+				"navigationStyle": "custom"
+			}
 		}
 	],
-	"tabBar": {
-		"color": "#7A7E83",
-		"selectedColor": "#3cc51f",
-		"borderStyle": "black",
-		"backgroundColor": "#ffffff",
-		"list": [
-			{
-				"pagePath": "pages/detail/index",
-				"iconPath": "static/logo.png",
-				"selectedIconPath": "static/logo.png",
-				"text": "明细"
-			},
-			{
-				"pagePath": "pages/statistics/index",
-				"iconPath": "static/logo.png",
-				"selectedIconPath": "static/logo.png",
-				"text": "统计"
-			},
-			{
-				"pagePath": "pages/record/index",
-				"iconPath": "static/logo.png",
-				"selectedIconPath": "static/logo.png",
-				"text": "记账"
-			},
-			{
-				"pagePath": "pages/analysis/index",
-				"iconPath": "static/logo.png",
-				"selectedIconPath": "static/logo.png",
-				"text": "资产"
-			},
-			{
-				"pagePath": "pages/my/index",
-				"iconPath": "static/logo.png",
-				"selectedIconPath": "static/logo.png",
-				"text": "我的"
-			}
-		]
-	},
+
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "Account Manager",

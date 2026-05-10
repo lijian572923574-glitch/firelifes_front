@@ -4,16 +4,22 @@
   技术：Vue3 + TypeScript + uni-app
 -->
 <script setup lang="ts">
-import { onLaunch, onShow, onHide, onError } from "@dcloudio/uni-app";
-import { useI18n } from 'vue-i18n';
+import { onLaunch, onError } from "@dcloudio/uni-app";
 import config from './config/index';
 import { storage } from './utils/storage';
 
-const { t } = useI18n();
+// 设置状态栏高度（H5 环境）
+const setStatusBarHeight = () => {
+  if (typeof window !== 'undefined') {
+    // 对于 H5，设置一个默认值
+    document.documentElement.style.setProperty('--status-bar-height', '0px');
+  }
+};
 
 // 应用启动时触发
 onLaunch(() => {
-  console.log('[app] 应用启动', t('app.launch'));
+  console.log('[app] 应用启动');
+  setStatusBarHeight();
   const token = storage.get(config.tokenKey);
   const user = storage.get(config.userKey);
   console.log('[app] 初始状态', { token: token ? '有' : '无', user: user ? user.phone : '无' });
@@ -25,16 +31,6 @@ onLaunch(() => {
       event.preventDefault();
     });
   }
-});
-
-// 应用显示时触发
-onShow(() => {
-  console.log('[app] 应用显示', t('app.show'));
-});
-
-// 应用隐藏时触发
-onHide(() => {
-  console.log('[app] 应用隐藏', t('app.hide'));
 });
 
 // 应用发生错误时触发
