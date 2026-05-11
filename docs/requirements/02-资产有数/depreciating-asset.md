@@ -1,10 +1,11 @@
 # 折旧资产管理
 &gt; 文件：depreciating-asset.md | 中文名称：手机/鞋服等随时间贬值的资产管理 | 所属模块：资产有数
-&gt; 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
+&gt; 版本：v2.0 | 状态：🟡设计中 | 最后更新：2026-05-12
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v2.0 | 2026-05-12 | 统一使用WotUI组件库，左滑交互模式 | AI |
 | v1.0 | 2026-05-09 | 初始版本 | AI |
 
 ---
@@ -525,3 +526,74 @@ const STORAGE_KEYS = {
 8. **资产列表为空**
    - 显示空态引导："还没有折旧资产"
    - 引导用户去记账时开启"记入资产"
+
+9. **禁止横向滚动**
+   - 页面根容器设置 `overflow-x: hidden`
+   - 避免与 WdSwipeCell 的横向滑动冲突
+
+---
+
+## UI 组件使用
+
+页面使用 WotUI (`@wot-ui/ui`) 组件库，通过 `@uni-helper/vite-plugin-uni-components` 自动按需导入。
+
+| 组件 | 用途 | 关键属性 |
+|------|------|---------|
+| WdNavbar | 顶部导航栏 | `title`，`leftArrow`，`fixed`，`placeholder`，`bordered`，`safeAreaInsetTop`，`rightText`，`@click-right` |
+| WdSwipeCell | 左滑单元格 | `:right-width="140"`，`#default`，`#right` |
+| WdButton | 操作按钮 | `size="small"`，`type="primary"`（编辑/调整价值），`type="warning"`（处置），`type="danger"`（删除） |
+| WdDialog | 弹窗 | `v-model`，`title`，`show-cancel-button`，`show-confirm-button` |
+| WdInput | 输入框 | `v-model`，`placeholder`，`maxlength`，`show-clear`，`type="number"` |
+| WdPicker | 日期选择器 | `v-model`，`type="date"`，`format="YYYY-MM-DD"` |
+| WdSwitch | 开关 | `v-model`，`@change` |
+| WdRadioGroup | 单选框 | `v-model`，`options` |
+| WdTab | 选项卡 | `v-model`，`options` |
+
+---
+
+## 实现要点
+
+### WdSwipeCell 使用示例
+
+```vue
+&lt;wd-swipe-cell :right-width="asset.status === 'active' ? 210 : 140"&gt;
+  &lt;template #default&gt;
+    &lt;view class="depreciating-asset-card" @click="goToDetail(asset.id)"&gt;
+      &lt;view class="card-left"&gt;
+        &lt;text class="asset-icon"&gt;{{ getCategoryIcon(asset.category) }}&lt;/text&gt;
+        &lt;view class="asset-info"&gt;
+          &lt;text class="asset-name"&gt;{{ asset.name }}&lt;/text&gt;
+          &lt;view class="asset-meta"&gt;
+            &lt;text class="asset-category"&gt;{{ getCategoryLabel(asset.category) }}&lt;/text&gt;
+            &lt;text class="depreciation-method"&gt;{{ getDepreciationMethodLabel(asset.depreciationMethod) }}&lt;/text&gt;
+          &lt;/view&gt;
+          &lt;view class="asset-value"&gt;
+            &lt;text class="current-value"&gt;¥{{ formatAmount(asset.currentValue) }}&lt;/text&gt;
+            &lt;view class="depreciation-progress"&gt;
+              &lt;view class="progress-bar" :style="{ width: getProgressPercent(asset) + '%' }"&gt;&lt;/view&gt;
+            &lt;/view&gt;
+          &lt;/view&gt;
+        &lt;/view&gt;
+      &lt;/view&gt;
+      &lt;view v-if="asset.status === 'disposed'" class="status-badge disposed"&gt;已处置&lt;/view&gt;
+    &lt;/view&gt;
+  &lt;/template&gt;
+  &lt;template #right&gt;
+    &lt;wd-button v-if="asset.status === 'active'" size="small" type="primary" @click.stop="handleAdjustValue(asset.id)"&gt;调整&lt;/wd-button&gt;
+    &lt;wd-button v-if="asset.status === 'active'" size="small" type="warning" @click.stop="handleDispose(asset.id)"&gt;处置&lt;/wd-button&gt;
+    &lt;wd-button size="small" type="danger" @click.stop="handleDelete(asset.id)"&gt;删除&lt;/wd-button&gt;
+  &lt;/template&gt;
+&lt;/wd-swipe-cell&gt;
+```
+
+### 禁止横向滚动
+
+```vue
+&lt;style scoped&gt;
+.page-container {
+  overflow-x: hidden; /* 关键：禁止页面横向滚动 */
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+&lt;/style&gt;
+```

@@ -32,7 +32,6 @@
           class="group-card"
         >
           <view class="card-left">
-            <text class="group-icon">📂</text>
             <text class="group-name">{{ group.name }}</text>
           </view>
           <view class="card-right">
@@ -344,11 +343,6 @@ onShow(() => {
   display: flex;
   align-items: center;
   flex: 1;
-}
-
-.group-icon {
-  font-size: 48rpx;
-  margin-right: 16rpx;
 }
 
 .group-name {

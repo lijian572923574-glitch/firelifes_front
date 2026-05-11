@@ -1,10 +1,11 @@
 # 投资账户追踪
 &gt; 文件：investment-tracking.md | 中文名称：股票/基金投资账户市值追踪功能 | 所属模块：资产有数
-&gt; 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
+&gt; 版本：v2.0 | 状态：🟡设计中 | 最后更新：2026-05-12
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v2.0 | 2026-05-12 | 统一使用WotUI组件库，左滑交互模式 | AI |
 | v1.0 | 2026-05-09 | 初始版本 | AI |
 
 ---
@@ -344,3 +345,71 @@ interface GetMarketValueHistoryResponse {
 8. **股票/基金搜索（可选）**
    - 可选接入行情 API
    - 自动更新市值
+
+9. **禁止横向滚动**
+   - 页面根容器设置 `overflow-x: hidden`
+   - 避免与 WdSwipeCell 的横向滑动冲突
+
+---
+
+## UI 组件使用
+
+页面使用 WotUI (`@wot-ui/ui`) 组件库，通过 `@uni-helper/vite-plugin-uni-components` 自动按需导入。
+
+| 组件 | 用途 | 关键属性 |
+|------|------|---------|
+| WdNavbar | 顶部导航栏 | `title`，`leftArrow`，`fixed`，`placeholder`，`bordered`，`safeAreaInsetTop`，`rightText`，`@click-right` |
+| WdSwipeCell | 左滑单元格 | `:right-width="140"`，`#default`，`#right` |
+| WdButton | 操作按钮 | `size="small"`，`type="primary"`（更新市值），`type="danger"`（删除） |
+| WdDialog | 弹窗 | `v-model`，`title`，`show-cancel-button`，`show-confirm-button` |
+| WdInput | 输入框 | `v-model`，`placeholder`，`maxlength`，`show-clear`，`type="number"` |
+| WdPicker | 日期选择器 | `v-model`，`type="date"`，`format="YYYY-MM-DD"` |
+| WdRadioGroup | 单选框 | `v-model`，`options` |
+
+---
+
+## 实现要点
+
+### WdSwipeCell 使用示例
+
+```vue
+&lt;wd-swipe-cell :right-width="140"&gt;
+  &lt;template #default&gt;
+    &lt;view class="investment-account-card" @click="goToDetail(account.id)"&gt;
+      &lt;view class="card-left"&gt;
+        &lt;text class="account-icon"&gt;{{ getInvestmentTypeIcon(account.investmentType) }}&lt;/text&gt;
+        &lt;view class="account-info"&gt;
+          &lt;text class="account-name"&gt;{{ account.name }}&lt;/text&gt;
+          &lt;view class="account-meta"&gt;
+            &lt;text class="investment-type"&gt;{{ getInvestmentTypeLabel(account.investmentType) }}&lt;/text&gt;
+            &lt;text class="updated-at"&gt;上次更新: {{ formatDate(account.updatedAt) }}&lt;/text&gt;
+          &lt;/view&gt;
+          &lt;view class="account-value"&gt;
+            &lt;text class="current-value"&gt;¥{{ formatAmount(account.currentValue) }}&lt;/text&gt;
+            &lt;view class="gain-info" :class="getGainClass(account.unrealizedGain)"&gt;
+              &lt;text class="gain-amount"&gt;{{ account.unrealizedGain &gt;= 0 ? '+' : '' }}¥{{ formatAmount(account.unrealizedGain) }}&lt;/text&gt;
+              &lt;text class="gain-rate"&gt;{{ account.unrealizedGainRate &gt;= 0 ? '+' : '' }}{{ account.unrealizedGainRate }}%&lt;/text&gt;
+            &lt;/view&gt;
+          &lt;/view&gt;
+        &lt;/view&gt;
+      &lt;/view&gt;
+    &lt;/view&gt;
+  &lt;/template&gt;
+  &lt;template #right&gt;
+    &lt;wd-button size="small" type="primary" @click.stop="handleUpdateMarketValue(account.id)"&gt;更新&lt;/wd-button&gt;
+    &lt;wd-button size="small" type="danger" @click.stop="handleDelete(account.id)"&gt;删除&lt;/wd-button&gt;
+  &lt;/template&gt;
+&lt;/wd-swipe-cell&gt;
+```
+
+### 禁止横向滚动
+
+```vue
+&lt;style scoped&gt;
+.page-container {
+  overflow-x: hidden; /* 关键：禁止页面横向滚动 */
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+&lt;/style&gt;
+```
