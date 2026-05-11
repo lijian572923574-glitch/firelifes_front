@@ -23,14 +23,14 @@
     <view class="menu-list">
       <view class="menu-item" @click="navigateToCategoryList">
         <view class="menu-left">
-          <text class="iconfont icon-fenlei menu-icon"></text>
+          <text class="menu-emoji">📂</text>
           <text class="menu-text">分类设置</text>
         </view>
         <text class="arrow">›</text>
       </view>
       <view class="menu-item" @click="navigateToAccountList">
         <view class="menu-left">
-          <text class="iconfont icon-zhangdan menu-icon"></text>
+          <text class="menu-emoji">💳</text>
           <text class="menu-text">账户设置</text>
         </view>
         <text class="arrow">›</text>
@@ -175,9 +175,8 @@ const handleLogout = () => {
   align-items: center;
 }
 
-.menu-icon {
-  font-size: 36rpx;
-  color: #00BFFF;
+.menu-emoji {
+  font-size: 40rpx;
   margin-right: 20rpx;
 }
 
