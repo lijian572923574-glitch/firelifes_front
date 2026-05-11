@@ -1,14 +1,15 @@
 # 个人中心页
 &gt; 文件：`settings.md` | 中文名称：个人中心页（我的页面） | 所属模块：系统配置 | 页面路径：`pages/my/index`
 
-&gt; 版本：v0.2 | 状态：🟡设计中 | 最后更新：2026-05-10
+&gt; 版本：v0.3 | 状态：🟡设计中 | 最后更新：2026-05-10
 
 ## 版本历史
 
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v0.3 | 2026-05-10 | 分类设置文档结构与账户设置保持一致 | AI |
 | v0.2 | 2026-05-10 | 增加分类设置菜单项 | AI |
-| v0.1 | 2026-05-09 | 初始版本：我的页面基础结构（用户信息+账户设置+退出登录） | AI |
+| v0.1 | 2026-05-09 | 初始版本：我的页面基本结构（用户信息+账户设置+退出登录） | AI |
 
 ---
 
@@ -157,7 +158,8 @@ interface UserInfo {
 
 ### 依赖关系
 - 依赖用户认证状态（userStore）
-- 账户设置入口依赖 account-system 模块
+- 账户设置入口依赖 account-setting 模块
+- 分类设置入口依赖 category-setting 模块
 
 ### 需要修改的文件
 - `src/pages/my/index.vue` — 我的页面（重构菜单结构，增加分类设置入口）
@@ -165,8 +167,14 @@ interface UserInfo {
 ### 新增文件
 - `src/pages/my/category-group-list.vue` — 分类大类列表页
 - `src/pages/my/category-group-edit.vue` — 新增/修改分类大类页
-- `src/pages/my/account-list.vue` — 账户列表页（v0.1 核心）
-- `src/pages/my/account-edit.vue` — 新增/修改账户页（v0.1 核心）
+- `src/pages/my/account-setting/account-list.vue` — 账户列表页
+- `src/pages/my/account-setting/account-edit.vue` — 新增/修改账户页
+
+### 相关文档
+- `category-setting/category-group-list.md` — 分类大类列表页文档
+- `category-setting/category-group-edit.md` — 分类大类编辑页文档
+- `account-setting/account-list.md` — 账户列表页文档
+- `account-setting/account-edit.md` — 账户编辑页文档
 
 ## 边界情况
 
