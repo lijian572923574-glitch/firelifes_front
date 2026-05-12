@@ -77,6 +77,39 @@ export interface UserCategoryGroup {
   updatedAt: string
 }
 
+/**
+ * 用户图标接口
+ */
+export interface UserIcon {
+  id: number
+  userId: number
+  name: string
+  url: string
+  iconType: 'emoji' | 'image'
+  sortOrder: number
+  isEnabled: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+/**
+ * 用户子分类接口
+ */
+export interface UserCategory {
+  id: number
+  userId: number
+  name: string
+  iconId: number
+  icon?: { id: number; url: string }
+  type: 'income' | 'expense'
+  groupId: number
+  sortOrder: number
+  isEnabled: boolean
+  isUserCreated: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export const categoryApi = {
   /**
    * 获取所有分类（带分组）
@@ -114,7 +147,7 @@ export const categoryApi = {
    * 获取用户图标列表
    */
   getUserIcons: () => {
-    return request<CategoryIcon[]>({
+    return request<UserIcon[]>({
       url: '/user/icons',
       method: 'GET',
     })
@@ -158,6 +191,48 @@ export const categoryApi = {
   deleteUserGroup: (id: number) => {
     return request({
       url: `/api/category/user/groups/${id}`,
+      method: 'DELETE',
+    })
+  },
+
+  /**
+   * 获取指定大类下的子分类列表
+   */
+  getCategoriesByGroup: (groupId: number) => {
+    return request<UserCategory[]>({
+      url: `/api/category/group/${groupId}`,
+      method: 'GET',
+    })
+  },
+
+  /**
+   * 创建子分类
+   */
+  createCategory: (data: { name: string; groupId: number; iconId: number; type: 'income' | 'expense' }) => {
+    return request<UserCategory>({
+      url: '/api/category/user',
+      method: 'POST',
+      data,
+    })
+  },
+
+  /**
+   * 更新子分类
+   */
+  updateCategory: (id: number, data: { name: string; iconId: number }) => {
+    return request<UserCategory>({
+      url: `/api/category/user/${id}`,
+      method: 'PUT',
+      data,
+    })
+  },
+
+  /**
+   * 删除子分类
+   */
+  deleteCategory: (id: number) => {
+    return request({
+      url: `/api/category/user/${id}`,
       method: 'DELETE',
     })
   },

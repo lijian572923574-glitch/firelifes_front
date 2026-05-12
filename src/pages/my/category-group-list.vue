@@ -1,304 +1,264 @@
 <template>
-  <view class="category-group-page">
-    <!-- 导航栏 -->
-    <view class="navbar">
-      <view class="nav-left" @click="goBack">
-        <text class="nav-icon">←</text>
-      </view>
-      <view class="nav-title">分类管理</view>
-      <view class="nav-right" @click="handleAdd">
-        <text class="nav-icon">+</text>
-      </view>
-    </view>
+  <view class="page-container">
+    <WdNavbar
+      title="分类管理"
+      left-arrow
+      fixed
+      placeholder
+      bordered
+      safe-area-inset-top
+      right-text="+"
+      @click-left="goBack"
+      @click-right="handleAdd"
+    />
 
-    <!-- 内容区域 -->
-    <scroll-view class="content" scroll-y>
-      <!-- 加载中 -->
+    <scroll-view scroll-y class="content-scroll">
       <view v-if="loading" class="loading-state">
+        <WdLoading type="ring" />
         <text class="loading-text">加载中...</text>
       </view>
 
-      <!-- 空状态 -->
       <view v-else-if="!hasGroups" class="empty-state">
-        <text class="empty-icon">📭</text>
-        <text class="empty-text">还没有分类，点击右上角 + 添加第一个分类</text>
+        <text class="empty-icon">📝</text>
+        <text class="empty-text">添加你的第一个分类</text>
       </view>
 
-      <!-- 分类列表 -->
       <view v-else class="group-list">
-        <view
-          v-for="group in groups"
+        <WdSwipeAction
+          v-for="(group, index) in groups"
           :key="group.id"
-          class="group-card"
+          v-model="openStates[index]"
         >
-          <view class="card-left">
+          <view class="group-card" @click="goToCategoryList(group)">
             <text class="group-name">{{ group.name }}</text>
+            <WdIcon name="arrow-right" size="16px" color="#CCCCCC" />
           </view>
-          <view class="card-right">
-            <view class="action-btn" @click.stop="handleEdit(group)">
-              <text class="iconfont icon-bianji"></text>
+          <template #right>
+            <view class="swipe-actions">
+              <WdButton
+                size="small"
+                type="primary"
+                class="action-btn edit-btn"
+                @click.stop="handleEdit(group)"
+              >
+                编辑
+              </WdButton>
+              <WdButton
+                size="small"
+                type="danger"
+                class="action-btn delete-btn"
+                @click.stop="handleDelete(group)"
+              >
+                删除
+              </WdButton>
             </view>
-            <view class="action-btn delete-btn" @click.stop="handleDelete(group)">
-              <text class="iconfont icon-shanchu"></text>
-            </view>
-          </view>
-        </view>
+          </template>
+        </WdSwipeAction>
       </view>
 
-      <!-- 底部安全区域 -->
       <view class="safe-bottom"></view>
     </scroll-view>
 
-    <!-- 编辑弹窗 -->
-    <view v-if="showEditDialog" class="dialog-mask" @click="closeEditDialog">
-      <view class="dialog" @click.stop>
-        <view class="dialog-title">{{ editingGroup ? '编辑分类' : '新增大类' }}</view>
-        <view class="dialog-content">
-          <input
-            class="input"
-            :value="editName"
-            @input="onEditNameInput"
-            placeholder="请输入分类名称"
-            focus
-          />
-        </view>
-        <view class="dialog-actions">
-          <view class="dialog-btn cancel-btn" @click="closeEditDialog">取消</view>
-          <view class="dialog-btn confirm-btn" @click="confirmEdit">确定</view>
-        </view>
+    <WdDialog
+      v-model:visible="showEditDialog"
+      :title="editingGroup ? '编辑分类' : '新增分类'"
+      :show-cancel-button="true"
+      :show-confirm-button="true"
+      @confirm="confirmEdit"
+      @cancel="closeEditDialog"
+    >
+      <view class="dialog-content">
+        <WdInput
+          v-model="editName"
+          placeholder="请输入分类名称"
+          :maxlength="20"
+          show-clear
+        />
       </view>
-    </view>
+    </WdDialog>
+
+    <WdDialog
+      v-model:visible="showDeleteDialog"
+      title="提示"
+      :show-cancel-button="true"
+      :show-confirm-button="true"
+      @confirm="confirmDelete"
+    >
+      <view class="dialog-content">
+        <text>确定要删除此分类吗？</text>
+      </view>
+    </WdDialog>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
-import { categoryApi, type UserCategoryGroup } from '../../api/category';
+import { ref, computed, onMounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
+import { categoryApi } from '../../api/category'
+import type { UserCategoryGroup } from '../../api/category'
 
-// 加载状态
-const loading = ref(false);
+const loading = ref(false)
+const groups = ref<UserCategoryGroup[]>([])
+const openStates = ref<string[]>([])
 
-// 分类列表
-const groups = ref<UserCategoryGroup[]>([]);
+const showEditDialog = ref(false)
+const showDeleteDialog = ref(false)
+const editingGroup = ref<UserCategoryGroup | null>(null)
+const editName = ref('')
+const deletingGroup = ref<UserCategoryGroup | null>(null)
 
-// 弹窗状态
-const showEditDialog = ref(false);
-const editingGroup = ref<UserCategoryGroup | null>(null);
-const editName = ref('');
+const hasGroups = computed(() => groups.value.length > 0)
 
-// 是否有分类
-const hasGroups = computed(() => groups.value.length > 0);
-
-// 返回上一页
-const goBack = () => {
-  const pages = getCurrentPages();
-  if (pages.length > 1) {
-    uni.navigateBack();
-  } else {
-    uni.redirectTo({
-      url: '/pages/my/index'
-    });
-  }
-};
-
-// 加载分类列表
-const loadGroups = async () => {
-  loading.value = true;
+async function loadGroups() {
+  loading.value = true
   try {
-    const res = await categoryApi.getUserGroups();
+    const res = await categoryApi.getUserGroups()
     if (res.success) {
-      groups.value = res.data;
+      groups.value = res.data
+      openStates.value = res.data.map(() => 'close')
     } else {
       uni.showToast({
         title: res.message || '获取分类列表失败',
         icon: 'none'
-      });
+      })
     }
   } catch (err) {
-    console.error('加载分类列表失败:', err);
+    console.error('加载分类列表失败:', err)
     uni.showToast({
       title: '网络错误',
       icon: 'none'
-    });
+    })
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
-// 新增大类
-const handleAdd = () => {
-  editingGroup.value = null;
-  editName.value = '';
-  showEditDialog.value = true;
-};
+function goBack() {
+  uni.navigateBack()
+}
 
-// 编辑分类
-const handleEdit = (group: UserCategoryGroup) => {
-  editingGroup.value = group;
-  editName.value = group.name;
-  showEditDialog.value = true;
-};
+function goToCategoryList(group: UserCategoryGroup) {
+  uni.navigateTo({
+    url: `/pages/my/category-list?groupId=${group.id}&groupName=${encodeURIComponent(group.name)}`
+  })
+}
 
-// 删除分类
-const handleDelete = (group: UserCategoryGroup) => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要删除该分类吗？',
-    success: async (res) => {
-      if (res.confirm) {
-        try {
-          const resDel = await categoryApi.deleteUserGroup(group.id);
-          if (resDel.success) {
-            uni.showToast({
-              title: '删除成功',
-              icon: 'success'
-            });
-            loadGroups();
-          } else {
-            uni.showToast({
-              title: resDel.message || '删除失败',
-              icon: 'none'
-            });
-          }
-        } catch (err) {
-          console.error('删除失败:', err);
-          uni.showToast({
-            title: '删除失败',
-            icon: 'none'
-          });
-        }
-      }
-    }
-  });
-};
+function handleAdd() {
+  editingGroup.value = null
+  editName.value = ''
+  showEditDialog.value = true
+}
 
-// 输入名称
-const onEditNameInput = (e: any) => {
-  editName.value = e.detail.value;
-};
+function handleEdit(group: UserCategoryGroup) {
+  editingGroup.value = group
+  editName.value = group.name
+  showEditDialog.value = true
+}
 
-// 关闭弹窗
-const closeEditDialog = () => {
-  showEditDialog.value = false;
-  editingGroup.value = null;
-  editName.value = '';
-};
+function handleDelete(group: UserCategoryGroup) {
+  deletingGroup.value = group
+  showDeleteDialog.value = true
+}
 
-// 确认编辑
-const confirmEdit = async () => {
+async function confirmEdit() {
   if (!editName.value.trim()) {
-    uni.showToast({
-      title: '请输入分类名称',
-      icon: 'none'
-    });
-    return;
+    uni.showToast({ title: '请输入分类名称', icon: 'none' })
+    return
   }
 
   try {
-    let res;
+    let res
     if (editingGroup.value) {
-      res = await categoryApi.updateUserGroup(editingGroup.value.id, { name: editName.value });
+      res = await categoryApi.updateUserGroup(editingGroup.value.id, {
+        name: editName.value.trim()
+      })
     } else {
-      res = await categoryApi.createUserGroup({ name: editName.value });
+      res = await categoryApi.createUserGroup({
+        name: editName.value.trim()
+      })
     }
 
     if (res.success) {
-      uni.showToast({
-        title: editingGroup.value ? '更新成功' : '创建成功',
-        icon: 'success'
-      });
-      closeEditDialog();
-      loadGroups();
+      uni.showToast({ title: editingGroup.value ? '编辑成功' : '新增成功', icon: 'success' })
+      showEditDialog.value = false
+      loadGroups()
     } else {
-      uni.showToast({
-        title: res.message || '操作失败',
-        icon: 'none'
-      });
+      uni.showToast({ title: res.message || '操作失败', icon: 'none' })
     }
   } catch (err) {
-    console.error('操作失败:', err);
-    uni.showToast({
-      title: '操作失败',
-      icon: 'none'
-    });
+    console.error('操作失败:', err)
+    uni.showToast({ title: '网络错误', icon: 'none' })
   }
-};
+}
 
-// 页面显示时重新加载
+function closeEditDialog() {
+  showEditDialog.value = false
+  editingGroup.value = null
+  editName.value = ''
+}
+
+async function confirmDelete() {
+  if (!deletingGroup.value) return
+
+  try {
+    const res = await categoryApi.deleteUserGroup(deletingGroup.value.id)
+    if (res.success) {
+      uni.showToast({ title: '删除成功', icon: 'success' })
+      showDeleteDialog.value = false
+      loadGroups()
+    } else {
+      uni.showToast({ title: res.message || '删除失败', icon: 'none' })
+    }
+  } catch (err) {
+    console.error('删除失败:', err)
+    uni.showToast({ title: '网络错误', icon: 'none' })
+  }
+}
+
+onMounted(() => {
+  loadGroups()
+})
+
 onShow(() => {
-  loadGroups();
-});
+  loadGroups()
+})
 </script>
 
-<style>
-.category-group-page {
+<style scoped>
+.page-container {
+  overflow-x: hidden;
   min-height: 100vh;
   background-color: #F5F5F5;
   display: flex;
   flex-direction: column;
 }
 
-/* 导航栏 */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 88rpx;
-  padding: 0 24rpx;
-  background-color: #FFFFFF;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.nav-left,
-.nav-right {
-  width: 80rpx;
-  height: 88rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-icon {
-  font-size: 36rpx;
-  color: #333333;
-}
-
-.nav-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333333;
-}
-
-/* 内容区域 */
-.content {
+.content-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 16rpx 0;
+  padding: 16rpx 24rpx;
 }
 
-/* 加载状态 */
 .loading-state {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 48rpx;
+  padding: 120rpx 0;
 }
 
 .loading-text {
   font-size: 28rpx;
   color: #999999;
+  margin-top: 20rpx;
 }
 
-/* 空状态 */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 48rpx;
+  padding: 120rpx 0;
 }
 
 .empty-icon {
@@ -314,131 +274,46 @@ onShow(() => {
   line-height: 1.6;
 }
 
-/* 分类列表 */
 .group-list {
-  padding: 0 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
 }
 
-/* 分类卡片 */
 .group-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx;
+  height: 88rpx;
+  padding: 0 24rpx;
   background-color: #FFFFFF;
   border-radius: 16rpx;
-  margin-bottom: 16rpx;
-  transition: transform 100ms ease;
-}
-
-.group-card:last-child {
-  margin-bottom: 0;
-}
-
-.group-card:active {
-  transform: scale(0.98);
-}
-
-.card-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
 }
 
 .group-name {
   font-size: 30rpx;
   color: #333333;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.card-right {
+.swipe-actions {
   display: flex;
-  align-items: center;
-  gap: 16rpx;
-  margin-left: 16rpx;
+  height: 100%;
 }
 
 .action-btn {
-  width: 64rpx;
-  height: 64rpx;
+  width: 70rpx;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #00BFFF;
-  font-size: 32rpx;
-}
-
-.delete-btn {
-  color: #FA3534;
-}
-
-/* 底部安全区域 */
-.safe-bottom {
-  height: env(safe-area-inset-bottom);
-}
-
-/* 弹窗样式 */
-.dialog-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.dialog {
-  width: 600rpx;
-  background: #FFFFFF;
-  border-radius: 16rpx;
-  overflow: hidden;
-}
-
-.dialog-title {
-  padding: 32rpx;
-  text-align: center;
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333333;
-  border-bottom: 1rpx solid #F0F0F0;
 }
 
 .dialog-content {
-  padding: 32rpx;
+  padding: 20rpx 0;
 }
 
-.input {
-  width: 100%;
-  height: 88rpx;
-  border: 1rpx solid #E0E0E0;
-  border-radius: 8rpx;
-  padding: 0 24rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-}
-
-.dialog-actions {
-  display: flex;
-  border-top: 1rpx solid #F0F0F0;
-}
-
-.dialog-btn {
-  flex: 1;
-  padding: 28rpx;
-  text-align: center;
-  font-size: 28rpx;
-}
-
-.cancel-btn {
-  color: #999999;
-  border-right: 1rpx solid #F0F0F0;
-}
-
-.confirm-btn {
-  color: #00BFFF;
+.safe-bottom {
+  height: env(safe-area-inset-bottom);
 }
 </style>

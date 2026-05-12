@@ -60,6 +60,13 @@
 			}
 		},
 		{
+			"path": "pages/my/category-list",
+			"style": {
+				"navigationBarTitleText": "子分类管理",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/my/account-setting/account-list",
 			"style": {
 				"navigationBarTitleText": "我的账户",

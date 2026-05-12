@@ -12,11 +12,15 @@ declare module 'vue' {
     WdCell: typeof import('@wot-ui/ui/components/wd-cell/wd-cell.vue')['default']
     WdCellGroup: typeof import('@wot-ui/ui/components/wd-cell-group/wd-cell-group.vue')['default']
     WdDatetimePickerView: typeof import('@wot-ui/ui/components/wd-datetime-picker-view/wd-datetime-picker-view.vue')['default']
+    WdDialog: typeof import('@wot-ui/ui/components/wd-dialog/wd-dialog.vue')['default']
+    WdIcon: typeof import('@wot-ui/ui/components/wd-icon/wd-icon.vue')['default']
     WdInput: typeof import('@wot-ui/ui/components/wd-input/wd-input.vue')['default']
     WdLoading: typeof import('@wot-ui/ui/components/wd-loading/wd-loading.vue')['default']
     WdNavbar: typeof import('@wot-ui/ui/components/wd-navbar/wd-navbar.vue')['default']
     WdPickerView: typeof import('@wot-ui/ui/components/wd-picker-view/wd-picker-view.vue')['default']
     WdPopup: typeof import('@wot-ui/ui/components/wd-popup/wd-popup.vue')['default']
+    WdSwipeAction: typeof import('@wot-ui/ui/components/wd-swipe-action/wd-swipe-action.vue')['default']
+    WdSwipeCell: typeof import('@wot-ui/ui/components/wd-swipe-cell/wd-swipe-cell.vue')['default']
     WdTextarea: typeof import('@wot-ui/ui/components/wd-textarea/wd-textarea.vue')['default']
   }
 }
