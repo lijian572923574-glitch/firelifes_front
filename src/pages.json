@@ -79,6 +79,13 @@
 				"navigationBarTitleText": "编辑账户",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/my/account-setting/account-adjust",
+			"style": {
+				"navigationBarTitleText": "调整余额",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 

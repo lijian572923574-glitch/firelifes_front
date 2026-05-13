@@ -75,6 +75,15 @@
           </WdInput>
         </view>
 
+        <!-- 调整余额入口 -->
+        <view v-if="isEdit" class="adjust-section" @click="goToAdjust">
+          <view class="adjust-left">
+            <text class="adjust-icon">🔄</text>
+            <text class="adjust-text">调整余额</text>
+          </view>
+          <text class="arrow">›</text>
+        </view>
+
         <!-- 账户说明 -->
         <view class="form-item">
           <view class="form-label">账户说明</view>
@@ -288,6 +297,14 @@ const goBack = () => {
   navigateBack('/pages/my/account-setting/account-list');
 };
 
+const goToAdjust = () => {
+  if (accountId.value) {
+    uni.navigateTo({
+      url: `/pages/my/account-setting/account-adjust?id=${accountId.value}`
+    });
+  }
+};
+
 onLoad((options: any) => {
   if (options.id) {
     accountId.value = options.id;
@@ -414,6 +431,33 @@ onLoad((options: any) => {
 
 .type-item.active .type-text {
   color: #00BFFF;
+  font-weight: 600;
+}
+
+/* 调整余额入口 */
+.adjust-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32rpx;
+  padding: 28rpx;
+  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  border-radius: 16rpx;
+}
+
+.adjust-left {
+  display: flex;
+  align-items: center;
+}
+
+.adjust-icon {
+  font-size: 44rpx;
+  margin-right: 16rpx;
+}
+
+.adjust-text {
+  font-size: 28rpx;
+  color: #0277BD;
   font-weight: 600;
 }
 
