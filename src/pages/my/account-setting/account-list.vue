@@ -1,15 +1,18 @@
+
 <template>
   <view class="account-list-page">
     <!-- 导航栏 -->
-    <view class="navbar">
-      <view class="nav-left" @click="goBack">
-        <text class="nav-icon">←</text>
-      </view>
-      <view class="nav-title">账户列表</view>
-      <view class="nav-right" @click="goToAdd">
-        <text class="nav-icon">+</text>
-      </view>
-    </view>
+    <WdNavbar
+      title="账户设置"
+      left-arrow
+      fixed
+      placeholder
+      bordered
+      safe-area-inset-top
+      right-text="+"
+      @click-left="goBack"
+      @click-right="goToAdd"
+    />
 
     <!-- 内容区域 -->
     <scroll-view class="content" scroll-y>
@@ -67,6 +70,7 @@
 import { ref, computed } from 'vue';
 import { onShow } from '@dcloudio/uni-app';
 import { getAccountList } from '../../../api/account';
+import { navigateBack } from '../../../utils/navigate';
 import type { Account, AccountType } from '../../../types/account';
 import { ACCOUNT_TYPE_OPTIONS, getBalanceColor } from '../../../types/account';
 
@@ -134,14 +138,7 @@ const loadAccounts = async () => {
 
 // 返回上一页
 const goBack = () => {
-  const pages = getCurrentPages();
-  if (pages.length > 1) {
-    uni.navigateBack();
-  } else {
-    uni.redirectTo({
-      url: '/pages/my/index'
-    });
-  }
+  navigateBack('/pages/my/index');
 };
 
 // 跳转新增账户
@@ -167,57 +164,22 @@ onShow(() => {
 <style>
 .account-list-page {
   min-height: 100vh;
-  background-color: #F5F5F5;
+  background-color: #F8F9FA;
   display: flex;
   flex-direction: column;
 }
 
-/* 导航栏 */
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 88rpx;
-  padding: 0 24rpx;
-  background-color: #FFFFFF;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.nav-left,
-.nav-right {
-  width: 80rpx;
-  height: 88rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-icon {
-  font-size: 36rpx;
-  color: #333333;
-}
-
-.nav-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #333333;
-}
-
-/* 内容区域 */
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 16rpx 0;
+  padding: 20rpx 0;
 }
 
-/* 加载状态 */
 .loading-state {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 48rpx;
+  padding: 140rpx 48rpx;
 }
 
 .loading-text {
@@ -225,19 +187,18 @@ onShow(() => {
   color: #999999;
 }
 
-/* 空状态 */
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 48rpx;
+  padding: 140rpx 48rpx;
 }
 
 .empty-icon {
   font-size: 120rpx;
-  margin-bottom: 32rpx;
-  opacity: 0.5;
+  margin-bottom: 24rpx;
+  opacity: 0.4;
 }
 
 .empty-text {
@@ -247,20 +208,19 @@ onShow(() => {
   line-height: 1.6;
 }
 
-/* 分组区域 */
 .group-section {
-  margin-bottom: 24rpx;
+  margin-bottom: 32rpx;
 }
 
-/* 分组标题 */
 .group-title {
   display: flex;
   align-items: center;
   height: 64rpx;
-  padding-left: 24rpx;
-  font-size: 28rpx;
+  padding-left: 28rpx;
+  font-size: 26rpx;
   font-weight: 600;
   color: #666666;
+  letter-spacing: 1rpx;
 }
 
 .title-line {
@@ -271,21 +231,20 @@ onShow(() => {
   margin-right: 12rpx;
 }
 
-/* 账户卡片列表 */
 .account-cards {
   padding: 0 24rpx;
 }
 
-/* 账户卡片 */
 .account-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx;
+  padding: 28rpx;
   background-color: #FFFFFF;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   margin-bottom: 16rpx;
-  transition: transform 100ms ease;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 150ms ease;
 }
 
 .account-card:last-child {
@@ -293,7 +252,9 @@ onShow(() => {
 }
 
 .account-card:active {
-  transform: scale(0.98);
+  transform: scale(0.99);
+  background: rgba(0, 191, 255, 0.05);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.03);
 }
 
 .card-left {
@@ -303,8 +264,10 @@ onShow(() => {
 }
 
 .account-icon {
-  font-size: 48rpx;
-  margin-right: 16rpx;
+  font-size: 52rpx;
+  margin-right: 20rpx;
+  width: 64rpx;
+  text-align: center;
 }
 
 .account-info {
@@ -316,8 +279,8 @@ onShow(() => {
 .account-name {
   font-size: 30rpx;
   color: #333333;
-  font-weight: 500;
-  margin-bottom: 4rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
 }
 
 .account-desc {
@@ -333,8 +296,8 @@ onShow(() => {
 }
 
 .balance {
-  font-size: 30rpx;
-  font-weight: 600;
+  font-size: 32rpx;
+  font-weight: 700;
   margin-right: 12rpx;
 }
 
@@ -343,7 +306,6 @@ onShow(() => {
   color: #CCCCCC;
 }
 
-/* 底部安全区域 */
 .safe-bottom {
   height: env(safe-area-inset-bottom);
 }

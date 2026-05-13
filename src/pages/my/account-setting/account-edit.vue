@@ -113,6 +113,7 @@
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { getAccountDetail, createAccount, updateAccount } from '../../../api/account';
+import { navigateBack } from '../../../utils/navigate';
 import type { Account, AccountRequest, AccountType } from '../../../types/account';
 import { ACCOUNT_TYPE_OPTIONS, ACCOUNT_ICONS } from '../../../types/account';
 
@@ -247,7 +248,7 @@ const handleSave = async () => {
           icon: 'success'
         });
         setTimeout(() => {
-          uni.navigateBack();
+          navigateBack('/pages/my/account-setting/account-list');
         }, 1500);
       } else {
         uni.showToast({
@@ -263,7 +264,7 @@ const handleSave = async () => {
           icon: 'success'
         });
         setTimeout(() => {
-          uni.navigateBack();
+          navigateBack('/pages/my/account-setting/account-list');
         }, 1500);
       } else {
         uni.showToast({
@@ -284,7 +285,7 @@ const handleSave = async () => {
 };
 
 const goBack = () => {
-  uni.navigateBack();
+  navigateBack('/pages/my/account-setting/account-list');
 };
 
 onLoad((options: any) => {
@@ -307,7 +308,7 @@ onLoad((options: any) => {
 <style>
 .account-edit-page {
   min-height: 100vh;
-  background-color: #F5F5F5;
+  background-color: #F8F9FA;
   display: flex;
   flex-direction: column;
 }
@@ -316,14 +317,15 @@ onLoad((options: any) => {
   flex: 1;
   overflow-y: auto;
   padding: 24rpx 0;
-  padding-bottom: 120rpx;
+  padding-bottom: 140rpx;
 }
 
 .form-container {
   background-color: #FFFFFF;
   margin: 0 24rpx;
-  border-radius: 16rpx;
-  padding: 32rpx 24rpx;
+  border-radius: 20rpx;
+  padding: 36rpx 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .form-item {
@@ -337,14 +339,14 @@ onLoad((options: any) => {
 .form-label {
   font-size: 28rpx;
   color: #333333;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 16rpx;
 }
 
 .currency {
   font-size: 32rpx;
   color: #333333;
-  font-weight: 600;
+  font-weight: 700;
   margin-right: 8rpx;
 }
 
@@ -356,15 +358,19 @@ onLoad((options: any) => {
 }
 
 .icon-item {
-  width: 96rpx;
-  height: 96rpx;
+  width: 104rpx;
+  height: 104rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #F8F8F8;
-  border-radius: 12rpx;
+  background-color: #F8F9FA;
+  border-radius: 16rpx;
   border: 2rpx solid transparent;
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
+}
+
+.icon-item:active {
+  transform: scale(0.95);
 }
 
 .icon-item.active {
@@ -373,7 +379,7 @@ onLoad((options: any) => {
 }
 
 .icon-text {
-  font-size: 48rpx;
+  font-size: 52rpx;
 }
 
 /* 类型选择器 */
@@ -384,11 +390,15 @@ onLoad((options: any) => {
 }
 
 .type-item {
-  padding: 12rpx 24rpx;
-  background-color: #F8F8F8;
-  border-radius: 40rpx;
+  padding: 14rpx 28rpx;
+  background-color: #F8F9FA;
+  border-radius: 48rpx;
   border: 2rpx solid transparent;
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
+}
+
+.type-item:active {
+  transform: scale(0.98);
 }
 
 .type-item.active {
@@ -399,11 +409,12 @@ onLoad((options: any) => {
 .type-text {
   font-size: 26rpx;
   color: #333333;
+  font-weight: 500;
 }
 
 .type-item.active .type-text {
   color: #00BFFF;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* 保存区域 */
@@ -412,9 +423,9 @@ onLoad((options: any) => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 16rpx 24rpx;
-  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
-  background-color: #F5F5F5;
+  padding: 20rpx 24rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  background-color: #F8F9FA;
 }
 
 .safe-bottom {

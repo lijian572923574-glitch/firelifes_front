@@ -73,6 +73,7 @@ export interface UserCategoryGroup {
   name: string
   sortOrder: number
   isEnabled: boolean
+  isUserCreated: boolean
   createdAt: string
   updatedAt: string
 }
@@ -186,6 +187,16 @@ export const categoryApi = {
   },
 
   /**
+   * 切换分类大类启用/禁用状态
+   */
+  toggleUserGroup: (id: number) => {
+    return request<UserCategoryGroup>({
+      url: `/api/category/user/groups/${id}/toggle`,
+      method: 'POST',
+    })
+  },
+
+  /**
    * 删除分类大类
    */
   deleteUserGroup: (id: number) => {
@@ -224,6 +235,16 @@ export const categoryApi = {
       url: `/api/category/user/${id}`,
       method: 'PUT',
       data,
+    })
+  },
+
+  /**
+   * 切换子分类启用/禁用状态
+   */
+  toggleCategory: (id: number) => {
+    return request<UserCategory>({
+      url: `/api/category/user/${id}/toggle`,
+      method: 'POST',
     })
   },
 

@@ -101,13 +101,14 @@ const handleLogout = () => {
 <style scoped>
 .my-container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: #F8F9FA;
   padding-bottom: 80px;
 }
 
 .user-card {
   background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
-  padding: 80rpx 40rpx 60rpx;
+  padding: 100rpx 32rpx 80rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 191, 255, 0.25);
 }
 
 .user-card.clickable {
@@ -123,9 +124,10 @@ const handleLogout = () => {
   width: 120rpx;
   height: 120rpx;
   border-radius: 60rpx;
-  border: 4rpx solid white;
-  margin-right: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.9);
+  margin-right: 24rpx;
   background: white;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .info {
@@ -136,30 +138,31 @@ const handleLogout = () => {
 .nickname {
   color: white;
   font-size: 36rpx;
-  font-weight: bold;
-  margin-bottom: 12rpx;
+  font-weight: 700;
+  margin-bottom: 8rpx;
 }
 
 .phone {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 26rpx;
 }
 
 .menu-list {
   background: white;
   margin: 24rpx;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   overflow: hidden;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .menu-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 24rpx;
-  height: 88rpx;
-  border-bottom: 1rpx solid #f0f0f0;
-  transition: transform 100ms ease;
+  padding: 0 28rpx;
+  height: 96rpx;
+  border-bottom: 1rpx solid #F0F2F5;
+  transition: all 150ms ease;
 }
 
 .menu-item:last-child {
@@ -167,7 +170,8 @@ const handleLogout = () => {
 }
 
 .menu-item:active {
-  transform: scale(0.98);
+  background: rgba(0, 191, 255, 0.05);
+  transform: scale(0.99);
 }
 
 .menu-left {
@@ -176,32 +180,38 @@ const handleLogout = () => {
 }
 
 .menu-emoji {
-  font-size: 40rpx;
+  font-size: 44rpx;
   margin-right: 20rpx;
+  width: 64rpx;
+  text-align: center;
 }
 
 .menu-text {
   font-size: 30rpx;
-  color: #333;
+  color: #333333;
+  font-weight: 500;
 }
 
 .arrow {
-  font-size: 40rpx;
-  color: #ccc;
+  font-size: 36rpx;
+  color: #CCCCCC;
 }
 
 .logout-btn {
-  margin: 60rpx 24rpx;
+  margin: 40rpx 24rpx;
   background: white;
   color: #FA3534;
   text-align: center;
   padding: 32rpx;
-  border-radius: 16rpx;
+  border-radius: 20rpx;
   font-size: 32rpx;
-  transition: transform 100ms ease;
+  font-weight: 500;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 150ms ease;
 }
 
 .logout-btn:active {
-  transform: scale(0.98);
+  transform: scale(0.99);
+  background: #FFF5F5;
 }
 </style>
