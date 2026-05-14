@@ -9,7 +9,7 @@
 
 | 功能 | 文件 | 版本 | 状态 | 优先级 |
 |------|------|------|------|--------|
-| 记账功能（核心+账户选择+转账） | record/record.md | v1.0 | 🟡设计中 | P0 |
+| 记账功能（核心+账户选择+转账+还债） | record/record.md | v2.0 | 🟡设计中 | P0 |
 | 明细页月份切换与年月选择器 | detail-month-switch.md | v1.0 | ✅已完成 | P0 |
 | 继续记下一笔 | record/record-continue.md | v1.0 | ❌已废弃 | P0 |
 | 账户选择器 | record/account-selector.md | v1.0 | ❌已废弃（已合并） | P0 |

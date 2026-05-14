@@ -27,9 +27,18 @@
       <TransactionForm
         :date="selectedDate"
         :transactionType="transactionType"
+        :categoryName="selectedCategory?.name"
+        :isTransfer="isTransfer"
+        :isRepayment="isRepayment"
+        :fromAccount="fromAccount"
+        :toAccount="toAccount"
+        :selectedAccount="selectedAccount"
         @update:date="selectedDate = $event"
         @update:amount="displayAmount = $event"
         @update:remark="remark = $event"
+        @update:fromAccount="fromAccount = $event"
+        @update:toAccount="toAccount = $event"
+        @update:selectedAccount="selectedAccount = $event"
         @complete="handleComplete"
         @toggleDatePicker="showDatePicker = true"
       />
@@ -41,12 +50,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import CategorySelector from './components/CategorySelector.vue'
 import TransactionForm from './components/TransactionForm.vue'
 import DatePicker from './components/DatePicker.vue'
 import { recordApi } from '../../api/record'
+import type { Account } from '../../types/account'
+import type { RecordType } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const transactionType = ref<'income' | 'expense'>('expense')
@@ -58,6 +69,19 @@ const showDatePicker = ref(false)
 const showTransactionForm = ref(false)
 const isSubmitting = ref(false)
 const categorySelectorRef = ref()
+
+const selectedAccount = ref<Account | null>(null)
+const fromAccount = ref<Account | null>(null)
+const toAccount = ref<Account | null>(null)
+
+const isTransfer = computed(() => selectedCategory.value?.name === '转账')
+const isRepayment = computed(() => selectedCategory.value?.name === '还债')
+
+const recordType = computed<RecordType>(() => {
+  if (isTransfer.value) return 'transfer'
+  if (isRepayment.value) return 'repayment'
+  return transactionType.value
+})
 
 onMounted(() => {
 })
@@ -75,16 +99,26 @@ const resetForm = () => {
   displayAmount.value = ''
   remark.value = ''
   selectedDate.value = new Date().toISOString().split('T')[0]
+  selectedAccount.value = null
+  fromAccount.value = null
+  toAccount.value = null
   categorySelectorRef.value?.reload?.()
 }
 
 const switchType = (type: 'income' | 'expense') => {
   transactionType.value = type
   selectedCategory.value = null
+  selectedAccount.value = null
+  fromAccount.value = null
+  toAccount.value = null
 }
 
 const selectCategory = (category: { id: number; name: string; icon: string }) => {
   selectedCategory.value = category
+  if (category.name === '转账' || category.name === '还债') {
+    fromAccount.value = null
+    toAccount.value = null
+  }
   showTransactionForm.value = true
 }
 
@@ -106,23 +140,56 @@ const handleComplete = async () => {
     return
   }
 
+  if (isTransfer.value || isRepayment.value) {
+    if (!fromAccount.value) {
+      uni.showToast({ title: isRepayment.value ? '请选择还款账户' : '请选择转出账户', icon: 'none' })
+      return
+    }
+    if (!toAccount.value) {
+      uni.showToast({ title: isRepayment.value ? '请选择债权账户' : '请选择转入账户', icon: 'none' })
+      return
+    }
+    if (fromAccount.value.id === toAccount.value.id) {
+      uni.showToast({ title: '转出和转入账户不能相同', icon: 'none' })
+      return
+    }
+  }
+
   if (isSubmitting.value) return
   isSubmitting.value = true
 
   try {
     const amount = parseFloat(displayAmount.value)
-    const finalAmount = transactionType.value === 'expense' ? -Math.abs(amount) : Math.abs(amount)
+    const finalAmount = transactionType.value === 'expense' || isTransfer.value || isRepayment.value ? -Math.abs(amount) : Math.abs(amount)
 
-    const res = await recordApi.createRecord({
+    const payload: {
+      typeId: number
+      type: RecordType
+      amount: number
+      accountId?: number
+      toAccountId?: number
+      remark: string
+      date: string
+    } = {
       typeId: selectedCategory.value.id,
-      type: transactionType.value,
+      type: recordType.value,
       amount: finalAmount,
       remark: remark.value,
       date: selectedDate.value
-    })
+    }
+
+    if (isTransfer.value || isRepayment.value) {
+      payload.accountId = parseInt(fromAccount.value!.id)
+      payload.toAccountId = parseInt(toAccount.value!.id)
+    } else if (selectedAccount.value) {
+      payload.accountId = parseInt(selectedAccount.value.id)
+    }
+
+    const res = await recordApi.createRecord(payload)
 
     if (res.success) {
-      uni.showToast({ title: '记账成功', icon: 'success' })
+      const successMsg = isTransfer.value ? '转账成功' : isRepayment.value ? '还款成功' : '记账成功'
+      uni.showToast({ title: successMsg, icon: 'success' })
       setTimeout(() => {
         uni.reLaunch({ url: '/pages/detail/index' })
       }, 1000)

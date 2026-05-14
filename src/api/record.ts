@@ -28,7 +28,9 @@ export interface RecordData {
   typeId: number
   date: string
   amount: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer' | 'repayment'
+  accountId?: number
+  toAccountId?: number
   remark?: string
   createdAt?: string
 }
@@ -51,18 +53,24 @@ export interface PageResult<T> {
   pageSize: number
 }
 
+export type RecordType = 'income' | 'expense' | 'transfer' | 'repayment'
+
+export interface CreateRecordData {
+  typeId: number
+  type: RecordType
+  amount: number
+  accountId?: number
+  toAccountId?: number
+  remark?: string
+  date: string
+}
+
 export const recordApi = {
   /**
    * 创建记账记录
    * @param data 记账数据
    */
-  createRecord: (data: {
-    typeId: number
-    type: 'income' | 'expense'
-    amount: number
-    remark?: string
-    date: string
-  }) => {
+  createRecord: (data: CreateRecordData) => {
     return request({
       url: '/record',
       method: 'POST',

@@ -5,6 +5,39 @@
       <text class="amount">{{ displayAmount || '0.00' }}</text>
     </view>
 
+    <view class="account-area" v-if="isTransfer || isRepayment">
+      <view class="account-row" @tap="openFromAccount">
+        <text class="account-label">{{ isRepayment ? '还款账户' : '转出账户' }}</text>
+        <view class="account-value" v-if="fromAccount">
+          <text class="account-value-icon">{{ fromAccount.icon }}</text>
+          <text class="account-value-name">{{ fromAccount.name }}</text>
+        </view>
+        <text class="account-value placeholder" v-else>点击选择</text>
+        <text class="account-arrow">▼</text>
+      </view>
+      <view class="account-row" @tap="openToAccount">
+        <text class="account-label">{{ isRepayment ? '债权账户' : '转入账户' }}</text>
+        <view class="account-value" v-if="toAccount">
+          <text class="account-value-icon">{{ toAccount.icon }}</text>
+          <text class="account-value-name">{{ toAccount.name }}</text>
+        </view>
+        <text class="account-value placeholder" v-else>点击选择</text>
+        <text class="account-arrow">▼</text>
+      </view>
+    </view>
+
+    <view class="account-area" v-else>
+      <view class="account-row single" @tap="openAccount">
+        <text class="account-label">{{ transactionType === 'income' ? '收入账户' : '支出账户' }}</text>
+        <view class="account-value" v-if="selectedAccount">
+          <text class="account-value-icon">{{ selectedAccount.icon }}</text>
+          <text class="account-value-name">{{ selectedAccount.name }}</text>
+        </view>
+        <text class="account-value placeholder" v-else>点击选择</text>
+        <text class="account-arrow">▼</text>
+      </view>
+    </view>
+
     <view class="remark-input" @tap="showRemarkInput = true">
       <text class="remark-label">备注：</text>
       <text class="remark-placeholder" v-if="!remark">点击填写备注</text>
@@ -37,38 +70,53 @@
         <view class="key-item" @tap="inputAmount('0')"><text>0</text></view>
         <view class="key-item function" @tap="deleteDigit"><text>⌫</text></view>
         <view class="key-item confirm" @tap="handleComplete">
-          <text>完成</text>
+          <text>{{ isTransfer ? '确认转账' : isRepayment ? '确认还款' : '完成' }}</text>
         </view>
       </view>
     </view>
 
-    <WdPopup position="center" v-model="showRemarkInput" :z-index="1001" :modal="true" :close-on-click-modal="true">
+    <WdPopup position="center" v-model="showRemarkInput" :z-index="1003" :modal="true" :close-on-click-modal="true">
       <view class="popup-content" @tap.stop>
         <view class="popup-header">
           <text class="popup-title">填写备注</text>
           <text class="popup-close" @tap="showRemarkInput = false">×</text>
         </view>
-        <WdTextarea v-model="remark" placeholder="请输入备注" :autosize />
+        <WdTextarea v-model="remark" placeholder="请输入备注" />
         <view class="popup-footer">
           <WdButton block type="primary" @tap="showRemarkInput = false">确定</WdButton>
         </view>
       </view>
     </WdPopup>
+
+    <AccountSelectorPopup ref="accountPopupRef" :title="'选择账户'" :filterType="transactionType" @select="handleAccountSelect" />
+    <AccountSelectorPopup ref="fromAccountPopupRef" :title="isRepayment ? '选择还款账户' : '选择转出账户'" :filterType="isRepayment ? 'repayment' : 'transfer'" :filterRole="'from'" @select="handleFromAccountSelect" />
+    <AccountSelectorPopup ref="toAccountPopupRef" :title="isRepayment ? '选择债权账户' : '选择转入账户'" :filterType="isRepayment ? 'repayment' : 'transfer'" :filterRole="'to'" :excludeAccountId="fromAccount?.id" @select="handleToAccountSelect" />
   </view>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import type { Account } from '../../../types/account'
+import AccountSelectorPopup from './AccountSelectorPopup.vue'
 
 const props = defineProps<{
   date: string
   transactionType: 'income' | 'expense'
+  categoryName?: string
+  isTransfer?: boolean
+  isRepayment?: boolean
+  fromAccount?: Account | null
+  toAccount?: Account | null
+  selectedAccount?: Account | null
 }>()
 
 const emit = defineEmits<{
   (e: 'update:date', date: string): void
   (e: 'update:amount', amount: string): void
   (e: 'update:remark', remark: string): void
+  (e: 'update:fromAccount', account: Account | null): void
+  (e: 'update:toAccount', account: Account | null): void
+  (e: 'update:selectedAccount', account: Account | null): void
   (e: 'complete'): void
   (e: 'toggleDatePicker'): void
 }>()
@@ -81,6 +129,34 @@ const hasSelectedDate = ref(false)
 const firstOperand = ref<string>('')
 const operator = ref<string>('')
 const waitingForSecondOperand = ref(false)
+
+const accountPopupRef = ref<InstanceType<typeof AccountSelectorPopup> | null>(null)
+const fromAccountPopupRef = ref<InstanceType<typeof AccountSelectorPopup> | null>(null)
+const toAccountPopupRef = ref<InstanceType<typeof AccountSelectorPopup> | null>(null)
+
+const openAccount = () => {
+  accountPopupRef.value?.open(props.selectedAccount?.id)
+}
+
+const openFromAccount = () => {
+  fromAccountPopupRef.value?.open(props.fromAccount?.id)
+}
+
+const openToAccount = () => {
+  toAccountPopupRef.value?.open(props.toAccount?.id)
+}
+
+const handleAccountSelect = (account: Account) => {
+  emit('update:selectedAccount', account)
+}
+
+const handleFromAccountSelect = (account: Account) => {
+  emit('update:fromAccount', account)
+}
+
+const handleToAccountSelect = (account: Account) => {
+  emit('update:toAccount', account)
+}
 
 const formattedDate = computed(() => {
   if (!hasSelectedDate.value) {
@@ -245,6 +321,61 @@ const toggleDatePicker = () => {
   backdrop-filter: blur(5rpx);
   border: 1rpx solid rgba(255, 255, 255, 0.6);
   transition: all 0.3s ease;
+}
+
+.account-area {
+  margin-bottom: 20rpx;
+}
+
+.account-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: rgba(245, 246, 250, 0.8);
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+}
+
+.account-row:active {
+  background: rgba(0, 191, 255, 0.08);
+  transform: scale(0.98);
+}
+
+.account-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 16rpx;
+  min-width: 120rpx;
+}
+
+.account-value {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.account-value-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
+}
+
+.account-value-name {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.account-value.placeholder {
+  font-size: 26rpx;
+  color: #ccc;
+}
+
+.account-arrow {
+  font-size: 20rpx;
+  color: #999;
+  margin-left: 12rpx;
 }
 
 .remark-input:active {

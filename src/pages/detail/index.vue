@@ -63,6 +63,8 @@
         :refresher-triggered="isRefreshing"
         refresher-threshold="60"
         @refresherrefresh="handleScrollToUpper"
+        @scrolltolower="handleReachBottom"
+        :lower-threshold="60"
       >
         <view :class="['bill-content', transitionDirection]" :key="currentYear + '-' + currentMonth">
           <view v-if="!loading && sortedDates.length === 0" class="empty-state">
@@ -108,7 +110,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive, watch } from 'vue'
-import { onShow, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app'
+import { onShow } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
 import { categoryApi, type CategoryGroup } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
@@ -117,7 +119,7 @@ import YearMonthPicker from '../../components/YearMonthPicker.vue'
 interface RecordItem {
   id: number
   typeId: number
-  type: 'income' | 'expense'
+  type: 'income' | 'expense' | 'transfer' | 'repayment'
   amount: number
   remark?: string
   date: string
@@ -374,13 +376,6 @@ const switchToNextMonth = async () => {
   }
 }
 
-const handlePullDownRefresh = async () => {
-  // 小程序端的下拉刷新
-  await switchToNextMonth()
-  uni.stopPullDownRefresh()
-  isRefreshing.value = false
-}
-
 const switchToPrevMonth = async () => {
   let year = parseInt(currentYear.value)
   let month = parseInt(currentMonth.value)
@@ -433,23 +428,15 @@ onShow(() => {
   loadMonthSummary()
   loadFirstPageDates()
 })
-
-onPullDownRefresh(() => {
-  handlePullDownRefresh()
-})
-
-onReachBottom(() => {
-  handleReachBottom()
-})
 </script>
 
 <style>
 .page {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: #f5f5f5;
-  padding-bottom: 80px;
+  overflow: hidden;
 }
 
 .header {
@@ -597,6 +584,7 @@ onReachBottom(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  padding-bottom: 80px;
 }
 
 .bill-scroll {
