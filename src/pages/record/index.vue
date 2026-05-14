@@ -33,6 +33,7 @@
         :fromAccount="fromAccount"
         :toAccount="toAccount"
         :selectedAccount="selectedAccount"
+        :submitting="submitStatus !== 'idle'"
         @update:date="selectedDate = $event"
         @update:amount="displayAmount = $event"
         @update:remark="remark = $event"
@@ -46,6 +47,14 @@
 
     <DatePicker :visible="showDatePicker" :date="selectedDate" @update:date="selectedDate = $event" @close="showDatePicker = false" />
     <CustomTabbar />
+
+    <view v-if="submitStatus !== 'idle'" class="loading-overlay" @tap.stop>
+      <view class="loading-box">
+        <view v-if="submitStatus === 'submitting'" class="loading-spinner"></view>
+        <view v-else class="loading-check">✓</view>
+        <text class="loading-text">{{ submitStatus === 'submitting' ? '记账中...' : submitStatus === 'success' ? '记账成功' : '记账失败' }}</text>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -68,6 +77,7 @@ const selectedDate = ref(new Date().toISOString().split('T')[0])
 const showDatePicker = ref(false)
 const showTransactionForm = ref(false)
 const isSubmitting = ref(false)
+const submitStatus = ref<'idle' | 'submitting' | 'success' | 'error'>('idle')
 const categorySelectorRef = ref()
 
 const selectedAccount = ref<Account | null>(null)
@@ -157,6 +167,7 @@ const handleComplete = async () => {
 
   if (isSubmitting.value) return
   isSubmitting.value = true
+  submitStatus.value = 'submitting'
 
   try {
     const amount = parseFloat(displayAmount.value)
@@ -188,19 +199,28 @@ const handleComplete = async () => {
     const res = await recordApi.createRecord(payload)
 
     if (res.success) {
-      const successMsg = isTransfer.value ? '转账成功' : isRepayment.value ? '还款成功' : '记账成功'
-      uni.showToast({ title: successMsg, icon: 'success' })
+      submitStatus.value = 'success'
       setTimeout(() => {
+        submitStatus.value = 'idle'
+        isSubmitting.value = false
         uni.reLaunch({ url: '/pages/detail/index' })
-      }, 1000)
+      }, 800)
     } else {
+      submitStatus.value = 'error'
+      setTimeout(() => {
+        submitStatus.value = 'idle'
+        isSubmitting.value = false
+      }, 1200)
       uni.showToast({ title: res.message || '记账失败', icon: 'none' })
     }
   } catch (error) {
+    submitStatus.value = 'error'
+    setTimeout(() => {
+      submitStatus.value = 'idle'
+      isSubmitting.value = false
+    }, 1200)
     uni.showToast({ title: '网络错误', icon: 'none' })
     console.error('记账失败:', error)
-  } finally {
-    isSubmitting.value = false
   }
 }
 </script>
@@ -306,5 +326,97 @@ const handleComplete = async () => {
 .cancel-btn:active {
   transform: scale(0.95);
   background: rgba(255, 255, 255, 0.6);
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.loading-box {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20rpx);
+  border-radius: 20rpx;
+  padding: 48rpx 64rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08), 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  animation: popIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.loading-spinner {
+  width: 56rpx;
+  height: 56rpx;
+  border: 4rpx solid rgba(0, 191, 255, 0.15);
+  border-top-color: #00BFFF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-check {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 4rpx 16rpx rgba(0, 191, 255, 0.35);
+  animation: checkPop 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes checkPop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  color: #2d3436;
+  font-size: 28rpx;
+  font-weight: 500;
 }
 </style>

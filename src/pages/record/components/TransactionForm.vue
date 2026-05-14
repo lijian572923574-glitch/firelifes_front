@@ -38,10 +38,14 @@
       </view>
     </view>
 
-    <view class="remark-input" @tap="showRemarkInput = true">
-      <text class="remark-label">备注：</text>
-      <text class="remark-placeholder" v-if="!remark">点击填写备注</text>
-      <text class="remark-text" v-else>{{ remark }}</text>
+    <view class="remark-area">
+      <WdTextarea
+        v-model="remark"
+        placeholder="点击填写备注"
+        :maxlength="200"
+        autoHeight
+        customStyle="background: rgba(245, 246, 250, 0.8); border-radius: 20rpx; padding: 20rpx 24rpx; font-size: 28rpx;"
+      />
     </view>
 
     <view class="keyboard">
@@ -69,24 +73,11 @@
         <view class="key-item" @tap="inputAmount('.')"><text>.</text></view>
         <view class="key-item" @tap="inputAmount('0')"><text>0</text></view>
         <view class="key-item function" @tap="deleteDigit"><text>⌫</text></view>
-        <view class="key-item confirm" @tap="handleComplete">
-          <text>{{ isTransfer ? '确认转账' : isRepayment ? '确认还款' : '完成' }}</text>
+        <view class="key-item confirm" :class="{ disabled: submitting }" @tap="!submitting && handleComplete()">
+          <text>{{ submitting ? '提交中...' : (isTransfer ? '确认转账' : isRepayment ? '确认还款' : '完成') }}</text>
         </view>
       </view>
     </view>
-
-    <WdPopup position="center" v-model="showRemarkInput" :z-index="1003" :modal="true" :close-on-click-modal="true">
-      <view class="popup-content" @tap.stop>
-        <view class="popup-header">
-          <text class="popup-title">填写备注</text>
-          <text class="popup-close" @tap="showRemarkInput = false">×</text>
-        </view>
-        <WdTextarea v-model="remark" placeholder="请输入备注" />
-        <view class="popup-footer">
-          <WdButton block type="primary" @tap="showRemarkInput = false">确定</WdButton>
-        </view>
-      </view>
-    </WdPopup>
 
     <AccountSelectorPopup ref="accountPopupRef" :title="'选择账户'" :filterType="transactionType" @select="handleAccountSelect" />
     <AccountSelectorPopup ref="fromAccountPopupRef" :title="isRepayment ? '选择还款账户' : '选择转出账户'" :filterType="isRepayment ? 'repayment' : 'transfer'" :filterRole="'from'" @select="handleFromAccountSelect" />
@@ -108,6 +99,7 @@ const props = defineProps<{
   fromAccount?: Account | null
   toAccount?: Account | null
   selectedAccount?: Account | null
+  submitting?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -123,7 +115,6 @@ const emit = defineEmits<{
 
 const displayAmount = ref('')
 const remark = ref('')
-const showRemarkInput = ref(false)
 const currentDate = ref(new Date())
 const hasSelectedDate = ref(false)
 const firstOperand = ref<string>('')
@@ -311,16 +302,8 @@ const toggleDatePicker = () => {
   transition: all 0.2s ease;
 }
 
-.remark-input {
-  padding: 20rpx 24rpx;
-  background: rgba(245, 246, 250, 0.8);
-  border-radius: 20rpx;
+.remark-area {
   margin-bottom: 28rpx;
-  display: flex;
-  align-items: center;
-  backdrop-filter: blur(5rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.6);
-  transition: all 0.3s ease;
 }
 
 .account-area {
@@ -376,31 +359,6 @@ const toggleDatePicker = () => {
   font-size: 20rpx;
   color: #999;
   margin-left: 12rpx;
-}
-
-.remark-input:active {
-  transform: scale(0.98);
-  background: rgba(245, 246, 250, 1);
-}
-
-.remark-label {
-  font-size: 28rpx;
-  color: #7b8794;
-  margin-right: 12rpx;
-  font-weight: 500;
-}
-
-.remark-placeholder {
-  font-size: 28rpx;
-  color: #b2bec3;
-  font-weight: 400;
-}
-
-.remark-text {
-  font-size: 28rpx;
-  color: #2d3436;
-  flex: 1;
-  font-weight: 500;
 }
 
 .keyboard {
@@ -474,61 +432,14 @@ const toggleDatePicker = () => {
   box-shadow: 0 4rpx 12rpx rgba(0, 191, 255, 0.3);
 }
 
+.key-item.confirm.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .date-text {
   font-size: 22rpx;
   color: #5c6b7a;
   font-weight: 500;
-}
-
-.popup-content {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 24rpx;
-  width: 80%;
-  max-width: 560rpx;
-  padding: 32rpx;
-  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(20rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.5);
-  animation: popIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes popIn {
-  from {
-    transform: scale(0.9) translateY(20rpx);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1) translateY(0);
-    opacity: 1;
-  }
-}
-
-.popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-}
-
-.popup-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #2d3436;
-}
-
-.popup-close {
-  font-size: 44rpx;
-  color: #9ca3af;
-  line-height: 1;
-  transition: all 0.2s ease;
-}
-
-.popup-close:active {
-  color: #6b7280;
-  transform: scale(0.9);
-}
-
-.popup-footer {
-  margin-top: 24rpx;
 }
 </style>
