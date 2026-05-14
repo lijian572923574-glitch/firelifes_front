@@ -3,11 +3,12 @@
 &gt; 文件：`account-list.md` | 中文名称：账户管理列表页 | 所属模块：系统配置（我的页面子模块）
 &gt; 页面路径：`pages/my/account-setting/account-list.vue`
 
-&gt; 版本：v2.0 | 状态：🟡设计中 | 最后更新：2026-05-12
+&gt; 版本：v2.1 | 状态：✅已完成 | 最后更新：2026-05-14
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v2.1 | 2026-05-14 | 完成开发：WdSwipeAction左滑交互、默认账户保护、分组展示 | AI |
 | v2.0 | 2026-05-12 | 统一使用WotUI组件库，左滑交互模式 | AI |
 | v1.3 | 2026-05-09 | 固定账户类型为5种：现金类、投资类、固定资产类、折旧资产类、负债类 | AI |
 | v1.2 | 2026-05-09 | 添加默认账户：现金、折旧资产、固定资产 | AI |
@@ -67,7 +68,7 @@
 **注意**：默认账户不可删除，但可以编辑名称、余额和说明。
 
 ### 账户卡片展示
-每个账户卡片使用 `WdSwipeCell` 组件：
+每个账户卡片使用 `WdSwipeAction` 组件：
 - **图标**：左侧显示账户图标（emoji）
 - **名称**：账户名称（加粗）
 - **说明**：账户说明（可选，灰色小字）
@@ -132,11 +133,11 @@
 | 组件 | 用途 | 关键属性 |
 |------|------|---------|
 | WdNavbar | 顶部导航栏 | `title="我的账户"`, `leftArrow`, `fixed`, `placeholder`, `bordered`, `safeAreaInsetTop`, `rightText="+", @click-right` |
-| WdSwipeCell | 左滑单元格 | `:right-width="140"`, `#default`, `#right` |
+| WdSwipeAction | 左滑单元格 | `:right-width="140"`, `#default`, `#right` |
 | WdButton | 操作按钮 | `size="small"`, `type="primary"` (编辑), `type="danger"` (删除) |
 | WdDialog | 删除确认弹窗 | `v-model`, `title`, `show-cancel-button`, `show-confirm-button` |
 
-&gt; **注意**：页面容器需设置 `overflow-x: hidden` 禁止横向滚动，避免与 WdSwipeCell 冲突。
+&gt; **注意**：页面容器需设置 `overflow-x: hidden` 禁止横向滚动，避免与 WdSwipeAction 冲突。
 
 ---
 
@@ -170,7 +171,7 @@
 
 ### 动效
 - 列表加载：fadeIn，时长 300ms，stagger 50ms
-- WdSwipeCell 滑动：组件自带过渡动画
+- WdSwipeAction 滑动：组件自带过渡动画
 - WdButton 点击：组件自带反馈效果
 
 ---
@@ -282,9 +283,9 @@ const DEFAULT_ACCOUNTS: Omit&lt;Account, 'id' | 'userId' | 'createdAt' | 'update
 
 ## 实现要点
 
-### WdSwipeCell 使用示例
+### WdSwipeAction 使用示例
 ```vue
-&lt;wd-swipe-cell :right-width="account.isDefault ? 70 : 140"&gt;
+&lt;wd-swipe-action :right-width="account.isDefault ? 70 : 140"&gt;
   &lt;template #default&gt;
     &lt;view class="account-card" @click="goToEdit(account.id)"&gt;
       &lt;view class="card-left"&gt;

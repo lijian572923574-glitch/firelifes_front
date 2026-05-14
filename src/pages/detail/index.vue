@@ -133,7 +133,6 @@ interface DatePageData {
 
 const categories = ref<CategoryGroup[]>([])
 const userIconsMap = ref<Map<number, string>>(new Map())
-const hasNextMonthData = ref<boolean>(true)
 const transitionDirection = ref<'next' | 'prev'>('next')
 
 // 使用当前日期初始化，避免硬编码导致的问题
@@ -161,7 +160,6 @@ const monthExpense = ref(0)
 const pageData = reactive<Map<string, DatePageData>>(new Map())
 const loading = ref(false)
 const isRefreshing = ref(false)
-const isLoadingMore = ref(false)
 const hasMoreData = ref(true)
 let loadPrevMonthLock = false
 
@@ -235,7 +233,10 @@ const formatAmount = (amount: number) => {
   return Math.abs(amount).toFixed(2)
 }
 
-const loadCategories = async () => {
+const categoriesLoaded = ref(false)
+
+const loadCategoriesOnce = async () => {
+  if (categoriesLoaded.value) return
   try {
     const [expenseRes, incomeRes, iconsRes] = await Promise.all([
       categoryApi.getUserCategories('expense'),
@@ -254,6 +255,7 @@ const loadCategories = async () => {
       })
       userIconsMap.value = iconMap
     }
+    categoriesLoaded.value = true
   } catch (error) {
     console.error('加载分类失败:', error)
   }
@@ -311,7 +313,7 @@ const loadFirstPageDates = async () => {
 const loadMonthData = async () => {
   loading.value = true
   try {
-    await Promise.all([loadCategories(), loadMonthSummary(), loadFirstPageDates()])
+    await Promise.all([loadCategoriesOnce(), loadMonthSummary(), loadFirstPageDates()])
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
@@ -428,7 +430,8 @@ onMounted(() => {
 })
 
 onShow(() => {
-  loadMonthData()
+  loadMonthSummary()
+  loadFirstPageDates()
 })
 
 onPullDownRefresh(() => {

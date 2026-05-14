@@ -3,11 +3,12 @@
 &gt; 文件：`category-group-list.md` | 中文名称：分类大类列表页 | 所属模块：系统配置（我的页面子模块）
 &gt; 页面路径：`pages/my/category-group-list.vue`
 
-&gt; 版本：v2.0 | 状态：🟡设计中 | 最后更新：2026-05-12
+&gt; 版本：v2.1 | 状态：✅已完成 | 最后更新：2026-05-14
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v2.1 | 2026-05-14 | 完成开发：WdSwipeAction左滑交互、默认标识、禁用/启用切换 | AI |
 | v2.0 | 2026-05-12 | 统一使用WotUI组件库，左滑交互模式，移除图标字段 | AI |
 | v1.1 | 2026-05-12 | 添加子分类管理入口，完善分层导航设计 | AI |
 | v1.0 | 2026-05-10 | 初始版本：分类大类列表页独立需求 | AI |
@@ -51,7 +52,7 @@
 ```
 
 ### 分类大类卡片展示
-每个分类大类卡片使用 `WdSwipeCell` 组件：
+每个分类大类卡片使用 `WdSwipeAction` 组件：
 - **名称**：分类大类名称（加粗）
 - **右箭头**：提示可点击进入子分类列表（使用 `WdIcon`）
 - **左滑操作区**：编辑按钮（主色）、删除按钮（危险色）
@@ -100,13 +101,13 @@
 | 组件 | 用途 | 关键属性 |
 |------|------|---------|
 | WdNavbar | 顶部导航栏 | `title="分类管理"`, `leftArrow`, `fixed`, `placeholder`, `bordered`, `safeAreaInsetTop`, `rightText="+", @click-right` |
-| WdSwipeCell | 左滑单元格 | `:right-width="140"`, `#default`, `#right` |
+| WdSwipeAction | 左滑单元格 | `:right-width="140"`, `#default`, `#right` |
 | WdButton | 操作按钮 | `size="small"`, `type="primary"` (编辑), `type="danger"` (删除) |
 | WdIcon | 箭头图标 | `name="arrow-right"`, `color="#CCCCCC"` |
 | WdDialog | 编辑弹窗 | `v-model`, `title`, `show-cancel-button`, `show-confirm-button` |
 | WdInput | 弹窗输入框 | `v-model`, `placeholder`, `maxlength` |
 
-&gt; **注意**：页面容器需设置 `overflow-x: hidden` 禁止横向滚动，避免与 WdSwipeCell 冲突。
+&gt; **注意**：页面容器需设置 `overflow-x: hidden` 禁止横向滚动，避免与 WdSwipeAction 冲突。
 
 ---
 
@@ -117,7 +118,7 @@
 - 导航栏：WdNavbar 组件，`fixed` + `placeholder` 固定顶部
 - 分类卡片：高度 88rpx，圆角 16rpx
 - 卡片间距：16rpx
-- WdSwipeCell 右滑区域宽度：140rpx（编辑70rpx + 删除70rpx）
+- WdSwipeAction 右滑区域宽度：140rpx（编辑70rpx + 删除70rpx）
 
 ### 颜色（卡布里蓝体系）
 - 页面背景：#F5F5F5
@@ -135,7 +136,7 @@
 
 ### 动效
 - 列表加载：fadeIn，时长 300ms，stagger 50ms
-- WdSwipeCell 滑动：组件自带过渡动画
+- WdSwipeAction 滑动：组件自带过渡动画
 - WdButton 点击：组件自带反馈效果
 
 ---
@@ -271,15 +272,15 @@ interface Category {
 
 5. **禁止横向滚动**
    - 页面根容器设置 `overflow-x: hidden`
-   - 避免与 WdSwipeCell 的横向滑动冲突
+   - 避免与 WdSwipeAction 的横向滑动冲突
 
 ---
 
 ## 实现要点
 
-### WdSwipeCell 使用示例
+### WdSwipeAction 使用示例
 ```vue
-&lt;wd-swipe-cell :right-width="140"&gt;
+&lt;wd-swipe-action :right-width="140"&gt;
   &lt;template #default&gt;
     &lt;view class="group-card" @click="goToCategoryList(group.id)"&gt;
       &lt;text class="group-name"&gt;{{ group.name }}&lt;/text&gt;
@@ -290,7 +291,7 @@ interface Category {
     &lt;wd-button size="small" type="primary" @click.stop="handleEdit(group)"&gt;编辑&lt;/wd-button&gt;
     &lt;wd-button size="small" type="danger" @click.stop="handleDelete(group)"&gt;删除&lt;/wd-button&gt;
   &lt;/template&gt;
-&lt;/wd-swipe-cell&gt;
+&lt;/wd-swipe-action&gt;
 ```
 
 ### 禁止横向滚动

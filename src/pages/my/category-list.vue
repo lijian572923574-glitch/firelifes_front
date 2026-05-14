@@ -335,8 +335,8 @@ function closeEditPopup() {
 
 onMounted(() => {
   const pages = getCurrentPages()
-  const currentPage = pages[pages.length - 1]
-  const options = currentPage.options as Record<string, string>
+  const currentPage = pages[pages.length - 1] as any
+  const options = (currentPage.$page?.options || currentPage.options || {}) as Record<string, string>
 
   if (options.groupId) {
     groupId.value = parseInt(options.groupId)
