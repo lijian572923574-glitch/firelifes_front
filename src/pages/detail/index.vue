@@ -56,7 +56,14 @@
     </view>
 
     <view class="bill-wrapper">
-      <scroll-view scroll-y class="bill-scroll" @scrolltoupper="handlePullDownRefresh">
+      <scroll-view
+        scroll-y
+        class="bill-scroll"
+        refresher-enabled
+        :refresher-triggered="isRefreshing"
+        refresher-threshold="60"
+        @refresherrefresh="handleScrollToUpper"
+      >
         <view :class="['bill-content', transitionDirection]" :key="currentYear + '-' + currentMonth">
           <view v-if="!loading && sortedDates.length === 0" class="empty-state">
             <text class="empty-text">暂无记账记录</text>
@@ -108,7 +115,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
-import { onShow, onReachBottom } from '@dcloudio/uni-app'
+import { onShow, onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
 import { categoryApi, type CategoryGroup } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
@@ -143,6 +150,21 @@ const showPicker = ref(false)
 const yearList = ref<number[]>([])
 
 const pickerColumns = computed(() => {
+  const currentYearNum = today.getFullYear()
+  const currentMonthNum = today.getMonth() + 1
+  const selectedYear = parseInt(currentYear.value)
+  
+  // 如果是当前年份，月份只到当前月
+  let monthValues: number[]
+  if (selectedYear === currentYearNum) {
+    monthValues = Array.from({ length: currentMonthNum }, (_, i) => i + 1)
+  } else if (selectedYear > currentYearNum) {
+    // 未来年份不显示月份
+    monthValues = [1]
+  } else {
+    monthValues = Array.from({ length: 12 }, (_, i) => i + 1)
+  }
+  
   return [
     {
       values: yearList.value,
@@ -150,8 +172,8 @@ const pickerColumns = computed(() => {
       format: (label: number) => `${label}年`
     },
     {
-      values: Array.from({ length: 12 }, (_, i) => i + 1),
-      defaultIndex: parseInt(currentMonth.value) - 1,
+      values: monthValues,
+      defaultIndex: Math.min(parseInt(currentMonth.value) - 1, monthValues.length - 1),
       format: (label: number) => `${label.toString().padStart(2, '0')}月`
     }
   ]
@@ -167,17 +189,17 @@ const loading = ref(false)
 const isRefreshing = ref(false)
 const isLoadingMore = ref(false)
 const hasMoreData = ref(true)
+let loadPrevMonthLock = false
 
 const loadMoreText = computed(() => {
-  if (isLoadingMore.value) return '加载中...'
-  if (!hasMoreData.value) return '没有更多数据了'
-  return '上拉加载更多'
+  return '上拉查看上一个月'
 })
 
 const initYearList = () => {
   const current = new Date().getFullYear()
   const years: number[] = []
-  for (let i = current - 10; i <= current + 10; i++) {
+  // 只到当前年份，不包含未来年份
+  for (let i = current - 10; i <= current; i++) {
     years.push(i)
   }
   yearList.value = years
@@ -197,8 +219,22 @@ const hideDatePicker = () => {
 
 const onPickerChange = (e: any) => {
   const [yearIndex, monthIndex] = e.modelValue
-  currentYear.value = yearList.value[yearIndex].toString()
-  currentMonth.value = (monthIndex + 1).toString().padStart(2, '0')
+  const selectedYear = yearList.value[yearIndex]
+  const currentYearNum = today.getFullYear()
+  const currentMonthNum = today.getMonth() + 1
+  
+  // 限制不能选择未来的年份和月份
+  if (selectedYear > currentYearNum) {
+    return
+  }
+  
+  let selectedMonth = monthIndex + 1
+  if (selectedYear === currentYearNum && selectedMonth > currentMonthNum) {
+    selectedMonth = currentMonthNum
+  }
+  
+  currentYear.value = selectedYear.toString()
+  currentMonth.value = selectedMonth.toString().padStart(2, '0')
 }
 
 const confirmDate = () => {
@@ -311,12 +347,12 @@ const loadMonthSummary = async () => {
 }
 
 const loadFirstPageDates = async () => {
-  const pageSize = 50
+  const pageSize = 500
   const yearMonth = `${currentYear.value}-${currentMonth.value}`
   try {
     const res = await recordApi.getRecordsByMonth(yearMonth, 1, pageSize)
     if (res.success && res.data) {
-      const { list, total } = res.data
+      const { list } = res.data
       const dateGroups = new Map<string, RecordItem[]>()
       list.forEach((record) => {
         const dateStr = record.date
@@ -330,12 +366,13 @@ const loadFirstPageDates = async () => {
       dateGroups.forEach((records, date) => {
         pageData.set(date, {
           list: records,
-          total: total,
+          total: list.length,
           page: 1,
           pageSize: pageSize
         })
       })
-      hasMoreData.value = list.length < total
+      // 不再需要分页加载，每次只加载一个月的数据
+      hasMoreData.value = false
     }
   } catch (error) {
     console.error('加载日期列表失败:', error)
@@ -355,14 +392,35 @@ const loadMonthData = async () => {
   }
 }
 
-const handlePullDownRefresh = async () => {
+const handleScrollToUpper = async () => {
+  isRefreshing.value = true
+  try {
+    await switchToNextMonth()
+  } finally {
+    isRefreshing.value = false
+  }
+}
+
+const switchToNextMonth = async () => {
   let year = parseInt(currentYear.value)
   let month = parseInt(currentMonth.value)
+  const currentYearNum = today.getFullYear()
+  const currentMonthNum = today.getMonth() + 1
 
+  // 计算下一个月
   month++
   if (month > 12) {
     month = 1
     year++
+  }
+
+  // 检查是否是未来月份
+  if (year > currentYearNum || (year === currentYearNum && month > currentMonthNum)) {
+    uni.showToast({
+      title: '已经是最新月份了',
+      icon: 'none'
+    })
+    return
   }
 
   const nextYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
@@ -381,91 +439,61 @@ const handlePullDownRefresh = async () => {
         title: '已经是最新月份了',
         icon: 'none'
       })
-      await loadMonthData()
     }
   } catch (error) {
     console.error('[detail] 检查下一个月数据失败', error)
-    await loadMonthData()
-  } finally {
-    isRefreshing.value = false
+  }
+}
+
+const handlePullDownRefresh = async () => {
+  // 小程序端的下拉刷新
+  await switchToNextMonth()
+  uni.stopPullDownRefresh()
+  isRefreshing.value = false
+}
+
+const switchToPrevMonth = async () => {
+  let year = parseInt(currentYear.value)
+  let month = parseInt(currentMonth.value)
+
+  // 计算上一个月
+  month--
+  if (month < 1) {
+    month = 12
+    year--
+  }
+
+  const prevYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
+
+  try {
+    const checkRes = await recordApi.getRecordsByMonth(prevYearMonth, 1, 1)
+
+    if (checkRes.success && checkRes.data && checkRes.data.list.length > 0) {
+      transitionDirection.value = 'prev'
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      currentYear.value = year.toString()
+      currentMonth.value = month.toString().padStart(2, '0')
+      await loadMonthData()
+    } else {
+      uni.showToast({
+        title: '已经到底了，没有更多数据了',
+        icon: 'none'
+      })
+    }
+  } catch (error) {
+    console.error('[detail] 检查上一个月数据失败', error)
   }
 }
 
 const handleReachBottom = async () => {
-  if (isLoadingMore.value) return
-
-  if (!hasMoreData.value) {
-    let year = parseInt(currentYear.value)
-    let month = parseInt(currentMonth.value)
-
-    month--
-    if (month < 1) {
-      month = 12
-      year--
-    }
-
-    const prevYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
-
-    try {
-      const checkRes = await recordApi.getRecordsByMonth(prevYearMonth, 1, 1)
-
-      if (checkRes.success && checkRes.data && checkRes.data.list.length > 0) {
-        transitionDirection.value = 'prev'
-        await new Promise((resolve) => setTimeout(resolve, 50))
-        currentYear.value = year.toString()
-        currentMonth.value = month.toString().padStart(2, '0')
-        await loadMonthData()
-      } else {
-        uni.showToast({
-          title: '已经到底了，没有更多数据了',
-          icon: 'none'
-        })
-      }
-    } catch (error) {
-      console.error('[detail] 检查上一个月数据失败', error)
-    }
-    return
-  }
-
-  isLoadingMore.value = true
-  const yearMonth = `${currentYear.value}-${currentMonth.value}`
-  const pageSize = 50
-  const currentPage = pageData.size > 0 ? Array.from(pageData.values())[0].page : 0
-
-  try {
-    const nextPage = currentPage + 1
-    const res = await recordApi.getRecordsByMonth(yearMonth, nextPage, pageSize)
-    if (res.success && res.data) {
-      const { list, total } = res.data
-      const dateGroups = new Map<string, RecordItem[]>()
-      list.forEach((record) => {
-        const dateStr = record.date
-        if (!dateGroups.has(dateStr)) {
-          dateGroups.set(dateStr, [])
-        }
-        dateGroups.get(dateStr)!.push(record)
-      })
-
-      dateGroups.forEach((records, date) => {
-        if (pageData.has(date)) {
-          const existing = pageData.get(date)!
-          existing.list = [...existing.list, ...records]
-        } else {
-          pageData.set(date, {
-            list: records,
-            total: total,
-            page: nextPage,
-            pageSize: pageSize
-          })
-        }
-      })
-      hasMoreData.value = pageData.size < total
-    }
-  } catch (error) {
-    console.error('加载更多失败:', error)
-  } finally {
-    isLoadingMore.value = false
-  }
+  if (loadPrevMonthLock) return
+  
+  loadPrevMonthLock = true
+  await switchToPrevMonth()
+  
+  setTimeout(() => {
+    loadPrevMonthLock = false
+  }, 1000)
 }
 
 onMounted(() => {
@@ -474,6 +502,10 @@ onMounted(() => {
 
 onShow(() => {
   loadMonthData()
+})
+
+onPullDownRefresh(() => {
+  handlePullDownRefresh()
 })
 
 onReachBottom(() => {
@@ -526,7 +558,7 @@ onReachBottom(() => {
   font-size: 28rpx;
   color: #333;
   display: inline-block;
-  transition: all 0.3s ease-out;
+  animation: fadeSlideDown 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .month-text {
@@ -534,7 +566,18 @@ onReachBottom(() => {
   font-weight: bold;
   color: #333;
   display: inline-block;
-  transition: all 0.3s ease-out;
+  animation: fadeSlideDown 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes fadeSlideDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .header-amounts {
@@ -561,7 +604,7 @@ onReachBottom(() => {
   font-size: 32rpx;
   font-weight: bold;
   display: inline-block;
-  transition: all 0.3s ease-out;
+  animation: fadeSlideDown 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .amount-value.income {
@@ -663,36 +706,36 @@ onReachBottom(() => {
 
 .bill-content {
   width: 100%;
-  animation: slideIn 0.3s ease-out;
+  animation: monthSlideIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 .bill-content.next {
-  animation-name: slideInFromBottom;
+  animation-name: slideUpFromBottom;
 }
 
 .bill-content.prev {
-  animation-name: slideInFromTop;
+  animation-name: slideDownFromTop;
 }
 
-@keyframes slideInFromBottom {
+@keyframes slideUpFromBottom {
   0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(80rpx) scale(0.96);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-@keyframes slideInFromTop {
+@keyframes slideDownFromTop {
   0% {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-80rpx) scale(0.96);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
