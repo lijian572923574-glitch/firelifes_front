@@ -99,7 +99,9 @@ const getFilteredAccounts = (
 ): Account[] => {
   switch (transactionType) {
     case 'expense':
-      return allAccounts.filter(a => !a.isDeleted && a.isVisible)
+      return allAccounts.filter(a =>
+        !a.isDeleted && a.isVisible && (a.type === 'cash' || a.type === 'liability')
+      )
 
     case 'income':
       return allAccounts.filter(a =>

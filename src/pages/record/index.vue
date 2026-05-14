@@ -65,6 +65,7 @@ import CategorySelector from './components/CategorySelector.vue'
 import TransactionForm from './components/TransactionForm.vue'
 import DatePicker from './components/DatePicker.vue'
 import { recordApi } from '../../api/record'
+import { getAccountList } from '../../api/account'
 import type { Account } from '../../types/account'
 import type { RecordType } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
@@ -123,12 +124,40 @@ const switchType = (type: 'income' | 'expense') => {
   toAccount.value = null
 }
 
-const selectCategory = (category: { id: number; name: string; icon: string }) => {
+const selectCategory = async (category: { id: number; name: string; icon: string }) => {
   selectedCategory.value = category
+
   if (category.name === '转账' || category.name === '还债') {
     fromAccount.value = null
     toAccount.value = null
   }
+
+  try {
+    const res = await getAccountList()
+    if (res.success && res.data && res.data.length > 0) {
+      const accounts = res.data.filter(a => !a.isDeleted && a.isVisible)
+
+      if (category.name === '转账') {
+        const nonLiability = accounts.filter(a => a.type !== 'liability')
+        fromAccount.value = nonLiability.find(a => a.isDefault) || nonLiability[0] || null
+        toAccount.value = accounts.find(a => a.id !== fromAccount.value?.id) || null
+      } else if (category.name === '还债') {
+        const nonLiability = accounts.filter(a => a.type !== 'liability')
+        const liabilities = accounts.filter(a => a.type === 'liability')
+        fromAccount.value = nonLiability.find(a => a.isDefault) || nonLiability[0] || null
+        toAccount.value = liabilities.find(a => a.isDefault) || liabilities[0] || null
+      } else if (transactionType.value === 'expense') {
+        const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
+        selectedAccount.value = expenseAccounts.find(a => a.isDefault) || expenseAccounts[0] || null
+      } else {
+        const incomeAccounts = accounts.filter(a => a.type !== 'liability')
+        selectedAccount.value = incomeAccounts.find(a => a.isDefault) || incomeAccounts[0] || null
+      }
+    }
+  } catch (error) {
+    console.error('加载账户列表失败:', error)
+  }
+
   showTransactionForm.value = true
 }
 
