@@ -36,19 +36,19 @@ const emit = defineEmits<{
 }>()
 
 const showPicker = ref(false)
-const currentDate = ref('')
+const currentDate = ref<number>(0)
 
-const getTodayDate = () => {
+const getTodayDate = (): number => {
   return new Date().getTime()
 }
 
-const timestampToDateString = (timestamp: number | string) => {
+const timestampToDateString = (timestamp: number | string): string => {
   if (!timestamp) return ''
   const date = new Date(Number(timestamp))
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
-const dateStringToTimestamp = (dateStr: string) => {
+const dateStringToTimestamp = (dateStr: string): number => {
   if (!dateStr) return new Date().getTime()
   return new Date(dateStr).getTime()
 }

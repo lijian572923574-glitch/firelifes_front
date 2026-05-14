@@ -87,8 +87,10 @@ export const recordApi = {
     id: number,
     data: {
       typeId?: number
-      type?: 'income' | 'expense'
+      type?: RecordType
       amount?: number
+      accountId?: number
+      toAccountId?: number
       remark?: string
       date?: string
     }

@@ -67,7 +67,7 @@ const updateTab = () => {
   const pages = getCurrentPages()
   if (pages.length > 0) {
     const currentPage = pages[pages.length - 1]
-    selectedTab.value = currentPage.route
+    selectedTab.value = currentPage.route || ''
   }
 }
 
