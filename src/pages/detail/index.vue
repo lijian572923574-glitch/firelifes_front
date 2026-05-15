@@ -5,51 +5,18 @@
 -->
 <template>
   <view class="page">
-    <view class="header">
-      <view class="header-top">
-        <text class="app-title">F.I.R.E生活家</text>
-      </view>
-      <view class="header-content">
-        <view class="date-selector" @tap="showDatePicker">
-          <text class="year-text" :key="currentYear">{{ currentYear }}年</text>
-          <text class="month-text" :key="currentMonth">{{ currentMonth }}月</text>
-        </view>
-        <view class="header-amounts">
-          <view class="amount-item">
-            <text class="amount-label">收入</text>
-            <text class="amount-value income" :key="monthIncome">{{ monthIncome.toFixed(2) }}</text>
-          </view>
-          <view class="amount-divider"></view>
-          <view class="amount-item">
-            <text class="amount-label">支出</text>
-            <text class="amount-value expense" :key="monthExpense">{{ monthExpense.toFixed(2) }}</text>
-          </view>
-        </view>
-      </view>
-    </view>
+    <DetailHeader
+      :currentYear="currentYear"
+      :currentMonth="currentMonth"
+      :monthIncome="monthIncome"
+      :monthExpense="monthExpense"
+      @open-date-picker="showDatePicker"
+    />
 
-    <view class="function-bar">
-      <view class="function-item">
-        <view class="function-icon"><text class="iconfont icon-zhangdan"></text></view>
-        <text class="function-text">账单</text>
-      </view>
-      <view class="function-item">
-        <view class="function-icon"><text class="iconfont icon-tongji"></text></view>
-        <text class="function-text">预算</text>
-      </view>
-      <view class="function-item">
-        <view class="function-icon"><text class="iconfont icon-zichan"></text></view>
-        <text class="function-text">资产管家</text>
-      </view>
-      <view class="function-item">
-        <view class="function-icon"><text class="iconfont icon-gouwuche"></text></view>
-        <text class="function-text">购物返现</text>
-      </view>
-      <view class="function-item">
-        <view class="function-icon"><text class="iconfont icon-qita"></text></view>
-        <text class="function-text">更多</text>
-      </view>
-    </view>
+    <FunctionBar
+      :items="functionItems"
+      @item-click="handleFunctionClick"
+    />
 
     <view v-if="loading && sortedDates.length === 0" class="loading-state">
       <text class="loading-text">加载中...</text>
@@ -73,27 +40,12 @@
           </view>
 
           <view v-for="date in sortedDates" :key="date" class="bill-section">
-            <WdCellGroup custom-style="border-radius: 16rpx; overflow: hidden;">
-              <view class="bill-date">
-                <text class="date-text">{{ formatDate(date) }}</text>
-                <view class="day-totals">
-                  <text class="day-income">收入: {{ getDayIncome(date) }}</text>
-                  <text class="day-expense">支出: {{ getDayExpense(date) }}</text>
-                </view>
-              </view>
-              <view v-for="record in getDateRecords(date)" :key="record.id" class="bill-item-wrapper">
-                <WdCell :title="getCategoryInfo(record.typeId).name" :value="`${record.type === 'expense' ? '-' : '+'}${formatAmount(record.amount)}`">
-                  <template #icon>
-                    <view class="item-icon"><text class="iconfont" :class="getCategoryInfo(record.typeId).icon"></text></view>
-                  </template>
-                  <template #value>
-                    <text :class="['item-amount', record.type]">
-                      {{ record.type === 'expense' ? '-' : '+' }}{{ formatAmount(record.amount) }}
-                    </text>
-                  </template>
-                </WdCell>
-              </view>
-            </WdCellGroup>
+            <BillCard
+              :formattedDate="formatDate(date)"
+              :dayIncome="getDayIncome(date)"
+              :dayExpense="getDayExpense(date)"
+              :records="getEnrichedRecords(date)"
+            />
           </view>
 
           <view v-if="sortedDates.length > 0" class="load-more">
@@ -115,6 +67,9 @@ import { recordApi } from '../../api/record'
 import { categoryApi, type CategoryGroup } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 import YearMonthPicker from '../../components/YearMonthPicker.vue'
+import DetailHeader from './components/DetailHeader.vue'
+import FunctionBar, { type FunctionItem } from './components/FunctionBar.vue'
+import BillCard, { type BillCardRecord } from './components/BillCard.vue'
 
 interface RecordItem {
   id: number
@@ -169,6 +124,17 @@ const loadMoreText = computed(() => {
   return '上拉查看上一个月'
 })
 
+const functionItems: FunctionItem[] = [
+  { key: 'bill', icon: 'icon-zhangdan', text: '账单' },
+  { key: 'budget', icon: 'icon-tongji', text: '预算' },
+  { key: 'asset', icon: 'icon-zichan', text: '资产管家' },
+  { key: 'cashback', icon: 'icon-gouwuche', text: '购物返现' },
+]
+
+const handleFunctionClick = (item: FunctionItem) => {
+  console.log('Function clicked:', item.key)
+}
+
 // 分类名→iconfont类名映射
 const CATEGORY_ICON_MAP: Record<string, string> = {
   // 支出
@@ -187,20 +153,18 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   '设置': 'icon-shezhi', '账单': 'icon-zhangdan',
 }
 
-const getCategoryInfo = (typeId: number): { name: string; icon: string } => {
+const CATEGORY_BG_COLOR = 'rgba(0, 191, 255, 0.08)'
+
+const getCategoryInfo = (typeId: number): { name: string; icon: string; color: string } => {
   for (const group of categories.value) {
     for (const cat of group.children) {
       if (cat.id === typeId) {
-        // 优先使用本地映射表
-        if (CATEGORY_ICON_MAP[cat.name]) {
-          return { name: cat.name, icon: CATEGORY_ICON_MAP[cat.name] }
-        }
-        const iconUrl = userIconsMap.value.get(cat.iconId) || cat.iconUrl || 'icon-qita'
-        return { name: cat.name, icon: iconUrl }
+        const icon = CATEGORY_ICON_MAP[cat.name] || userIconsMap.value.get(cat.iconId) || cat.iconUrl || 'icon-qita'
+        return { name: cat.name, icon, color: CATEGORY_BG_COLOR }
       }
     }
   }
-  return { name: '其他', icon: 'icon-qita' }
+  return { name: '其他', icon: 'icon-qita', color: CATEGORY_BG_COLOR }
 }
 
 const sortedDates = computed(() => {
@@ -209,6 +173,20 @@ const sortedDates = computed(() => {
 
 const getDateRecords = (date: string): RecordItem[] => {
   return pageData.get(date)?.list || []
+}
+
+const getEnrichedRecords = (date: string): BillCardRecord[] => {
+  return getDateRecords(date).map((record) => {
+    const info = getCategoryInfo(record.typeId)
+    return {
+      id: record.id,
+      type: record.type,
+      amount: record.amount,
+      displayName: record.remark || info.name,
+      categoryIcon: info.icon,
+      categoryColor: info.color,
+    }
+  })
 }
 
 const getDayIncome = (dateStr: string) => {
@@ -229,10 +207,6 @@ const formatDate = (dateStr: string) => {
   const day = date.getDate().toString().padStart(2, '0')
   const weekDay = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][date.getDay()]
   return `${month}月${day}日 ${weekDay}`
-}
-
-const formatAmount = (amount: number) => {
-  return Math.abs(amount).toFixed(2)
 }
 
 const categoriesLoaded = ref(false)
@@ -430,140 +404,12 @@ onShow(() => {
 })
 </script>
 
-<style>
+<style scoped>
 .page {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
-  overflow: hidden;
-}
-
-.header {
-  background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
-  padding: 40rpx 30rpx 30rpx;
-  color: #333;
-  flex-shrink: 0;
-  width: 100%;
-}
-
-.header-top {
-  margin-bottom: 20rpx;
-  text-align: center;
-}
-
-.app-title {
-  font-size: 40rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.header-content {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.date-selector {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 5rpx;
-}
-
-.year-text {
-  font-size: 28rpx;
-  color: #333;
-  display: inline-block;
-  animation: fadeSlideDown 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.month-text {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #333;
-  display: inline-block;
-  animation: fadeSlideDown 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-@keyframes fadeSlideDown {
-  0% {
-    opacity: 0;
-    transform: translateY(-20rpx);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.header-amounts {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 20rpx;
-  padding: 15rpx 25rpx;
-}
-
-.amount-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.amount-label {
-  font-size: 22rpx;
-  color: #666;
-  margin-bottom: 5rpx;
-}
-
-.amount-value {
-  font-size: 32rpx;
-  font-weight: bold;
-  display: inline-block;
-  animation: fadeSlideDown 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.amount-value.income {
-  color: #19be6b;
-}
-
-.amount-value.expense {
-  color: #fa3534;
-}
-
-.amount-divider {
-  width: 1px;
-  height: 60rpx;
-  background: rgba(255, 255, 255, 0.5);
-  margin: 0 25rpx;
-}
-
-.function-bar {
-  display: flex;
-  justify-content: space-around;
-  padding: 30rpx 20rpx;
-  background: #fff;
-  flex-shrink: 0;
-  border-bottom: 1px solid #eee;
-  width: 100%;
-}
-
-.function-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.function-icon {
-  font-size: 48rpx;
-  margin-bottom: 10rpx;
-  color: #00BFFF;
-}
-
-.function-text {
-  font-size: 22rpx;
-  color: #666;
+  background: #f5f6fa;
 }
 
 .loading-state {
@@ -584,7 +430,7 @@ onShow(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-bottom: 80px;
+  padding-bottom: 60px;
 }
 
 .bill-scroll {
@@ -594,6 +440,7 @@ onShow(() => {
 
 .bill-content {
   width: 100%;
+  padding: 20rpx 0;
   animation: monthSlideIn 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -628,65 +475,7 @@ onShow(() => {
 }
 
 .bill-section {
-  margin-bottom: 20rpx;
-}
-
-.bill-date {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20rpx;
-  background: #fff;
-}
-
-.date-text {
-  font-size: 28rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.day-totals {
-  display: flex;
-  gap: 20rpx;
-}
-
-.day-income {
-  font-size: 24rpx;
-  color: #19be6b;
-}
-
-.day-expense {
-  font-size: 24rpx;
-  color: #fa3534;
-}
-
-.bill-item-wrapper {
-  background: #fff;
-}
-
-.item-icon {
-  color: #00BFFF;
-  font-size: 40rpx;
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f5f5f5;
-  border-radius: 12rpx;
-}
-
-.item-amount {
-  font-size: 32rpx;
-  font-weight: 500;
-}
-
-.item-amount.expense {
-  color: #fa3534;
-}
-
-.item-amount.income {
-  color: #19be6b;
+  margin-bottom: 24rpx;
 }
 
 .load-more {
