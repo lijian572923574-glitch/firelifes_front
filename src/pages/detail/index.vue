@@ -13,9 +13,19 @@
       @open-date-picker="showDatePicker"
     />
 
+    <view v-if="netWorth !== null" class="fire-mini-bar">
+      <view class="fire-mini-bar-fill" :style="{ width: firePercent + '%' }"></view>
+      <text class="fire-mini-text">🔥 净资产 ¥{{ formatNetWorth }} · 距 FIRE {{ firePercent.toFixed(1) }}%</text>
+    </view>
+
     <FunctionBar
       :items="functionItems"
       @item-click="handleFunctionClick"
+    />
+
+    <SavingsRateCard
+      :monthIncome="monthIncome"
+      :monthExpense="monthExpense"
     />
 
     <view v-if="loading && sortedDates.length === 0" class="loading-state">
@@ -70,6 +80,7 @@ import YearMonthPicker from '../../components/YearMonthPicker.vue'
 import DetailHeader from './components/DetailHeader.vue'
 import FunctionBar, { type FunctionItem } from './components/FunctionBar.vue'
 import BillCard, { type BillCardRecord } from './components/BillCard.vue'
+import SavingsRateCard from './components/SavingsRateCard.vue'
 
 interface RecordItem {
   id: number
@@ -113,6 +124,18 @@ watch(selectedYearMonth, (newVal) => {
 
 const monthIncome = ref(0)
 const monthExpense = ref(0)
+const netWorth = ref<number | null>(null)
+const fireGoal = ref(0)
+
+const firePercent = computed(() => {
+  if (fireGoal.value <= 0 || netWorth.value === null) return 0
+  return Math.min((netWorth.value / fireGoal.value) * 100, 100)
+})
+
+const formatNetWorth = computed(() => {
+  if (netWorth.value === null) return '--'
+  return Math.abs(netWorth.value).toFixed(0)
+})
 
 const pageData = reactive<Map<string, DatePageData>>(new Map())
 const loading = ref(false)
@@ -248,6 +271,17 @@ const loadMonthSummary = async () => {
     console.error('加载月度汇总失败:', error)
     monthIncome.value = 0
     monthExpense.value = 0
+  }
+}
+
+const fetchNetWorth = async () => {
+  try {
+    const res = await recordApi.getNetWorth()
+    if (res.success && res.data) {
+      netWorth.value = res.data.netWorth
+    }
+  } catch {
+    netWorth.value = null
   }
 }
 
@@ -400,6 +434,7 @@ onMounted(() => {
 
 onShow(() => {
   loadMonthSummary()
+  fetchNetWorth()
   loadFirstPageDates()
 })
 </script>
@@ -422,6 +457,35 @@ onShow(() => {
 .loading-text {
   font-size: 28rpx;
   color: #999;
+}
+
+.fire-mini-bar {
+  margin: 0 20rpx;
+  height: 40rpx;
+  background: rgba(0, 191, 255, 0.06);
+  border-radius: 8rpx;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.fire-mini-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.25));
+  transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.fire-mini-text {
+  position: relative;
+  z-index: 1;
+  font-size: 22rpx;
+  color: #00BFFF;
+  padding: 0 16rpx;
+  white-space: nowrap;
 }
 
 .bill-wrapper {

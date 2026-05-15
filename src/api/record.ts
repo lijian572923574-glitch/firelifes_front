@@ -55,6 +55,16 @@ export interface PageResult<T> {
 
 export type RecordType = 'income' | 'expense' | 'transfer' | 'repayment'
 
+export interface CreateRecordAssetData {
+  name: string
+  category: string
+  depreciationMethod: string
+  purchasePrice: number
+  purchaseDate: string
+  expectedLifeMonths: number
+  residualValue: number
+}
+
 export interface CreateRecordData {
   typeId: number
   type: RecordType
@@ -63,6 +73,7 @@ export interface CreateRecordData {
   toAccountId?: number
   remark?: string
   date: string
+  depreciatingAsset?: CreateRecordAssetData
 }
 
 export const recordApi = {
@@ -146,6 +157,39 @@ export const recordApi = {
       url: '/record/month-summary',
       method: 'GET',
       data: { yearMonth },
+    })
+  },
+
+  /**
+   * 获取当前净资产
+   */
+  getNetWorth: () => {
+    return request<{
+      netWorth: number
+      cashBalance: number
+      depreciatingAssetValue: number
+    }>({
+      url: '/record/net-worth',
+      method: 'GET',
+    })
+  },
+
+  /**
+   * 获取折旧资产列表
+   */
+  getDepreciatingAssets: () => {
+    return request<Array<{
+      id: number
+      name: string
+      category: string
+      purchasePrice: number
+      currentValue: number
+      expectedLifeMonths: number
+      usedMonths: number
+      status: string
+    }>>({
+      url: '/record/depreciating-assets',
+      method: 'GET',
     })
   },
 

@@ -5,6 +5,14 @@
       <text class="amount">{{ displayAmount || '0.00' }}</text>
     </view>
 
+    <view v-if="showAssetFields" class="date-row" @tap="toggleDatePicker">
+      <text class="date-label">📅 日期</text>
+      <view class="date-value-row">
+        <text class="date-value">{{ formattedDateFull }}</text>
+        <text class="date-arrow">▼</text>
+      </view>
+    </view>
+
     <view class="account-area" v-if="isTransfer || isRepayment">
       <view class="account-row" @tap="openFromAccount">
         <text class="account-label">{{ isRepayment ? '还款账户' : '转出账户' }}</text>
@@ -48,7 +56,16 @@
       />
     </view>
 
-    <view class="keyboard">
+    <AssetFields
+      v-if="transactionType === 'expense'"
+      v-model="showAssetFields"
+      :purchasePrice="parseFloat(displayAmount) || 0"
+      :purchaseDate="props.date"
+      :defaultName="categoryName"
+      @update:assetData="handleAssetDataChange"
+    />
+
+    <view v-if="!showAssetFields" class="keyboard">
       <view class="keyboard-row">
         <view class="key-item" @tap="inputAmount('7')"><text>7</text></view>
         <view class="key-item" @tap="inputAmount('8')"><text>8</text></view>
@@ -79,6 +96,12 @@
       </view>
     </view>
 
+    <view v-if="showAssetFields" class="complete-btn-wrapper">
+      <view class="complete-btn" :class="{ disabled: submitting }" @tap="!submitting && handleComplete()">
+        <text>{{ submitting ? '提交中...' : '完  成' }}</text>
+      </view>
+    </view>
+
     <AccountSelectorPopup ref="accountPopupRef" :title="'选择账户'" :filterType="transactionType" @select="handleAccountSelect" />
     <AccountSelectorPopup ref="fromAccountPopupRef" :title="isRepayment ? '选择还款账户' : '选择转出账户'" :filterType="isRepayment ? 'repayment' : 'transfer'" :filterRole="'from'" @select="handleFromAccountSelect" />
     <AccountSelectorPopup ref="toAccountPopupRef" :title="isRepayment ? '选择债权账户' : '选择转入账户'" :filterType="isRepayment ? 'repayment' : 'transfer'" :filterRole="'to'" :excludeAccountId="fromAccount?.id" @select="handleToAccountSelect" />
@@ -88,7 +111,9 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { Account } from '../../../types/account'
+import type { DepreciatingAssetData } from '../../../types/asset'
 import AccountSelectorPopup from './AccountSelectorPopup.vue'
+import AssetFields from './AssetFields.vue'
 
 const props = defineProps<{
   date: string
@@ -109,6 +134,7 @@ const emit = defineEmits<{
   (e: 'update:fromAccount', account: Account | null): void
   (e: 'update:toAccount', account: Account | null): void
   (e: 'update:selectedAccount', account: Account | null): void
+  (e: 'update:assetData', data: DepreciatingAssetData | null): void
   (e: 'complete'): void
   (e: 'toggleDatePicker'): void
 }>()
@@ -120,6 +146,7 @@ const hasSelectedDate = ref(false)
 const firstOperand = ref<string>('')
 const operator = ref<string>('')
 const waitingForSecondOperand = ref(false)
+const showAssetFields = ref(false)
 
 const accountPopupRef = ref<InstanceType<typeof AccountSelectorPopup> | null>(null)
 const fromAccountPopupRef = ref<InstanceType<typeof AccountSelectorPopup> | null>(null)
@@ -158,6 +185,17 @@ const formattedDate = computed(() => {
   const day = String(currentDate.value.getDate()).padStart(2, '0')
   return `${year}/${month}/${day}`
 })
+
+const formattedDateFull = computed(() => {
+  const year = currentDate.value.getFullYear()
+  const month = String(currentDate.value.getMonth() + 1).padStart(2, '0')
+  const day = String(currentDate.value.getDate()).padStart(2, '0')
+  return `${year}/${month}/${day}`
+})
+
+const handleAssetDataChange = (data: DepreciatingAssetData | null) => {
+  emit('update:assetData', data)
+}
 
 watch(() => props.date, (newDate) => {
   if (newDate) {
@@ -359,6 +397,93 @@ const toggleDatePicker = () => {
   font-size: 20rpx;
   color: #999;
   margin-left: 12rpx;
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 24rpx;
+  background: rgba(245, 246, 250, 0.8);
+  border-radius: 16rpx;
+  margin-bottom: 12rpx;
+  border: 1rpx solid rgba(255, 255, 255, 0.6);
+  animation: dateRowIn 0.2s ease;
+}
+
+@keyframes dateRowIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.date-label {
+  font-size: 24rpx;
+  color: #999;
+  margin-right: 16rpx;
+  min-width: 100rpx;
+}
+
+.date-value-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.date-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.date-arrow {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.complete-btn-wrapper {
+  padding: 28rpx 20rpx 40rpx;
+  animation: completeBtnIn 0.2s ease;
+}
+
+@keyframes completeBtnIn {
+  from {
+    opacity: 0;
+    transform: translateY(10rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.complete-btn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 191, 255, 0.3);
+  transition: all 0.15s ease;
+}
+
+.complete-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+.complete-btn.disabled {
+  opacity: 0.6;
 }
 
 .keyboard {

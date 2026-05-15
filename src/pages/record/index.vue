@@ -40,6 +40,7 @@
         @update:fromAccount="fromAccount = $event"
         @update:toAccount="toAccount = $event"
         @update:selectedAccount="selectedAccount = $event"
+        @update:assetData="assetData = $event"
         @complete="handleComplete"
         @toggleDatePicker="showDatePicker = true"
       />
@@ -48,13 +49,25 @@
     <DatePicker :visible="showDatePicker" :date="selectedDate" @update:date="selectedDate = $event" @close="showDatePicker = false" />
     <CustomTabbar />
 
-    <view v-if="submitStatus !== 'idle'" class="loading-overlay" @tap.stop>
+    <view v-if="submitStatus === 'submitting'" class="loading-overlay" @tap.stop>
       <view class="loading-box">
-        <view v-if="submitStatus === 'submitting'" class="loading-spinner"></view>
-        <view v-else class="loading-check">✓</view>
-        <text class="loading-text">{{ submitStatus === 'submitting' ? '记账中...' : submitStatus === 'success' ? '记账成功' : '记账失败' }}</text>
+        <view class="loading-spinner"></view>
+        <text class="loading-text">记账中...</text>
       </view>
     </view>
+
+    <RecordConfirmCard
+      v-if="showConfirmCard"
+      :type="transactionType"
+      :amount="Math.abs(parseFloat(displayAmount))"
+      :categoryName="selectedCategory?.name || ''"
+      :accountName="activeAccount?.name || ''"
+      :accountIcon="activeAccount?.icon || ''"
+      :accountBalance="0"
+      :hasAsset="!!assetData"
+      @continue="handleContinueRecord"
+      @back="handleBackToDetail"
+    />
   </view>
 </template>
 
@@ -64,10 +77,12 @@ import { onShow } from '@dcloudio/uni-app'
 import CategorySelector from './components/CategorySelector.vue'
 import TransactionForm from './components/TransactionForm.vue'
 import DatePicker from './components/DatePicker.vue'
+import RecordConfirmCard from './components/RecordConfirmCard.vue'
 import { recordApi } from '../../api/record'
 import { getAccountList } from '../../api/account'
 import type { Account } from '../../types/account'
-import type { RecordType } from '../../api/record'
+import type { DepreciatingAssetData } from '../../types/asset'
+import type { RecordType, CreateRecordData } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const transactionType = ref<'income' | 'expense'>('expense')
@@ -84,6 +99,13 @@ const categorySelectorRef = ref()
 const selectedAccount = ref<Account | null>(null)
 const fromAccount = ref<Account | null>(null)
 const toAccount = ref<Account | null>(null)
+const assetData = ref<DepreciatingAssetData | null>(null)
+const showConfirmCard = ref(false)
+
+const activeAccount = computed(() => {
+  if (isTransfer.value || isRepayment.value) return fromAccount.value
+  return selectedAccount.value
+})
 
 const isTransfer = computed(() => selectedCategory.value?.name === '转账')
 const isRepayment = computed(() => selectedCategory.value?.name === '还债')
@@ -202,15 +224,7 @@ const handleComplete = async () => {
     const amount = parseFloat(displayAmount.value)
     const finalAmount = transactionType.value === 'expense' || isTransfer.value || isRepayment.value ? -Math.abs(amount) : Math.abs(amount)
 
-    const payload: {
-      typeId: number
-      type: RecordType
-      amount: number
-      accountId?: number
-      toAccountId?: number
-      remark: string
-      date: string
-    } = {
+    const payload: CreateRecordData = {
       typeId: selectedCategory.value.id,
       type: recordType.value,
       amount: finalAmount,
@@ -225,15 +239,26 @@ const handleComplete = async () => {
       payload.accountId = parseInt(selectedAccount.value.id)
     }
 
+    // 如果记入了折旧资产，附加资产数据
+    if (assetData.value) {
+      payload.depreciatingAsset = {
+        name: assetData.value.name,
+        category: assetData.value.category,
+        depreciationMethod: assetData.value.depreciationMethod,
+        purchasePrice: assetData.value.purchasePrice,
+        purchaseDate: assetData.value.purchaseDate,
+        expectedLifeMonths: assetData.value.expectedLifeMonths,
+        residualValue: assetData.value.residualValue,
+      }
+    }
+
     const res = await recordApi.createRecord(payload)
 
     if (res.success) {
-      submitStatus.value = 'success'
-      setTimeout(() => {
-        submitStatus.value = 'idle'
-        isSubmitting.value = false
-        uni.reLaunch({ url: '/pages/detail/index' })
-      }, 800)
+      submitStatus.value = 'idle'
+      isSubmitting.value = false
+      showTransactionForm.value = false
+      showConfirmCard.value = true
     } else {
       submitStatus.value = 'error'
       setTimeout(() => {
@@ -251,6 +276,19 @@ const handleComplete = async () => {
     uni.showToast({ title: '网络错误', icon: 'none' })
     console.error('记账失败:', error)
   }
+}
+
+const handleContinueRecord = () => {
+  showConfirmCard.value = false
+  selectedCategory.value = null
+  displayAmount.value = ''
+  remark.value = ''
+  assetData.value = null
+  showTransactionForm.value = false
+}
+
+const handleBackToDetail = () => {
+  uni.reLaunch({ url: '/pages/detail/index' })
 }
 </script>
 
