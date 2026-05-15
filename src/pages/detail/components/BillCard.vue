@@ -12,6 +12,7 @@
       :key="item.id"
       class="bill-item"
       :class="{ 'bill-item-last': index === records.length - 1 }"
+      @tap="handleItemTap(item)"
     >
       <view class="bill-item-left">
         <view class="category-icon" :style="{ backgroundColor: item.categoryColor }">
@@ -44,6 +45,14 @@ defineProps<{
   dayExpense: string
   records: BillCardRecord[]
 }>()
+
+const emit = defineEmits<{
+  'record-tap': [record: BillCardRecord]
+}>()
+
+const handleItemTap = (item: BillCardRecord) => {
+  emit('record-tap', item)
+}
 
 const formatAmount = (amount: number) => {
   return Math.abs(amount).toFixed(2)

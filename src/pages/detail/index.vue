@@ -55,6 +55,7 @@
               :dayIncome="getDayIncome(date)"
               :dayExpense="getDayExpense(date)"
               :records="getEnrichedRecords(date)"
+              @record-tap="handleRecordTap"
             />
           </view>
 
@@ -156,6 +157,12 @@ const functionItems: FunctionItem[] = [
 
 const handleFunctionClick = (item: FunctionItem) => {
   console.log('Function clicked:', item.key)
+}
+
+const handleRecordTap = (record: BillCardRecord) => {
+  uni.navigateTo({
+    url: `/pages/record/edit-record?id=${record.id}`,
+  })
 }
 
 // 分类名→iconfont类名映射

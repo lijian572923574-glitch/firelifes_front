@@ -42,6 +42,13 @@
 			}
 		},
 		{
+			"path": "pages/record/edit-record",
+			"style": {
+				"navigationBarTitleText": "Edit Record",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/analysis/index",
 			"style": {
 				"navigationBarTitleText": "Analysis"

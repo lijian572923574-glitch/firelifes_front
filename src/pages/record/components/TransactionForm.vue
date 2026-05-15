@@ -62,6 +62,7 @@
       :purchasePrice="parseFloat(displayAmount) || 0"
       :purchaseDate="props.date"
       :defaultName="categoryName"
+      :initialData="props.initialAssetData"
       @update:assetData="handleAssetDataChange"
     />
 
@@ -125,6 +126,9 @@ const props = defineProps<{
   toAccount?: Account | null
   selectedAccount?: Account | null
   submitting?: boolean
+  initialAmount?: string
+  initialRemark?: string
+  initialAssetData?: DepreciatingAssetData | null
 }>()
 
 const emit = defineEmits<{
@@ -214,6 +218,26 @@ watch(() => props.transactionType, () => {
   waitingForSecondOperand.value = false
   emit('update:amount', '')
 })
+
+watch(() => props.initialAmount, (val) => {
+  if (val) {
+    displayAmount.value = val
+    emit('update:amount', val)
+  }
+}, { immediate: true })
+
+watch(() => props.initialRemark, (val) => {
+  if (val) {
+    remark.value = val
+    emit('update:remark', val)
+  }
+}, { immediate: true })
+
+watch(() => props.initialAssetData, (val) => {
+  if (val) {
+    showAssetFields.value = true
+  }
+}, { immediate: true })
 
 const inputAmount = (digit: string) => {
   if (digit === '+' || digit === '-') {

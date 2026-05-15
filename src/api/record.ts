@@ -194,6 +194,30 @@ export const recordApi = {
   },
 
   /**
+   * 根据记账记录ID获取关联的折旧资产
+   */
+  getDepreciatingAssetByRecordId: (recordId: number) => {
+    return request<{
+      id: number
+      recordId: number
+      name: string
+      category: string
+      depreciationMethod: string
+      purchasePrice: number
+      purchaseDate: string
+      expectedLifeMonths: number
+      residualValue: number
+      currentValue: number
+      monthlyDepreciation: number
+      usedMonths: number
+      status: string
+    } | null>({
+      url: `/record/depreciating-asset/${recordId}`,
+      method: 'GET',
+    })
+  },
+
+  /**
    * 删除记账记录
    * @param id 记录 ID
    */

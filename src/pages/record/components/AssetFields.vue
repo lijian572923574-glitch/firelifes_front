@@ -123,6 +123,7 @@ const props = defineProps<{
   purchasePrice: number
   purchaseDate: string
   defaultName?: string
+  initialData?: DepreciatingAssetData | null
 }>()
 
 const emit = defineEmits<{
@@ -195,6 +196,16 @@ watch(() => props.modelValue, (val) => {
     showCategoryPicker.value = false
   }
 })
+
+watch(() => props.initialData, (data) => {
+  if (data) {
+    localCategory.value = data.category
+    localMethod.value = data.depreciationMethod
+    localLifeMonths.value = String(data.expectedLifeMonths)
+    localResidualValue.value = data.residualValue.toFixed(2)
+    localName.value = data.name
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>
