@@ -29,6 +29,14 @@
 			}
 		},
 		{
+			"path": "pages/detail/bill",
+			"style": {
+				"navigationBarTitleText": "账单汇总",
+				"navigationStyle": "custom",
+				"backgroundColor": "#f5f6fa"
+			}
+		},
+		{
 			"path": "pages/statistics/index",
 			"style": {
 				"navigationBarTitleText": "Statistics"

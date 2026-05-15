@@ -218,6 +218,35 @@ export const recordApi = {
   },
 
   /**
+   * 获取年度汇总（自记账以来）
+   */
+  getYearlySummary: () => {
+    return request<{
+      totalIncome: number
+      totalExpense: number
+      totalBalance: number
+    }>({
+      url: '/record/yearly-summary',
+      method: 'GET',
+    })
+  },
+
+  /**
+   * 获取各年度账单列表
+   */
+  getYearlyBills: () => {
+    return request<Array<{
+      year: number
+      income: number
+      expense: number
+      balance: number
+    }>>({
+      url: '/record/yearly-bills',
+      method: 'GET',
+    })
+  },
+
+  /**
    * 删除记账记录
    * @param id 记录 ID
    */

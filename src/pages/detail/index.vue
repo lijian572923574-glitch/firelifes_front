@@ -156,6 +156,10 @@ const functionItems: FunctionItem[] = [
 ]
 
 const handleFunctionClick = (item: FunctionItem) => {
+  if (item.key === 'bill') {
+    uni.navigateTo({ url: '/pages/detail/bill' })
+    return
+  }
   console.log('Function clicked:', item.key)
 }
 
