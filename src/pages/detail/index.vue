@@ -21,6 +21,7 @@
     <FunctionBar
       :items="functionItems"
       @item-click="handleFunctionClick"
+      @more-click="handleMoreClick"
     />
 
     <SavingsRateCard
@@ -80,6 +81,7 @@ import CustomTabbar from '../../components/CustomTabbar.vue'
 import YearMonthPicker from '../../components/YearMonthPicker.vue'
 import DetailHeader from './components/DetailHeader.vue'
 import FunctionBar, { type FunctionItem } from './components/FunctionBar.vue'
+import { useFunctionItemsStore } from '../../stores/functionItems'
 import BillCard, { type BillCardRecord } from './components/BillCard.vue'
 import SavingsRateCard from './components/SavingsRateCard.vue'
 
@@ -148,19 +150,23 @@ const loadMoreText = computed(() => {
   return '上拉查看上一个月'
 })
 
-const functionItems: FunctionItem[] = [
-  { key: 'bill', icon: 'icon-zhangdan', text: '账单' },
-  { key: 'budget', icon: 'icon-tongji', text: '预算' },
-  { key: 'asset', icon: 'icon-zichan', text: '资产管家' },
-  { key: 'cashback', icon: 'icon-gouwuche', text: '购物返现' },
-]
+const functionItemsStore = useFunctionItemsStore()
+const functionItems = computed(() => functionItemsStore.topItems)
 
 const handleFunctionClick = (item: FunctionItem) => {
   if (item.key === 'bill') {
     uni.navigateTo({ url: '/pages/detail/bill' })
     return
   }
+  if (item.key === 'fire') {
+    uni.navigateTo({ url: '/pages/detail/fire-progress' })
+    return
+  }
   console.log('Function clicked:', item.key)
+}
+
+const handleMoreClick = () => {
+  uni.navigateTo({ url: '/pages/detail/function-list' })
 }
 
 const handleRecordTap = (record: BillCardRecord) => {

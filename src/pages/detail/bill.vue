@@ -5,13 +5,15 @@
 -->
 <template>
   <view class="page">
-    <view class="nav-bar">
-      <view class="nav-back" @tap="goBack">
-        <text class="nav-back-icon">←</text>
-      </view>
-      <text class="nav-title">账单汇总</text>
-      <view class="nav-placeholder"></view>
-    </view>
+    <wd-navbar
+      title="账单汇总"
+      left-arrow
+      fixed
+      placeholder
+      bordered
+      safe-area-inset-top
+      @click-left="goBack"
+    />
 
     <view class="tab-bar">
       <view
@@ -263,36 +265,6 @@ onMounted(() => {
 .page {
   min-height: 100vh;
   background: #f5f6fa;
-}
-
-.nav-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12rpx 20rpx;
-  background: #fff;
-  border-bottom: 1rpx solid #eee;
-}
-
-.nav-back {
-  width: 80rpx;
-  display: flex;
-  align-items: center;
-}
-
-.nav-back-icon {
-  font-size: 36rpx;
-  color: #333;
-}
-
-.nav-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #2d3436;
-}
-
-.nav-placeholder {
-  width: 80rpx;
 }
 
 .tab-bar {

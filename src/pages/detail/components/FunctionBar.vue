@@ -13,34 +13,20 @@
         <text class="function-text">{{ item.text }}</text>
       </view>
       <view
-        v-if="hasMore"
         class="function-item"
-        @tap="toggleExpand"
+        @tap="handleMoreClick"
       >
         <view class="function-icon">
-          <text class="iconfont" :class="expanded ? 'icon-fanhui' : 'icon-qita'"></text>
+          <text class="iconfont icon-qita"></text>
         </view>
-        <text class="function-text">{{ expanded ? '收起' : '更多' }}</text>
-      </view>
-    </view>
-    <view v-if="expanded && overflowItems.length > 0" class="function-expand">
-      <view
-        v-for="item in overflowItems"
-        :key="item.key"
-        class="function-item"
-        @tap="handleItemClick(item)"
-      >
-        <view class="function-icon">
-          <text class="iconfont" :class="item.icon"></text>
-        </view>
-        <text class="function-text">{{ item.text }}</text>
+        <text class="function-text">更多</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 export interface FunctionItem {
   key: string
@@ -57,30 +43,19 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   'item-click': [item: FunctionItem]
+  'more-click': []
 }>()
 
-const expanded = ref(false)
-
-const hasMore = computed(() => props.items.length > props.maxVisible)
-
 const visibleItems = computed(() => {
-  if (!hasMore.value || expanded.value) {
-    return props.items
-  }
   return props.items.slice(0, props.maxVisible - 1)
 })
 
-const overflowItems = computed(() => {
-  if (!hasMore.value) return []
-  return props.items.slice(props.maxVisible - 1)
-})
-
-const toggleExpand = () => {
-  expanded.value = !expanded.value
-}
-
 const handleItemClick = (item: FunctionItem) => {
   emit('item-click', item)
+}
+
+const handleMoreClick = () => {
+  emit('more-click')
 }
 </script>
 
@@ -98,26 +73,6 @@ const handleItemClick = (item: FunctionItem) => {
   padding: 18rpx 20rpx;
   background: #fff;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
-}
-
-.function-expand {
-  display: flex;
-  justify-content: space-around;
-  padding: 18rpx 20rpx;
-  background: #fff;
-  border-top: 1rpx solid #f5f5f5;
-  animation: expandIn 0.2s ease;
-}
-
-@keyframes expandIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10rpx);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .function-item {

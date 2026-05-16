@@ -37,6 +37,22 @@
 			}
 		},
 		{
+			"path": "pages/detail/function-list",
+			"style": {
+				"navigationBarTitleText": "全部功能",
+				"navigationStyle": "custom",
+				"backgroundColor": "#f5f6fa"
+			}
+		},
+		{
+			"path": "pages/detail/fire-progress",
+			"style": {
+				"navigationBarTitleText": "FIRE进度",
+				"navigationStyle": "custom",
+				"backgroundColor": "#f5f6fa"
+			}
+		},
+		{
 			"path": "pages/statistics/index",
 			"style": {
 				"navigationBarTitleText": "Statistics"
