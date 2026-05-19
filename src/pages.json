@@ -53,6 +53,22 @@
 			}
 		},
 		{
+			"path": "pages/detail/budget/index",
+			"style": {
+				"navigationBarTitleText": "预算",
+				"navigationStyle": "custom",
+				"backgroundColor": "#f5f6fa"
+			}
+		},
+		{
+			"path": "pages/detail/budget/budget-setting",
+			"style": {
+				"navigationBarTitleText": "预算设置",
+				"navigationStyle": "custom",
+				"backgroundColor": "#f5f6fa"
+			}
+		},
+		{
 			"path": "pages/statistics/index",
 			"style": {
 				"navigationBarTitleText": "Statistics"

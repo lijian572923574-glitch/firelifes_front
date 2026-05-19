@@ -18,6 +18,14 @@
       <text class="fire-mini-text">🔥 净资产 ¥{{ formatNetWorth }} · 距 FIRE {{ firePercent.toFixed(1) }}%</text>
     </view>
 
+    <view v-if="budgetOverview" class="budget-mini-bar" @tap="goToBudget">
+      <view class="budget-mini-bar-fill" :style="{ width: Math.min(budgetOverview.usedPercentage, 100) + '%' }" :class="'budget-mini-' + budgetAlertLevel"></view>
+      <text class="budget-mini-text">
+        本月预算 ¥{{ formatBudgetAmount(budgetOverview.totalUsed) }}/¥{{ formatBudgetAmount(budgetOverview.totalBudget) }}
+        剩余 ¥{{ formatBudgetAmount(budgetOverview.totalRemaining) }}
+      </text>
+    </view>
+
     <FunctionBar
       :items="functionItems"
       @item-click="handleFunctionClick"
@@ -76,6 +84,7 @@
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
+import { budgetApi, type BudgetOverview } from '../../api/budget'
 import { categoryApi, type CategoryGroup } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 import YearMonthPicker from '../../components/YearMonthPicker.vue'
@@ -130,6 +139,19 @@ const monthExpense = ref(0)
 const netWorth = ref<number | null>(null)
 const fireGoal = ref(0)
 
+const budgetOverview = ref<BudgetOverview | null>(null)
+
+const budgetAlertLevel = computed(() => {
+  if (!budgetOverview.value || budgetOverview.value.usedPercentage >= 100) return 'danger'
+  if (budgetOverview.value.usedPercentage >= 80) return 'warning'
+  if (budgetOverview.value.usedPercentage >= 60) return 'normal'
+  return 'healthy'
+})
+
+const formatBudgetAmount = (val: number) => {
+  return Math.abs(val).toLocaleString('zh-CN', { maximumFractionDigits: 0 })
+}
+
 const firePercent = computed(() => {
   if (fireGoal.value <= 0 || netWorth.value === null) return 0
   return Math.min((netWorth.value / fireGoal.value) * 100, 100)
@@ -163,6 +185,21 @@ const handleFunctionClick = (item: FunctionItem) => {
     return
   }
   console.log('Function clicked:', item.key)
+}
+
+const goToBudget = () => {
+  uni.navigateTo({ url: '/pages/detail/budget/index' })
+}
+
+const fetchBudgetOverview = async () => {
+  try {
+    const res = await budgetApi.getCurrentOverview()
+    if (res.success && res.data) {
+      budgetOverview.value = res.data
+    }
+  } catch {
+    // ignore
+  }
 }
 
 const handleMoreClick = () => {
@@ -452,6 +489,7 @@ onMounted(() => {
 onShow(() => {
   loadMonthSummary()
   fetchNetWorth()
+  fetchBudgetOverview()
   loadFirstPageDates()
 })
 </script>
@@ -501,6 +539,50 @@ onShow(() => {
   z-index: 1;
   font-size: 22rpx;
   color: #00BFFF;
+  padding: 0 16rpx;
+  white-space: nowrap;
+}
+
+.budget-mini-bar {
+  margin: 8rpx 20rpx;
+  height: 40rpx;
+  background: rgba(253, 203, 110, 0.06);
+  border-radius: 8rpx;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.budget-mini-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.budget-mini-healthy {
+  background: linear-gradient(90deg, rgba(0, 184, 148, 0.15), rgba(0, 184, 148, 0.25));
+}
+
+.budget-mini-normal {
+  background: linear-gradient(90deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.25));
+}
+
+.budget-mini-warning {
+  background: linear-gradient(90deg, rgba(253, 203, 110, 0.2), rgba(253, 203, 110, 0.35));
+}
+
+.budget-mini-danger {
+  background: linear-gradient(90deg, rgba(214, 48, 49, 0.12), rgba(214, 48, 49, 0.25));
+}
+
+.budget-mini-text {
+  position: relative;
+  z-index: 1;
+  font-size: 22rpx;
+  color: #e17055;
   padding: 0 16rpx;
   white-space: nowrap;
 }

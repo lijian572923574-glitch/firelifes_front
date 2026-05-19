@@ -35,6 +35,13 @@
         </view>
         <text class="arrow">›</text>
       </view>
+      <view class="menu-item" @click="navigateToBudget">
+        <view class="menu-left">
+          <text class="menu-emoji">📊</text>
+          <text class="menu-text">预算设置</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
     </view>
 
     <!-- 退出登录按钮 -->
@@ -72,6 +79,13 @@ const navigateToCategoryList = () => {
 const navigateToAccountList = () => {
   uni.navigateTo({
     url: '/pages/my/account-setting/account-list'
+  })
+}
+
+// 跳转到预算设置
+const navigateToBudget = () => {
+  uni.navigateTo({
+    url: '/pages/detail/budget/budget-setting'
   })
 }
 

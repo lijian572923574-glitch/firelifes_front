@@ -156,7 +156,12 @@ const loadingYear = ref(false)
 const formatAmount = (val: number) => Math.abs(val).toFixed(2)
 
 const goBack = () => {
-  uni.navigateBack()
+  const pages = getCurrentPages()
+  if (pages.length > 1) {
+    uni.navigateBack()
+  } else {
+    uni.redirectTo({ url: '/pages/detail/index' })
+  }
 }
 
 const switchTab = (tab: 'month' | 'year') => {

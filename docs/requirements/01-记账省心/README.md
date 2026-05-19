@@ -1,5 +1,5 @@
 # 01 - 记账省心
-&gt; 模块版本：v1.2 | 功能数：14 | 最后更新：2026-05-15 | 中文名称：快速记账与智能辅助功能模块
+> 模块版本：v1.3 | 功能数：17 | 最后更新：2026-05-16 | 中文名称：快速记账与智能辅助功能模块
 
 ## 模块概述
 
@@ -14,6 +14,8 @@
 | 记账功能（核心+账户选择+转账+还债） | record/record.md | v2.0 | 🔵开发中 | P0 |
 | 明细页月份切换与年月选择器 | detail-month-switch.md | v1.0 | ✅已完成 | P0 |
 | 记账→折旧资产打通 | record-account-linkage.md | v1.1 | ✅已完成 | P0 |
+| 预算设置（双预算体系） | budget/budget-setting.md | v1.1 | 📋规划中 | P0 |
+| 预算进度（执行追踪+预警） | budget/budget-progress.md | v1.1 | 📋规划中 | P0 |
 | 记账确认FIRE反馈卡片 | fire-feedback.md（跨模块） | v1.0 | 🔵开发中 | P0 |
 | 明细页储蓄率卡片 | savings-rate.md（跨模块） | v1.1 | 🔵开发中 | P1 |
 | 继续记下一笔 | record/record-continue.md | v1.0 | ❌已废弃 | P0 |

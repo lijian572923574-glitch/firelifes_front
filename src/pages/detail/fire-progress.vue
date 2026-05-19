@@ -149,7 +149,12 @@ const formatAmount = (val: number | null) => {
 }
 
 const goBack = () => {
-  uni.navigateBack()
+  const pages = getCurrentPages()
+  if (pages.length > 1) {
+    uni.navigateBack()
+  } else {
+    uni.redirectTo({ url: '/pages/detail/index' })
+  }
 }
 
 const fetchNetWorth = async () => {

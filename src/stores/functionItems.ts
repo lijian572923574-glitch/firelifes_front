@@ -23,7 +23,6 @@ export interface FunctionItem {
 
 const DEFAULT_ITEMS: FunctionItem[] = [
   { key: 'bill', icon: 'icon-zhangdan', text: '账单' },
-  { key: 'budget', icon: 'icon-tongji', text: '预算' },
   { key: 'asset', icon: 'icon-zichan', text: '资产管家' },
   { key: 'fire', icon: 'icon-mubiao', text: 'FIRE进度' },
   { key: 'cashback', icon: 'icon-gouwuche', text: '购物返现' },

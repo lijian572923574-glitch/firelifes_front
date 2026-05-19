@@ -7,6 +7,7 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BudgetBar: typeof import('./src/components/BudgetBar.vue')['default']
     CustomTabbar: typeof import('./src/components/CustomTabbar.vue')['default']
     WdButton: typeof import('@wot-ui/ui/components/wd-button/wd-button.vue')['default']
     WdCell: typeof import('@wot-ui/ui/components/wd-cell/wd-cell.vue')['default']
