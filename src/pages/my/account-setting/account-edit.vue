@@ -538,7 +538,6 @@ onLoad((options: any) => {
       description: '',
       isDefaultExpense: false,
       isDefaultIncome: false,
-      enableAutoRepayment: false,
       originalPrincipal: undefined,
       annualInterestRate: 4.9,
       repaymentMethod: 'equal_principal_interest',
