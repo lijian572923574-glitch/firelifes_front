@@ -11,6 +11,7 @@ declare module 'vue' {
     CustomTabbar: typeof import('./src/components/CustomTabbar.vue')['default']
     WdButton: typeof import('@wot-ui/ui/components/wd-button/wd-button.vue')['default']
     WdDatetimePickerView: typeof import('@wot-ui/ui/components/wd-datetime-picker-view/wd-datetime-picker-view.vue')['default']
+    WdDialog: typeof import('@wot-ui/ui/components/wd-dialog/wd-dialog.vue')['default']
     WdIcon: typeof import('@wot-ui/ui/components/wd-icon/wd-icon.vue')['default']
     WdInput: typeof import('@wot-ui/ui/components/wd-input/wd-input.vue')['default']
     WdLoading: typeof import('@wot-ui/ui/components/wd-loading/wd-loading.vue')['default']

@@ -1,58 +1,76 @@
 <template>
   <view class="page-container">
     <wd-navbar
-      title="账户设置"
+      title="我的账户"
       left-arrow
       fixed
       placeholder
       bordered
       safe-area-inset-top
-      right-text="+"
       @click-left="goBack"
-      @click-right="goToAdd"
-    />
+    >
+      <template #right>
+        <view class="nav-add-btn" @click="goToAdd">
+          <text class="nav-add-icon">+</text>
+        </view>
+      </template>
+    </wd-navbar>
 
     <view class="content-scroll">
-      <view v-if="loading" class="loading-state">
-        <text class="loading-icon">⏳</text>
-        <text class="loading-text">加载中...</text>
+      <view v-if="loading" class="skeleton-container">
+        <view v-for="i in 3" :key="i" class="skeleton-card">
+          <view class="skeleton-icon"></view>
+          <view class="skeleton-info">
+            <view class="skeleton-line skeleton-line-long"></view>
+            <view class="skeleton-line skeleton-line-short"></view>
+          </view>
+          <view class="skeleton-balance"></view>
+        </view>
       </view>
 
       <view v-else-if="!hasAccounts" class="empty-state">
-        <text class="empty-icon">📝</text>
-        <text class="empty-text">添加你的第一个账户</text>
+        <view class="empty-icon-wrap">
+          <text class="empty-icon-emoji">💳</text>
+        </view>
+        <text class="empty-title">还没有添加账户</text>
+        <text class="empty-subtitle">添加你的第一个账户开始记账吧</text>
+        <view class="empty-btn" @click="goToAdd">
+          <text class="empty-btn-text">+ 添加账户</text>
+        </view>
       </view>
 
       <view v-else>
         <view v-for="group in groupedAccounts" :key="group.type" class="group-section">
           <view class="group-title">
-            <view class="title-line"></view>
-            <text>{{ getTypeLabel(group.type) }}</text>
+            <view class="title-bar" :style="{ background: getTypeColor(group.type) }"></view>
+            <text class="title-emoji">{{ getTypeEmoji(group.type) }}</text>
+            <text class="title-text">{{ getTypeLabel(group.type) }}</text>
+            <text class="title-count">({{ group.accounts.length }})</text>
           </view>
+
           <view class="account-list">
             <wd-swipe-action
               v-for="account in group.accounts"
               :key="account.id"
-              :right-width="140"
+              :right-width="(account.isDefaultExpense || account.isDefaultIncome) ? 70 : 140"
             >
               <template #default>
                 <view class="account-card" @click="goToEdit(account.id)">
-                  <view class="card-left">
-                    <text class="account-icon">{{ account.icon }}</text>
-                    <view class="account-info">
-                      <view class="name-row">
-                        <text class="account-name">{{ account.name }}</text>
-                        <view class="badges-row">
-                          <view v-if="account.isDefaultExpense" class="default-badge">
-                            <text class="badge-text">默认支出</text>
-                          </view>
-                          <view v-if="account.isDefaultIncome" class="default-badge income">
-                            <text class="badge-text">默认收入</text>
-                          </view>
+                  <view class="card-bar" :style="{ background: getTypeColor(account.type) }"></view>
+                  <text class="account-icon">{{ account.icon }}</text>
+                  <view class="account-info">
+                    <view class="name-row">
+                      <text class="account-name">{{ account.name }}</text>
+                      <view class="badges-row">
+                        <view v-if="account.isDefaultExpense" class="default-badge">
+                          <text class="badge-text">默认支出</text>
+                        </view>
+                        <view v-if="account.isDefaultIncome" class="default-badge income">
+                          <text class="badge-text">默认收入</text>
                         </view>
                       </view>
-                      <text v-if="account.description" class="account-desc">{{ account.description }}</text>
                     </view>
+                    <text v-if="account.description" class="account-desc">{{ account.description }}</text>
                   </view>
                   <view class="card-right">
                     <text class="balance" :style="{ color: getBalanceColor(account.type) }">
@@ -74,7 +92,7 @@
                   <view
                     v-if="!account.isDefaultExpense && !account.isDefaultIncome"
                     class="swipe-btn swipe-btn-delete"
-                    @click.stop="handleDelete(account)"
+                    @click.stop="handleDeleteClick(account)"
                   >
                     <text class="swipe-btn-text">删除</text>
                   </view>
@@ -87,6 +105,18 @@
 
       <view class="safe-bottom"></view>
     </view>
+
+    <wd-dialog
+      v-model="showDeleteDialog"
+      title="删除账户"
+      show-cancel-button
+      show-confirm-button
+      confirm-button-text="删除"
+      cancel-button-text="取消"
+      @confirm="confirmDelete"
+    >
+      <text>确定要删除「{{ deleteTarget?.name }}」吗？删除后不可恢复。</text>
+    </wd-dialog>
   </view>
 </template>
 
@@ -100,18 +130,18 @@ import { ACCOUNT_TYPE_OPTIONS, getBalanceColor } from '../../../types/account'
 
 const loading = ref(false)
 const accounts = ref<Account[]>([])
+const showDeleteDialog = ref(false)
+const deleteTarget = ref<Account | null>(null)
 
 const groupedAccounts = computed(() => {
   const groups: { type: AccountType; accounts: Account[] }[] = []
   const typeOrder: AccountType[] = ['cash', 'investment', 'fixed_asset', 'depreciable_asset', 'liability']
-
   typeOrder.forEach(type => {
     const typeAccounts = accounts.value.filter(a => a.type === type)
     if (typeAccounts.length > 0) {
       groups.push({ type, accounts: typeAccounts })
     }
   })
-
   return groups
 })
 
@@ -122,10 +152,32 @@ const getTypeLabel = (type: AccountType): string => {
   return option?.label || type
 }
 
+const getTypeColor = (type: AccountType): string => {
+  const map: Record<AccountType, string> = {
+    cash: '#00BFFF',
+    investment: '#FF9800',
+    fixed_asset: '#9C27B0',
+    depreciable_asset: '#00BCD4',
+    liability: '#FA3534',
+  }
+  return map[type] || '#00BFFF'
+}
+
+const getTypeEmoji = (type: AccountType): string => {
+  const map: Record<AccountType, string> = {
+    cash: '💰',
+    investment: '📈',
+    fixed_asset: '🏠',
+    depreciable_asset: '📱',
+    liability: '💳',
+  }
+  return map[type] || '💰'
+}
+
 const formatBalance = (balance: number): string => {
-  return balance.toLocaleString('zh-CN', {
+  return Math.abs(balance).toLocaleString('zh-CN', {
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   })
 }
 
@@ -136,17 +188,11 @@ async function loadAccounts() {
     if (res.success) {
       accounts.value = res.data
     } else {
-      uni.showToast({
-        title: res.message || '获取账户列表失败',
-        icon: 'none'
-      })
+      uni.showToast({ title: res.message || '获取账户列表失败', icon: 'none' })
     }
   } catch (error) {
     console.error('加载账户列表失败:', error)
-    uni.showToast({
-      title: '网络错误',
-      icon: 'none'
-    })
+    uni.showToast({ title: '网络错误', icon: 'none' })
   } finally {
     loading.value = false
   }
@@ -157,41 +203,38 @@ function goBack() {
 }
 
 function goToAdd() {
-  uni.navigateTo({
-    url: '/pages/my/account-setting/account-edit'
-  })
+  uni.navigateTo({ url: '/pages/my/account-setting/account-edit' })
 }
 
 function goToEdit(id: string) {
-  uni.navigateTo({
-    url: `/pages/my/account-setting/account-edit?id=${id}`
-  })
+  uni.navigateTo({ url: `/pages/my/account-setting/account-edit?id=${id}` })
 }
 
 function handleEdit(account: Account) {
   goToEdit(account.id)
 }
 
-async function handleDelete(account: Account) {
-  uni.showModal({
-    title: '提示',
-    content: '确定要删除此账户吗？',
-    success: async (res) => {
-      if (res.confirm) {
-        try {
-          const apiRes = await deleteAccount(account.id)
-          if (apiRes.success) {
-            uni.showToast({ title: '删除成功', icon: 'success' })
-            loadAccounts()
-          } else {
-            uni.showToast({ title: apiRes.message || '删除失败', icon: 'none' })
-          }
-        } catch (err) {
-          uni.showToast({ title: '网络错误', icon: 'none' })
-        }
-      }
+function handleDeleteClick(account: Account) {
+  deleteTarget.value = account
+  showDeleteDialog.value = true
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value) return
+  const account = deleteTarget.value
+  try {
+    const apiRes = await deleteAccount(account.id)
+    if (apiRes.success) {
+      uni.showToast({ title: `已删除「${account.name}」`, icon: 'success', duration: 2000 })
+      showDeleteDialog.value = false
+      deleteTarget.value = null
+      loadAccounts()
+    } else {
+      uni.showToast({ title: apiRes.message || '删除失败', icon: 'none' })
     }
-  })
+  } catch (err) {
+    uni.showToast({ title: '网络错误', icon: 'none' })
+  }
 }
 
 onShow(() => {
@@ -203,98 +246,241 @@ onShow(() => {
 .page-container {
   overflow-x: hidden;
   min-height: 100vh;
-  background-color: #F5F5F5;
+  background-color: #F0F2F5;
+}
+
+.nav-add-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 191, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+}
+
+.nav-add-btn:active {
+  background: rgba(0, 191, 255, 0.2);
+  transform: scale(0.92);
+}
+
+.nav-add-icon {
+  font-size: 36rpx;
+  color: #00BFFF;
+  font-weight: 300;
+  line-height: 1;
 }
 
 .content-scroll {
   padding: 24rpx;
 }
 
-.loading-state,
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.skeleton-card {
+  height: 120rpx;
+  background-color: #FFFFFF;
+  border-radius: 20rpx;
+  padding: 0 28rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.skeleton-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(90deg, #F0F2F5 25%, #E8EAED 50%, #F0F2F5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-left: 20rpx;
+}
+
+.skeleton-line {
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, #F0F2F5 25%, #E8EAED 50%, #F0F2F5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-line-long {
+  width: 240rpx;
+  height: 28rpx;
+}
+
+.skeleton-line-short {
+  width: 160rpx;
+  height: 20rpx;
+}
+
+.skeleton-balance {
+  width: 120rpx;
+  height: 32rpx;
+  border-radius: 8rpx;
+  background: linear-gradient(90deg, #F0F2F5 25%, #E8EAED 50%, #F0F2F5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon-wrap {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background: rgba(0, 191, 255, 0.08);
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 160rpx 0;
+  margin-bottom: 32rpx;
 }
 
-.loading-icon,
-.empty-icon {
-  font-size: 120rpx;
-  margin-bottom: 24rpx;
-  opacity: 0.4;
+.empty-icon-emoji {
+  font-size: 64rpx;
 }
 
-.loading-text,
-.empty-text {
+.empty-title {
   font-size: 28rpx;
+  font-weight: 600;
+  color: #666666;
+  margin-bottom: 12rpx;
+}
+
+.empty-subtitle {
+  font-size: 24rpx;
   color: #999999;
-  text-align: center;
-  line-height: 1.6;
+  margin-bottom: 48rpx;
+}
+
+.empty-btn {
+  width: 320rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+}
+
+.empty-btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+.empty-btn-text {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #FFFFFF;
 }
 
 .group-section {
-  margin-bottom: 32rpx;
+  margin-bottom: 36rpx;
 }
 
 .group-title {
   display: flex;
   align-items: center;
   height: 64rpx;
-  padding-left: 8rpx;
-  font-size: 26rpx;
-  font-weight: 600;
-  color: #666666;
-  letter-spacing: 1rpx;
+  padding: 0 8rpx;
+  margin-bottom: 16rpx;
 }
 
-.title-line {
+.title-bar {
   width: 6rpx;
   height: 28rpx;
-  background: linear-gradient(180deg, #00BFFF 0%, #0099CC 100%);
   border-radius: 3rpx;
-  margin-right: 12rpx;
+  margin-right: 10rpx;
+  flex-shrink: 0;
+}
+
+.title-emoji {
+  font-size: 36rpx;
+  margin-right: 10rpx;
+}
+
+.title-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #666666;
+}
+
+.title-count {
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #999999;
+  margin-left: 8rpx;
 }
 
 .account-list {
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .account-card {
   height: 120rpx;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 32rpx;
+  padding: 0 28rpx;
   background-color: #FFFFFF;
   border-radius: 20rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+  transition: all 200ms ease;
+  position: relative;
 }
 
 .account-card:active {
-  background-color: #F8F9FA;
+  background-color: #F5F7FA;
+  transform: scale(0.985);
 }
 
-.card-left {
-  display: flex;
-  align-items: center;
-  flex: 1;
+.card-bar {
+  width: 6rpx;
+  height: 48rpx;
+  border-radius: 3rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
 }
 
 .account-icon {
   font-size: 52rpx;
-  margin-right: 20rpx;
   width: 64rpx;
   text-align: center;
+  flex-shrink: 0;
+  margin-right: 20rpx;
 }
 
 .account-info {
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-width: 0;
 }
 
 .name-row {
@@ -308,6 +494,7 @@ onShow(() => {
   font-size: 32rpx;
   font-weight: 600;
   color: #333333;
+  line-height: 1.2;
 }
 
 .badges-row {
@@ -318,7 +505,7 @@ onShow(() => {
 
 .default-badge {
   background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
-  padding: 2rpx 12rpx;
+  padding: 4rpx 14rpx;
   border-radius: 8rpx;
 }
 
@@ -335,13 +522,17 @@ onShow(() => {
 .account-desc {
   font-size: 24rpx;
   color: #999999;
-  line-height: 1.4;
+  margin-top: 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .card-right {
   display: flex;
   align-items: center;
   margin-left: 16rpx;
+  flex-shrink: 0;
 }
 
 .balance {
