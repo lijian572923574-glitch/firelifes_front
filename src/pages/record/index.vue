@@ -161,19 +161,19 @@ const selectCategory = async (category: { id: number; name: string; icon: string
 
       if (category.name === '转账') {
         const nonLiability = accounts.filter(a => a.type !== 'liability')
-        fromAccount.value = nonLiability.find(a => a.isDefault) || nonLiability[0] || null
+        fromAccount.value = nonLiability.find(a => a.isDefaultExpense) || nonLiability[0] || null
         toAccount.value = accounts.find(a => a.id !== fromAccount.value?.id) || null
       } else if (category.name === '还债') {
         const nonLiability = accounts.filter(a => a.type !== 'liability')
         const liabilities = accounts.filter(a => a.type === 'liability')
-        fromAccount.value = nonLiability.find(a => a.isDefault) || nonLiability[0] || null
-        toAccount.value = liabilities.find(a => a.isDefault) || liabilities[0] || null
+        fromAccount.value = nonLiability.find(a => a.isDefaultExpense) || nonLiability[0] || null
+        toAccount.value = liabilities.find(a => a.isDefaultIncome) || liabilities[0] || null
       } else if (transactionType.value === 'expense') {
         const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
-        selectedAccount.value = expenseAccounts.find(a => a.isDefault) || expenseAccounts[0] || null
+        selectedAccount.value = expenseAccounts.find(a => a.isDefaultExpense) || expenseAccounts[0] || null
       } else {
         const incomeAccounts = accounts.filter(a => a.type !== 'liability')
-        selectedAccount.value = incomeAccounts.find(a => a.isDefault) || incomeAccounts[0] || null
+        selectedAccount.value = incomeAccounts.find(a => a.isDefaultIncome) || incomeAccounts[0] || null
       }
     }
   } catch (error) {
