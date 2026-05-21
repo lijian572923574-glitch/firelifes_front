@@ -1,5 +1,5 @@
 import request from './request'
-import type { Account, AccountRequest, AdjustBalanceRequest, AccountAdjustment } from '../types/account'
+import type { Account, AccountRequest } from '../types/account'
 
 // 获取账户列表
 export const getAccountList = () => {
@@ -40,22 +40,5 @@ export const deleteAccount = (id: string) => {
   return request({
     url: `/api/accounts/${id}`,
     method: 'DELETE'
-  })
-}
-
-// 调整账户余额
-export const adjustAccountBalance = (id: string, data: AdjustBalanceRequest) => {
-  return request<{ account: Account; adjustment: AccountAdjustment }>({
-    url: `/api/accounts/${id}/adjust`,
-    method: 'POST',
-    data
-  })
-}
-
-// 获取账户调整记录
-export const getAccountAdjustments = (id: string) => {
-  return request<AccountAdjustment[]>({
-    url: `/api/accounts/${id}/adjustments`,
-    method: 'GET'
   })
 }

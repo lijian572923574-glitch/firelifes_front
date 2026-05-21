@@ -2,7 +2,7 @@
 > 文件：`account-edit.md` | 中文名称：账户编辑 | 所属模块：系统配置（我的页面子模块）
 > 页面路径：`pages/my/account-setting/account-edit.vue`
 
-> 版本：v1.6 | 状态：✅已实现 | 最后更新：2026-05-10
+> 版本：v1.8 | 状态：✅已实现 | 最后更新：2026-05-21
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -14,6 +14,8 @@
 | v1.4 | 2026-05-10 | 与代码实现对齐：字段顺序、UI规范、数据结构、API | AI |
 | v1.5 | 2026-05-10 | 引入WotUI组件：WdNavbar、WdInput、WdTextarea、WdButton | AI |
 | v1.6 | 2026-05-10 | 负债类余额特殊处理：默认为负数、只允许负数、切换类型时自动转换 | AI |
+| v1.7 | 2026-05-21 | 删除调整余额功能，余额直接在账户编辑页修改 | AI |
+| v1.8 | 2026-05-21 | 新增「设为默认支出账户」和「设为默认收入账户」开关，支持记账时自动选中 | AI |
 
 ---
 
@@ -55,6 +57,16 @@
 │  │ ¥ 0.00                     [x] │ │
 │  └────────────────────────────────┘ │
 │                                      │
+│  设为默认支出账户        (WdSwitch)  │
+│  ┌────────────────────────────────┐ │
+│  │ [ ] 记账时默认选中用于支出      │ │
+│  └────────────────────────────────┘ │
+│                                      │
+│  设为默认收入账户        (WdSwitch)  │
+│  ┌────────────────────────────────┐ │
+│  │ [ ] 记账时默认选中用于收入      │ │
+│  └────────────────────────────────┘ │
+│                                      │
 │  账户说明                 (WdTextarea)│
 │  ┌────────────────────────────────┐ │
 │  │ 请输入账户说明（选填）          │ │
@@ -79,6 +91,8 @@
 | 账户名称 | ✅ | 1-20字符 | 非空且不超过20字符 |
 | 账户类型 | ✅ | 五选一 | 现金类 / 投资类 / 固定资产类 / 折旧资产类 / 负债类，pill标签样式 |
 | 账户余额 | ✅ | 数字，最多2位小数 | ¥前缀，输入时正则校验 `/^\d*\.?\d{0,2}$/`，负债类传负数 |
+| 设为默认支出账户 | ⭕ | 开关 | 开启后记账时默认选中此账户，同一类型最多一个默认 |
+| 设为默认收入账户 | ⭕ | 开关 | 开启后记账时默认选中此账户，同一类型最多一个默认 |
 | 账户说明 | ⭕ | 0-500字符 | 多行文本输入，右下角显示字符计数 `n/500` |
 
 ### 账户类型
@@ -100,7 +114,7 @@
 
 ### 交互细节
 
-- **默认值填充**：新增模式图标默认💵，类型默认cash（现金类），余额输入框为空
+- **默认值填充**：新增模式图标默认💵，类型默认cash（现金类），余额输入框为空，默认开关均关闭
 - **保存按钮**：使用 WdButton 组件，固定在页面底部，`disabled` 置灰不可点击，`loading` 显示加载中状态
 - **保存反馈**：调用API成功后toast提示"创建成功"/"修改成功"，1.5秒后自动 `navigateBack` 返回列表页
 - **余额输入**：使用 WdInput 组件，`prefix` 插槽显示¥符号，输入时实时正则校验
@@ -110,8 +124,20 @@
 - **类型切换自动转换**：
   - 从非负债类切换到负债类：如果余额是正数，自动加负号转为负数
   - 从负债类切换到非负债类：如果余额是负数，自动去掉负号转为正数
+- **默认账户开关互斥逻辑**：
+  - 开启「设为默认支出账户」时，后端自动将同类型其他账户的该字段设为false
+  - 开启「设为默认收入账户」时，后端自动将同类型其他账户的该字段设为false
+  - 每个账户类型（现金类、投资类等）最多有一个默认支出账户和一个默认收入账户
 - **字符计数**：WdTextarea 组件 `showWordCount` 属性自动显示 `当前字符数/500`
 - **清除按钮**：WdInput 组件 `showClear` 属性提供一键清除功能
+
+### 记账页使用规则
+
+- 新增记账记录时，根据收支类型自动选择对应类型的默认账户
+- 支出场景：优先选择 `isDefaultExpense = true` 的账户
+- 收入场景：优先选择 `isDefaultIncome = true` 的账户
+- 若用户手动切换过账户，下次进入时优先记住用户上次选择的账户
+- 若无默认账户，则选择该类型排序（order字段）最靠前的账户
 
 ## UI 组件使用
 
@@ -122,6 +148,8 @@
 | WdNavbar | 顶部导航栏 | `title`, `leftArrow`, `fixed`, `placeholder`, `bordered`, `safeAreaInsetTop` |
 | WdInput | 账户名称输入 | `v-model`, `placeholder`, `maxlength=20`, `showClear` |
 | WdInput | 账户余额输入 | `:model-value` + `@update:model-value`, `type="text"`, `:placeholder` 动态占位符, `showClear`, `prefix` 插槽放¥ |
+| WdSwitch | 默认支出账户开关 | `v-model="isDefaultExpense"`, `activeColor="#00BFFF"` |
+| WdSwitch | 默认收入账户开关 | `v-model="isDefaultIncome"`, `activeColor="#00BFFF"` |
 | WdTextarea | 账户说明输入 | `v-model`, `placeholder`, `maxlength=500`, `showWordCount`, `autoHeight` |
 | WdButton | 保存按钮 | `type="primary"`, `block`, `:disabled`, `:loading` |
 
@@ -190,7 +218,8 @@ export interface Account {
   type: AccountType;
   balance: number;
   description?: string;
-  isDefault: boolean;
+  isDefaultExpense: boolean;     // 是否为默认支出账户
+  isDefaultIncome: boolean;      // 是否为默认收入账户
   order: number;
   isVisible: boolean;
   isDeleted: boolean;
@@ -205,6 +234,8 @@ export interface AccountRequest {
   type: AccountType;
   balance: number;
   description?: string;
+  isDefaultExpense: boolean;
+  isDefaultIncome: boolean;
 }
 
 // 账户类型选项
@@ -238,7 +269,8 @@ const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt
     balance: 0,
     description: '日常现金备用',
     order: 1,
-    isDefault: true,
+    isDefaultExpense: true,    // 现金默认作为支出账户
+    isDefaultIncome: true,     // 现金默认作为收入账户
     isVisible: true,
     isDeleted: false
   },
@@ -249,7 +281,8 @@ const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt
     balance: 0,
     description: '手机、电脑等折旧物品',
     order: 2,
-    isDefault: true,
+    isDefaultExpense: false,
+    isDefaultIncome: false,
     isVisible: true,
     isDeleted: false
   },
@@ -260,7 +293,8 @@ const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt
     balance: 0,
     description: '房产、车位等高价值物品',
     order: 3,
-    isDefault: true,
+    isDefaultExpense: false,
+    isDefaultIncome: false,
     isVisible: true,
     isDeleted: false
   }
@@ -280,11 +314,13 @@ const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt
 ```typescript
 // 创建/更新请求体（AccountRequest）
 {
-  name: string;        // 账户名称
-  icon: string;        // 图标emoji
-  type: AccountType;   // 账户类型
-  balance: number;     // 账户余额
-  description?: string;// 账户说明
+  name: string;             // 账户名称
+  icon: string;             // 图标emoji
+  type: AccountType;        // 账户类型
+  balance: number;          // 账户余额
+  description?: string;     // 账户说明
+  isDefaultExpense: boolean;// 是否默认支出账户
+  isDefaultIncome: boolean; // 是否默认收入账户
 }
 
 // 响应体

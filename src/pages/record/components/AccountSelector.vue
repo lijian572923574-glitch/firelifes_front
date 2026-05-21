@@ -147,11 +147,53 @@ const loadAccounts = async () => {
     const res = await getAccountList()
     if (res.success && res.data) {
       accounts.value = res.data
+      // 如果没有已选中的账户，自动选择默认账户
+      if (!selectedId.value) {
+        autoSelectDefaultAccount()
+      }
     }
   } catch (error) {
     console.error('加载账户列表失败:', error)
   } finally {
     loading.value = false
+  }
+}
+
+const autoSelectDefaultAccount = () => {
+  const availableAccounts = getFilteredAccounts(
+    accounts.value,
+    props.filterType || 'expense',
+    props.filterRole || 'from'
+  )
+
+  if (availableAccounts.length === 0) return
+
+  // 根据交易类型选择对应的默认账户
+  let defaultAccount: Account | null = null
+
+  if (props.filterType === 'expense' || props.filterType === 'transfer') {
+    // 支出/转出：选择默认支出账户
+    defaultAccount = availableAccounts.find(a => a.isDefaultExpense) || null
+  } else if (props.filterType === 'income') {
+    // 收入：选择默认收入账户
+    defaultAccount = availableAccounts.find(a => a.isDefaultIncome) || null
+  } else if (props.filterType === 'repayment') {
+    if (props.filterRole === 'from') {
+      // 还款-从：选择默认支出账户
+      defaultAccount = availableAccounts.find(a => a.isDefaultExpense) || null
+    } else {
+      // 还款-到：选择负债类的第一个
+      defaultAccount = availableAccounts[0] || null
+    }
+  }
+
+  // 如果没有找到默认账户，选择排序最靠前的
+  if (!defaultAccount) {
+    defaultAccount = availableAccounts.sort((a, b) => a.order - b.order)[0]
+  }
+
+  if (defaultAccount) {
+    selectAccount(defaultAccount)
   }
 }
 
@@ -162,6 +204,10 @@ const setSelected = (accountId?: string) => {
 watch(() => props.filterType, () => {
   selectedId.value = ''
   searchKeyword.value = ''
+  // 切换类型时重新自动选择默认账户
+  if (accounts.value.length > 0) {
+    autoSelectDefaultAccount()
+  }
 })
 
 onMounted(() => {

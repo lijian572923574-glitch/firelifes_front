@@ -75,13 +75,34 @@
           </WdInput>
         </view>
 
-        <!-- 调整余额入口 -->
-        <view v-if="isEdit" class="adjust-section" @click="goToAdjust">
-          <view class="adjust-left">
-            <text class="adjust-icon">🔄</text>
-            <text class="adjust-text">调整余额</text>
+        <!-- 默认支出账户开关 -->
+        <view class="form-item">
+          <view class="switch-item" @click="formData.isDefaultExpense = !formData.isDefaultExpense">
+            <view class="switch-label">
+              <text class="switch-title">设为默认支出账户</text>
+              <text class="switch-desc">记账时默认选中此账户用于支出</text>
+            </view>
+            <WdSwitch
+              :model-value="formData.isDefaultExpense"
+              @update:model-value="formData.isDefaultExpense = $event"
+              activeColor="#00BFFF"
+            />
           </view>
-          <text class="arrow">›</text>
+        </view>
+
+        <!-- 默认收入账户开关 -->
+        <view class="form-item">
+          <view class="switch-item" @click="formData.isDefaultIncome = !formData.isDefaultIncome">
+            <view class="switch-label">
+              <text class="switch-title">设为默认收入账户</text>
+              <text class="switch-desc">记账时默认选中此账户用于收入</text>
+            </view>
+            <WdSwitch
+              :model-value="formData.isDefaultIncome"
+              @update:model-value="formData.isDefaultIncome = $event"
+              activeColor="#00BFFF"
+            />
+          </view>
         </view>
 
         <!-- 账户说明 -->
@@ -136,7 +157,9 @@ const formData = ref<AccountRequest>({
   icon: '💵',
   type: 'cash',
   balance: 0,
-  description: ''
+  description: '',
+  isDefaultExpense: false,
+  isDefaultIncome: false
 });
 
 const balanceInput = ref('');
@@ -164,7 +187,9 @@ const loadAccountDetail = async (id: string) => {
         icon: res.data.icon,
         type: res.data.type,
         balance: displayBalance,
-        description: res.data.description
+        description: res.data.description,
+        isDefaultExpense: res.data.isDefaultExpense || false,
+        isDefaultIncome: res.data.isDefaultIncome || false
       };
       
       balanceInput.value = displayBalance.toString();
@@ -297,14 +322,6 @@ const goBack = () => {
   navigateBack('/pages/my/account-setting/account-list');
 };
 
-const goToAdjust = () => {
-  if (accountId.value) {
-    uni.navigateTo({
-      url: `/pages/my/account-setting/account-adjust?id=${accountId.value}`
-    });
-  }
-};
-
 onLoad((options: any) => {
   if (options.id) {
     accountId.value = options.id;
@@ -315,7 +332,9 @@ onLoad((options: any) => {
       icon: '💵',
       type: 'cash',
       balance: 0,
-      description: ''
+      description: '',
+      isDefaultExpense: false,
+      isDefaultIncome: false
     };
     balanceInput.value = '';
   }
@@ -434,31 +453,30 @@ onLoad((options: any) => {
   font-weight: 600;
 }
 
-/* 调整余额入口 */
-.adjust-section {
+/* 开关项 */
+.switch-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 32rpx;
-  padding: 28rpx;
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-  border-radius: 16rpx;
+  padding: 16rpx 0;
 }
 
-.adjust-left {
+.switch-label {
+  flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 8rpx;
 }
 
-.adjust-icon {
-  font-size: 44rpx;
-  margin-right: 16rpx;
-}
-
-.adjust-text {
+.switch-title {
   font-size: 28rpx;
-  color: #0277BD;
-  font-weight: 600;
+  color: #333333;
+  font-weight: 500;
+}
+
+.switch-desc {
+  font-size: 24rpx;
+  color: #999999;
 }
 
 /* 保存区域 */

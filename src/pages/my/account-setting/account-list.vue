@@ -42,8 +42,13 @@
                     <view class="account-info">
                       <view class="name-row">
                         <text class="account-name">{{ account.name }}</text>
-                        <view v-if="account.isDefault" class="default-badge">
-                          <text class="badge-text">默认</text>
+                        <view class="badges-row">
+                          <view v-if="account.isDefaultExpense" class="default-badge">
+                            <text class="badge-text">默认支出</text>
+                          </view>
+                          <view v-if="account.isDefaultIncome" class="default-badge income">
+                            <text class="badge-text">默认收入</text>
+                          </view>
                         </view>
                       </view>
                       <text v-if="account.description" class="account-desc">{{ account.description }}</text>
@@ -67,7 +72,7 @@
                     <text class="swipe-btn-text">编辑</text>
                   </view>
                   <view
-                    v-if="!account.isDefault"
+                    v-if="!account.isDefaultExpense && !account.isDefaultIncome"
                     class="swipe-btn swipe-btn-delete"
                     @click.stop="handleDelete(account)"
                   >
@@ -98,7 +103,7 @@ const accounts = ref<Account[]>([])
 
 const groupedAccounts = computed(() => {
   const groups: { type: AccountType; accounts: Account[] }[] = []
-  const typeOrder: AccountType[] = ['cash', 'fixed_asset', 'depreciable_asset', 'liability']
+  const typeOrder: AccountType[] = ['cash', 'investment', 'fixed_asset', 'depreciable_asset', 'liability']
 
   typeOrder.forEach(type => {
     const typeAccounts = accounts.value.filter(a => a.type === type)
@@ -305,10 +310,20 @@ onShow(() => {
   color: #333333;
 }
 
+.badges-row {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
 .default-badge {
   background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
   padding: 2rpx 12rpx;
   border-radius: 8rpx;
+}
+
+.default-badge.income {
+  background: linear-gradient(135deg, #19BE6B 0%, #14A85D 100%);
 }
 
 .badge-text {
