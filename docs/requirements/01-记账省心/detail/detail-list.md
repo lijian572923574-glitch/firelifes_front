@@ -2,14 +2,19 @@
 > 文件：`detail-month-switch.md` | 中文名称：明细页（账单明细首页） | 所属模块：记账省心
 > 页面路径：`src/pages/detail/index.vue`
 
-> 版本：v1.2 | 状态：✅已完成 | 最后更新：2026-05-21
+> 版本：v1.3 | 状态：✅已完成 | 最后更新：2026-05-21
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.3 | 2026-05-21 | 新增 Pencil 设计稿：`designs/detail-index.pen`，可视化页面布局与组件层级 | AI-UI设计 |
 | v1.2 | 2026-05-21 | 修复 CATEGORY_ICON_MAP：补全 26 个数据库已有分类的 iconfont 映射，修复 statistics 页 20 个错误图标类名 | AI |
 | v1.1 | 2026-05-21 | 补充完整页面结构：DetailHeader、FunctionBar、BillCard、CustomTabbar、分类图标映射、空状态、加载态、切换动画 | AI |
 | v1.0 | 2026-05-14 | 初始版本：月份切换、年月选择器、共用组件 | AI |
+
+---
+
+> 🎨 **Pencil 设计稿**: `designs/detail-index.pen` — 在编辑器中使用 Pencil 插件打开，可以可视化查看节点层级、精确尺寸和颜色。
 
 ---
 
@@ -67,6 +72,8 @@
 
 ## 二、组件拆解
 
+> 📐 完整可视化设计稿请打开 `designs/detail-index.pen`（Pencil 插件）
+
 ### 2.1 DetailHeader（头部区域）
 
 | 属性 | 值 |
@@ -114,12 +121,12 @@
 **Emits:** `item-click`, `more-click`
 
 **默认功能入口（定义在 `src/stores/functionItems.ts`）：**
-| key | 图标 | 文字 | 点击行为 |
-|-----|------|------|---------|
-| bill | `icon-zhangdan` | 账单 | 跳转 `/pages/detail/bill` |
-| asset | `icon-zichan` | 资产管家 | 未实现（toast 提示） |
-| fire | `icon-mubiao` | FIRE进度 | 跳转 `/pages/detail/fire-progress` |
-| cashback | `icon-gouwuche` | 购物返现 | 未实现（toast 提示） |
+| key | emoji | 文字 | 点击行为 |
+|-----|-------|------|---------|
+| bill | 📊 | 账单 | 跳转 `/pages/detail/bill` |
+| asset | 🏠 | 资产管家 | 未实现（toast 提示） |
+| fire | 🔥 | FIRE进度 | 跳转 `/pages/detail/fire-progress` |
+| cashback | 🛒 | 购物返现 | 未实现（toast 提示） |
 
 > **排序**：用户可在「功能页」(`/pages/detail/function-list`) 拖拽排序，前4个展示在明细页。
 
@@ -157,7 +164,9 @@
 | 属性 | 值 |
 |------|-----|
 | 文件 | `src/components/CustomTabbar.vue` |
-| 布局 | 固定在页面底部，3个 tab：明细 / 记账 / 我的 |
+| 布局 | 固定在页面底部，5 个 tab：明细 / 统计 / 记账 / 资产 / 我的 |
+| 高度 | 48px |
+| 背景 | `#FFFFFF`，顶部 `<hr>` 分割线 |
 
 ---
 
