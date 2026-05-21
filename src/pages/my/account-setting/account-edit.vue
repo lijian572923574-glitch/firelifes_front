@@ -105,6 +105,116 @@
           </view>
         </view>
 
+        <!-- 负债类账户专用字段 - 贷款参数（灵活还款除外） -->
+        <view v-if="formData.type === 'liability' && formData.repaymentMethod !== 'flexible'" class="form-item">
+          <view class="liability-section">
+            <view class="section-title">贷款参数</view>
+
+            <!-- 原始贷款总本金 -->
+            <view class="field-item">
+              <text class="field-label">原始贷款总本金</text>
+              <WdInput
+                v-model.number="formData.originalPrincipal"
+                type="digit"
+                placeholder="请输入原始贷款总额"
+                customStyle="background: #F8F8F8; border-radius: 12rpx;"
+              >
+                <template #suffix>
+                  <text class="unit">元</text>
+                </template>
+              </WdInput>
+            </view>
+
+            <!-- 贷款年利率 -->
+            <view class="field-item">
+              <text class="field-label">贷款年利率</text>
+              <WdInput
+                v-model.number="formData.annualInterestRate"
+                type="digit"
+                placeholder="4.9"
+                customStyle="background: #F8F8F8; border-radius: 12rpx;"
+              >
+                <template #suffix>
+                  <text class="unit">%</text>
+                </template>
+              </WdInput>
+              <text class="field-hint">灵活还款填0表示无息</text>
+            </view>
+
+            <!-- 还款方式 -->
+            <view class="field-item">
+              <text class="field-label">还款方式</text>
+              <view class="repayment-selector">
+                <view
+                  v-for="method in repaymentMethods"
+                  :key="method.value"
+                  class="repayment-item"
+                  :class="{ active: formData.repaymentMethod === method.value }"
+                  @click="formData.repaymentMethod = method.value"
+                >
+                  <text class="repayment-text">{{ method.label }}</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 总还款期数 - 灵活还款不显示 -->
+            <view v-if="formData.repaymentMethod !== 'flexible'" class="field-item">
+              <text class="field-label">总还款期数</text>
+              <WdInput
+                v-model.number="formData.totalMonths"
+                type="number"
+                placeholder="请输入总期数"
+                customStyle="background: #F8F8F8; border-radius: 12rpx;"
+              >
+                <template #suffix>
+                  <text class="unit">月</text>
+                </template>
+              </WdInput>
+            </view>
+
+            <!-- 剩余还款期数 - 灵活还款不显示 -->
+            <view v-if="formData.repaymentMethod !== 'flexible'" class="field-item">
+              <text class="field-label">剩余还款期数</text>
+              <WdInput
+                v-model.number="formData.remainingMonths"
+                type="number"
+                placeholder="请输入剩余期数"
+                customStyle="background: #F8F8F8; border-radius: 12rpx;"
+              >
+                <template #suffix>
+                  <text class="unit">月</text>
+                </template>
+              </WdInput>
+            </view>
+
+            <!-- 每月还款日 - 灵活还款不显示 -->
+            <view v-if="formData.repaymentMethod !== 'flexible'" class="field-item">
+              <text class="field-label">每月还款日</text>
+              <view class="day-selector">
+                <view
+                  v-for="day in 28"
+                  :key="day"
+                  class="day-item"
+                  :class="{ active: formData.repaymentDay === day }"
+                  @click="formData.repaymentDay = day"
+                >
+                  <text class="day-text">{{ day }}</text>
+                </view>
+              </view>
+            </view>
+
+            <!-- 关联资产账户 -->
+            <view class="field-item">
+              <text class="field-label">关联资产账户（可选）</text>
+              <view class="account-picker" @click="showAccountPicker = true">
+                <text v-if="linkedAccountName" class="picker-value">{{ linkedAccountName }}</text>
+                <text v-else class="picker-placeholder">选择关联的固定资产账户</text>
+                <text class="picker-arrow">›</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
         <!-- 账户说明 -->
         <view class="form-item">
           <view class="form-label">账户说明</view>
@@ -137,20 +247,69 @@
       </WdButton>
     </view>
   </view>
+
+  <!-- 账户选择弹窗 -->
+  <wd-popup v-model="showAccountPicker" position="bottom">
+    <view class="account-picker-popup">
+      <view class="picker-header">
+        <text class="picker-title">选择关联资产账户</text>
+        <text class="picker-cancel" @click="showAccountPicker = false">取消</text>
+      </view>
+      <view class="picker-list">
+        <view
+          v-for="account in assetAccounts"
+          :key="account.id"
+          class="picker-item"
+          :class="{ selected: formData.linkedAssetAccountId === account.id }"
+          @click="selectLinkedAccount(account.id)"
+        >
+          <text class="picker-icon">{{ account.icon }}</text>
+          <text class="picker-name">{{ account.name }}</text>
+          <text v-if="formData.linkedAssetAccountId === account.id" class="check-icon">✓</text>
+        </view>
+        <view
+          v-if="formData.linkedAssetAccountId"
+          class="picker-item picker-clear"
+          @click="clearLinkedAccount"
+        >
+          <text class="picker-name clear-text">不关联任何账户</text>
+        </view>
+      </view>
+    </view>
+  </wd-popup>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
-import { getAccountDetail, createAccount, updateAccount } from '../../../api/account';
+import { getAccountDetail, createAccount, updateAccount, getAccountList } from '../../../api/account';
 import { navigateBack } from '../../../utils/navigate';
-import type { Account, AccountRequest, AccountType } from '../../../types/account';
+import type { Account, AccountRequest, AccountType, RepaymentMethod } from '../../../types/account';
 import { ACCOUNT_TYPE_OPTIONS, ACCOUNT_ICONS } from '../../../types/account';
 
 const accountId = ref<string | null>(null);
 const isEdit = computed(() => !!accountId.value);
 const account = ref<Account | null>(null);
 const saving = ref(false);
+
+// 还款方式选项
+const repaymentMethods: { value: RepaymentMethod; label: string }[] = [
+  { value: 'equal_principal_interest', label: '等额本息' },
+  { value: 'equal_principal', label: '等额本金' },
+  { value: 'interest_first', label: '先息后本' },
+  { value: 'flexible', label: '灵活还款' }
+];
+
+// 资产账户列表（用于关联固定资产）
+const assetAccounts = ref<Account[]>([]);
+const showAccountPicker = ref(false);
+
+// 计算关联账户名称
+const linkedAccountName = computed(() => {
+  if (!formData.value.linkedAssetAccountId) return '';
+  const account = assetAccounts.value.find(a => a.id === formData.value.linkedAssetAccountId);
+  return account?.name || '';
+});
 
 const formData = ref<AccountRequest>({
   name: '',
@@ -159,7 +318,15 @@ const formData = ref<AccountRequest>({
   balance: 0,
   description: '',
   isDefaultExpense: false,
-  isDefaultIncome: false
+  isDefaultIncome: false,
+  // 负债类字段默认值
+  originalPrincipal: undefined,
+  annualInterestRate: 4.9,
+  repaymentMethod: 'equal_principal_interest',
+  totalMonths: undefined,
+  remainingMonths: undefined,
+  repaymentDay: undefined,
+  linkedAssetAccountId: undefined
 });
 
 const balanceInput = ref('');
@@ -189,10 +356,21 @@ const loadAccountDetail = async (id: string) => {
         balance: displayBalance,
         description: res.data.description,
         isDefaultExpense: res.data.isDefaultExpense || false,
-        isDefaultIncome: res.data.isDefaultIncome || false
+        isDefaultIncome: res.data.isDefaultIncome || false,
+        // 负债类字段
+        originalPrincipal: res.data.originalPrincipal,
+        annualInterestRate: res.data.annualInterestRate ?? 4.9,
+        repaymentMethod: res.data.repaymentMethod || 'equal_principal_interest',
+        totalMonths: res.data.totalMonths,
+        remainingMonths: res.data.remainingMonths,
+        repaymentDay: res.data.repaymentDay,
+        linkedAssetAccountId: res.data.linkedAssetAccountId
       };
       
       balanceInput.value = displayBalance.toString();
+
+      // 加载资产账户列表（用于关联）
+      loadAssetAccounts();
     } else {
       uni.showToast({
         title: res.message || '获取账户详情失败',
@@ -318,6 +496,31 @@ const handleSave = async () => {
   }
 };
 
+// 加载固定资产账户列表（用于关联）
+const loadAssetAccounts = async () => {
+  try {
+    const res = await getAccountList();
+    if (res.success) {
+      // 只显示固定资产类账户
+      assetAccounts.value = res.data.filter((a: Account) => a.type === 'fixed_asset');
+    }
+  } catch (error) {
+    console.error('加载资产账户失败:', error);
+  }
+};
+
+// 选择关联账户
+const selectLinkedAccount = (accountId: string) => {
+  formData.value.linkedAssetAccountId = accountId;
+  showAccountPicker.value = false;
+};
+
+// 清除关联账户
+const clearLinkedAccount = () => {
+  formData.value.linkedAssetAccountId = undefined;
+  showAccountPicker.value = false;
+};
+
 const goBack = () => {
   navigateBack('/pages/my/account-setting/account-list');
 };
@@ -334,9 +537,19 @@ onLoad((options: any) => {
       balance: 0,
       description: '',
       isDefaultExpense: false,
-      isDefaultIncome: false
+      isDefaultIncome: false,
+      enableAutoRepayment: false,
+      originalPrincipal: undefined,
+      annualInterestRate: 4.9,
+      repaymentMethod: 'equal_principal_interest',
+      totalMonths: undefined,
+      remainingMonths: undefined,
+      repaymentDay: undefined,
+      linkedAssetAccountId: undefined
     };
     balanceInput.value = '';
+    // 加载资产账户列表（用于关联）
+    loadAssetAccounts();
   }
 });
 </script>
@@ -477,6 +690,204 @@ onLoad((options: any) => {
 .switch-desc {
   font-size: 24rpx;
   color: #999999;
+}
+
+/* 负债类账户表单 */
+.liability-section {
+  padding: 24rpx;
+  background: linear-gradient(135deg, rgba(250, 53, 52, 0.05) 0%, rgba(250, 53, 52, 0.02) 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid rgba(250, 53, 52, 0.1);
+}
+
+.section-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #FA3534;
+  margin-bottom: 24rpx;
+}
+
+.field-item {
+  margin-bottom: 32rpx;
+}
+
+.field-item:last-child {
+  margin-bottom: 0;
+}
+
+.field-label {
+  font-size: 26rpx;
+  color: #333333;
+  font-weight: 500;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.field-hint {
+  font-size: 22rpx;
+  color: #999999;
+  margin-top: 8rpx;
+  display: block;
+}
+
+.unit {
+  font-size: 26rpx;
+  color: #999999;
+  margin-right: 8rpx;
+}
+
+/* 还款方式选择器 */
+.repayment-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.repayment-item {
+  padding: 16rpx 24rpx;
+  background: #FFFFFF;
+  border: 2rpx solid #EEEEEE;
+  border-radius: 12rpx;
+  transition: all 0.2s ease;
+}
+
+.repayment-item.active {
+  border-color: #FA3534;
+  background: rgba(250, 53, 52, 0.05);
+}
+
+.repayment-text {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.repayment-item.active .repayment-text {
+  color: #FA3534;
+  font-weight: 500;
+}
+
+/* 还款日选择器 */
+.day-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.day-item {
+  width: 64rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border: 2rpx solid #EEEEEE;
+  border-radius: 12rpx;
+  transition: all 0.2s ease;
+}
+
+.day-item.active {
+  border-color: #FA3534;
+  background: rgba(250, 53, 52, 0.05);
+}
+
+.day-text {
+  font-size: 24rpx;
+  color: #666666;
+}
+
+.day-item.active .day-text {
+  color: #FA3534;
+  font-weight: 600;
+}
+
+/* 账户选择器 */
+.account-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+  background: #FFFFFF;
+  border-radius: 12rpx;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.picker-placeholder {
+  font-size: 28rpx;
+  color: #CCCCCC;
+}
+
+.picker-arrow {
+  font-size: 32rpx;
+  color: #CCCCCC;
+}
+
+/* 账户选择弹窗 */
+.account-picker-popup {
+  background: #FFFFFF;
+  border-radius: 24rpx 24rpx 0 0;
+  max-height: 60vh;
+}
+
+.picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32rpx 24rpx;
+  border-bottom: 2rpx solid #F5F5F5;
+}
+
+.picker-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333333;
+}
+
+.picker-cancel {
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.picker-list {
+  padding: 16rpx 0;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  transition: background 0.2s ease;
+}
+
+.picker-item:active {
+  background: #F5F5F5;
+}
+
+.picker-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.picker-name {
+  flex: 1;
+  font-size: 28rpx;
+  color: #333333;
+}
+
+.check-icon {
+  font-size: 28rpx;
+  color: #00BFFF;
+  font-weight: 600;
+}
+
+.picker-clear .picker-name {
+  color: #FA3534;
+  text-align: center;
 }
 
 /* 保存区域 */

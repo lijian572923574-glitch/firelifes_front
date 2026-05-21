@@ -1,6 +1,9 @@
 // 账户类型枚举
 export type AccountType = 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability';
 
+// 还款方式类型
+export type RepaymentMethod = 'equal_principal_interest' | 'equal_principal' | 'interest_first' | 'flexible';
+
 // 账户数据结构
 export interface Account {
   id: string;
@@ -12,6 +15,14 @@ export interface Account {
   description?: string;
   isDefaultExpense: boolean;     // 是否为默认支出账户
   isDefaultIncome: boolean;      // 是否为默认收入账户
+  // 负债类账户专用字段
+  originalPrincipal?: number;         // 原始贷款总本金
+  annualInterestRate?: number;        // 贷款年利率
+  repaymentMethod?: RepaymentMethod;  // 还款方式
+  totalMonths?: number;               // 总还款期数
+  remainingMonths?: number;            // 剩余还款期数
+  repaymentDay?: number;               // 每月还款日
+  linkedAssetAccountId?: string;       // 关联资产账户ID
   order: number;
   isVisible: boolean;
   isDeleted: boolean;
@@ -28,6 +39,14 @@ export interface AccountRequest {
   description?: string;
   isDefaultExpense: boolean;
   isDefaultIncome: boolean;
+  // 负债类账户专用字段
+  originalPrincipal?: number;
+  annualInterestRate?: number;
+  repaymentMethod?: RepaymentMethod;
+  totalMonths?: number;
+  remainingMonths?: number;
+  repaymentDay?: number;
+  linkedAssetAccountId?: string;
 }
 
 // 默认账户配置
