@@ -55,19 +55,6 @@
         <text class="loading-text">记账中...</text>
       </view>
     </view>
-
-    <RecordConfirmCard
-      v-if="showConfirmCard"
-      :type="transactionType"
-      :amount="Math.abs(parseFloat(displayAmount))"
-      :categoryName="selectedCategory?.name || ''"
-      :accountName="activeAccount?.name || ''"
-      :accountIcon="activeAccount?.icon || ''"
-      :accountBalance="0"
-      :hasAsset="!!assetData"
-      @continue="handleContinueRecord"
-      @back="handleBackToDetail"
-    />
   </view>
 </template>
 
@@ -77,7 +64,6 @@ import { onShow } from '@dcloudio/uni-app'
 import CategorySelector from './components/CategorySelector.vue'
 import TransactionForm from './components/TransactionForm.vue'
 import DatePicker from './components/DatePicker.vue'
-import RecordConfirmCard from './components/RecordConfirmCard.vue'
 import { recordApi } from '../../api/record'
 import { getAccountList } from '../../api/account'
 import type { Account } from '../../types/account'
@@ -100,12 +86,6 @@ const selectedAccount = ref<Account | null>(null)
 const fromAccount = ref<Account | null>(null)
 const toAccount = ref<Account | null>(null)
 const assetData = ref<DepreciatingAssetData | null>(null)
-const showConfirmCard = ref(false)
-
-const activeAccount = computed(() => {
-  if (isTransfer.value || isRepayment.value) return fromAccount.value
-  return selectedAccount.value
-})
 
 const isTransfer = computed(() => selectedCategory.value?.name === '转账')
 const isRepayment = computed(() => selectedCategory.value?.name === '还债')
@@ -258,7 +238,10 @@ const handleComplete = async () => {
       submitStatus.value = 'idle'
       isSubmitting.value = false
       showTransactionForm.value = false
-      showConfirmCard.value = true
+      uni.showToast({ title: '记账成功', icon: 'success' })
+      setTimeout(() => {
+        uni.reLaunch({ url: '/pages/detail/index' })
+      }, 800)
     } else {
       submitStatus.value = 'error'
       setTimeout(() => {
@@ -278,18 +261,6 @@ const handleComplete = async () => {
   }
 }
 
-const handleContinueRecord = () => {
-  showConfirmCard.value = false
-  selectedCategory.value = null
-  displayAmount.value = ''
-  remark.value = ''
-  assetData.value = null
-  showTransactionForm.value = false
-}
-
-const handleBackToDetail = () => {
-  uni.reLaunch({ url: '/pages/detail/index' })
-}
 </script>
 
 <style>

@@ -622,6 +622,14 @@ import { onShow } from '@dcloudio/uni-app'
 - 确保 vite.config.ts 配置了 `@uni-helper/vite-plugin-uni-components`
 - 组件名使用 PascalCase（大写开头）
 
+#### 7001 端口被占用（EADDRINUSE）
+- 关闭终端后 `npm run dev` 的 node 进程可能未退出，持续占用 7001 端口
+- 先查看占用进程：`lsof -i :7001`
+- 强杀占用进程：`lsof -ti :7001 | xargs kill -9`
+- 确认释放：`lsof -i :7001`（无输出即已释放）
+- 然后重新执行 `npm run dev`
+- **根本方案**：退出终端前先 `Ctrl+C` 停止 dev 进程，或使用 `pkill -f "midway"` 统一清理
+
 ---
 
 ## 第六部分：代码审查清单

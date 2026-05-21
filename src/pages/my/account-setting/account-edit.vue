@@ -76,30 +76,28 @@
         </view>
 
         <!-- 默认支出账户开关 -->
-        <view class="form-item">
-          <view class="switch-item" @click="formData.isDefaultExpense = !formData.isDefaultExpense">
+        <view v-if="canSetDefault" class="form-item">
+          <view class="switch-item">
             <view class="switch-label">
               <text class="switch-title">设为默认支出账户</text>
               <text class="switch-desc">记账时默认选中此账户用于支出</text>
             </view>
             <WdSwitch
-              :model-value="formData.isDefaultExpense"
-              @update:model-value="formData.isDefaultExpense = $event"
+              v-model="formData.isDefaultExpense"
               activeColor="#00BFFF"
             />
           </view>
         </view>
 
         <!-- 默认收入账户开关 -->
-        <view class="form-item">
-          <view class="switch-item" @click="formData.isDefaultIncome = !formData.isDefaultIncome">
+        <view v-if="canSetDefault" class="form-item">
+          <view class="switch-item">
             <view class="switch-label">
               <text class="switch-title">设为默认收入账户</text>
               <text class="switch-desc">记账时默认选中此账户用于收入</text>
             </view>
             <WdSwitch
-              :model-value="formData.isDefaultIncome"
-              @update:model-value="formData.isDefaultIncome = $event"
+              v-model="formData.isDefaultIncome"
               activeColor="#00BFFF"
             />
           </view>
@@ -304,6 +302,11 @@ const repaymentMethods: { value: RepaymentMethod; label: string }[] = [
 const assetAccounts = ref<Account[]>([]);
 const showAccountPicker = ref(false);
 
+// 只有现金类和负债类可以设置为默认账户
+const canSetDefault = computed(() => {
+  return formData.value.type === 'cash' || formData.value.type === 'liability';
+});
+
 // 计算关联账户名称
 const linkedAccountName = computed(() => {
   if (!formData.value.linkedAssetAccountId) return '';
@@ -389,6 +392,12 @@ const loadAccountDetail = async (id: string) => {
 const onTypeChange = (type: AccountType) => {
   const oldType = formData.value.type;
   formData.value.type = type;
+  
+  // 切换到不支持默认账户的类型时，重置默认标记
+  if (type !== 'cash' && type !== 'liability') {
+    formData.value.isDefaultExpense = false;
+    formData.value.isDefaultIncome = false;
+  }
   
   // 如果从非负债类切换到负债类，且当前余额是正数，自动转为负数
   if (type === 'liability' && oldType !== 'liability') {
