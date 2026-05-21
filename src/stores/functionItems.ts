@@ -16,16 +16,17 @@ export interface FunctionItem {
   key: string
   icon: string
   text: string
+  emoji?: string
   bg?: string
   color?: string
   desc?: string
 }
 
 const DEFAULT_ITEMS: FunctionItem[] = [
-  { key: 'bill', icon: 'icon-zhangdan', text: '账单' },
-  { key: 'asset', icon: 'icon-zichan', text: '资产管家' },
-  { key: 'fire', icon: 'icon-mubiao', text: 'FIRE进度' },
-  { key: 'cashback', icon: 'icon-gouwuche', text: '购物返现' },
+  { key: 'bill', icon: 'icon-zhangdan', text: '账单', emoji: '📊' },
+  { key: 'asset', icon: 'icon-zichan', text: '资产管家', emoji: '🏠' },
+  { key: 'fire', icon: 'icon-tongji1', text: 'FIRE进度', emoji: '🔥' },
+  { key: 'cashback', icon: 'icon-gouwuche', text: '购物返现', emoji: '🛒' },
 ]
 
 const STORAGE_KEY = 'function_items_order'

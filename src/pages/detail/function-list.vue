@@ -49,7 +49,7 @@
             </view>
           </view>
           <view class="function-icon" :style="{ background: item.bg || 'rgba(0, 191, 255, 0.08)' }">
-            <text class="iconfont" :class="item.icon" :style="{ color: item.color || '#00BFFF' }"></text>
+            <text class="function-emoji">{{ getEmoji(item) }}</text>
           </view>
           <view class="function-info">
             <text class="function-name">{{ item.text }}</text>
@@ -88,7 +88,7 @@
             </view>
           </view>
           <view class="function-icon" :style="{ background: item.bg || 'rgba(108, 92, 231, 0.08)' }">
-            <text class="iconfont" :class="item.icon" :style="{ color: item.color || '#6c5ce7' }"></text>
+            <text class="function-emoji">{{ getEmoji(item) }}</text>
           </view>
           <view class="function-info">
             <text class="function-name">{{ item.text }}</text>
@@ -117,6 +117,18 @@ const dragIndex = ref(-1)
 const dragStartY = ref(0)
 const dragOffsetY = ref(0)
 const ITEM_HEIGHT = 96
+
+const EMOJI_MAP: Record<string, string> = {
+  bill: '📊',
+  asset: '🏠',
+  fire: '🔥',
+  cashback: '🛒',
+}
+
+const getEmoji = (item: FunctionItem): string => {
+  if (item.emoji) return item.emoji
+  return EMOJI_MAP[item.key] || '📋'
+}
 
 const topItems = computed(() => localItems.value.slice(0, 4))
 const restItems = computed(() => localItems.value.slice(4))
@@ -313,8 +325,9 @@ const onDragEnd = () => {
   flex-shrink: 0;
 }
 
-.function-icon .iconfont {
+.function-emoji {
   font-size: 36rpx;
+  line-height: 1;
 }
 
 .function-info {

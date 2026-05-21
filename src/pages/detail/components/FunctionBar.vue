@@ -8,7 +8,7 @@
         @tap="handleItemClick(item)"
       >
         <view class="function-icon">
-          <text class="iconfont" :class="item.icon"></text>
+          <text class="function-emoji">{{ getEmoji(item) }}</text>
         </view>
         <text class="function-text">{{ item.text }}</text>
       </view>
@@ -17,7 +17,7 @@
         @tap="handleMoreClick"
       >
         <view class="function-icon">
-          <text class="iconfont icon-qita"></text>
+          <text class="function-emoji">⋯</text>
         </view>
         <text class="function-text">更多</text>
       </view>
@@ -32,6 +32,7 @@ export interface FunctionItem {
   key: string
   icon: string
   text: string
+  emoji?: string
 }
 
 const props = withDefaults(defineProps<{
@@ -56,6 +57,18 @@ const handleItemClick = (item: FunctionItem) => {
 
 const handleMoreClick = () => {
   emit('more-click')
+}
+
+const EMOJI_MAP: Record<string, string> = {
+  bill: '📊',
+  asset: '🏠',
+  fire: '🔥',
+  cashback: '🛒',
+}
+
+const getEmoji = (item: FunctionItem): string => {
+  if (item.emoji) return item.emoji
+  return EMOJI_MAP[item.key] || '📋'
 }
 </script>
 
@@ -82,9 +95,19 @@ const handleMoreClick = () => {
 }
 
 .function-icon {
-  font-size: 40rpx;
-  margin-bottom: 6rpx;
-  color: #00BFFF;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: rgba(0, 191, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8rpx;
+}
+
+.function-emoji {
+  font-size: 36rpx;
+  line-height: 1;
 }
 
 .function-text {

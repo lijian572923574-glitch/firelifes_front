@@ -85,17 +85,17 @@ import { categoryApi } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const CATEGORY_ICON_MAP: Record<string, string> = {
-  '餐饮': 'icon-canyin', '零食': 'icon-lingshi', '水果': 'icon-shuiguo', '饮料': 'icon-yinliao', '咖啡': 'icon-kafei',
-  '住房': 'icon-fangzi', '居家': 'icon-jujia', '维修': 'icon-weixiugongju', '快递': 'icon-kuaidi',
+  '餐饮': 'icon-canyin', '零食': 'icon-lingshi', '水果': 'icon-lingshi', '饮料': 'icon-lingshi', '咖啡': 'icon-lingshi',
+  '住房': 'icon-fangzi', '居家': 'icon-fangzi', '维修': 'icon-wj-zd', '快递': 'icon-qitadingdan',
   '交通': 'icon-jiaotong', '汽车': 'icon-qiche',
-  '服饰': 'icon-fushi', '美发': 'icon-meifa', '美容': 'icon-meirong', '购物': 'icon-gouwuche',
-  '运动': 'icon-yundong', '健身': 'icon-jianshen', '旅行': 'icon-lvyou', '书籍': 'icon-shuji', '学习': 'icon-xuexi',
-  '娱乐': 'icon-youxiyouxiji', '电影': 'icon-dianying', '音乐': 'icon-yinle', '游戏': 'icon-youxi',
-  '社交': 'icon-renjiguanxi', '礼物': 'icon-liwu', '礼金': 'icon-hongbao', '亲友': 'icon-jiaren', '宠物': 'icon-chongwu',
+  '服饰': 'icon-yifu', '美发': 'icon-meirong', '美容': 'icon-meirong', '购物': 'icon-gouwuche',
+  '运动': 'icon-yundong-', '健身': 'icon-yundong-', '旅行': 'icon-lvhang', '书籍': 'icon-jiaoyu', '学习': 'icon-jiaoyu',
+  '娱乐': 'icon-youxiyouxiji', '电影': 'icon-youxiyouxiji', '音乐': 'icon-youxiyouxiji', '游戏': 'icon-youxiyouxiji',
+  '社交': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin', '亲友': 'icon-13', '宠物': 'icon-xiedaichongwu',
   '医疗': 'icon-yiliao',
-  '办公': 'icon-bangong', '通讯': 'icon-shouji',
-  '投资': 'icon-touzilicai', '彩票': 'icon-caipiao',
-  '日用': 'icon-riyongpin', '捐赠': 'icon-juanzeng',
+  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
+  '投资': 'icon-licaishouyi', '彩票': 'icon-licaishouyi',
+  '日用': 'icon-riyongpin', '捐赠': 'icon-jiangjinjilu',
   '其他': 'icon-qita',
 }
 
