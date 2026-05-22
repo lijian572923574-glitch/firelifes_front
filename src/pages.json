@@ -97,7 +97,8 @@
 		{
 			"path": "pages/my/index",
 			"style": {
-				"navigationBarTitleText": "My"
+				"navigationBarTitleText": "My",
+				"navigationStyle": "custom"
 			}
 		},
 		{

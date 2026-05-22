@@ -115,13 +115,13 @@ const handleLogout = () => {
 <style scoped>
 .my-container {
   min-height: 100vh;
-  background: #F8F9FA;
+  background: #F0F2F5;
   padding-bottom: 80px;
 }
 
 .user-card {
   background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
-  padding: 100rpx 32rpx 80rpx;
+  padding: calc(80rpx + env(safe-area-inset-top)) 32rpx 80rpx;
   box-shadow: 0 8rpx 24rpx rgba(0, 191, 255, 0.25);
 }
 
@@ -194,10 +194,16 @@ const handleLogout = () => {
 }
 
 .menu-emoji {
-  font-size: 44rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: rgba(0, 191, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
   margin-right: 20rpx;
-  width: 64rpx;
-  text-align: center;
+  flex-shrink: 0;
 }
 
 .menu-text {
