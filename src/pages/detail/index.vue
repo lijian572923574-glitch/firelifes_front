@@ -47,6 +47,7 @@
               :dayExpense="getDayExpense(date)"
               :records="getEnrichedRecords(date)"
               @record-tap="handleRecordTap"
+              @record-delete="handleDeleteRecord"
             />
           </view>
 
@@ -74,6 +75,8 @@ import DetailHeader from './components/DetailHeader.vue'
 import FunctionBar, { type FunctionItem } from './components/FunctionBar.vue'
 import { useFunctionItemsStore } from '../../stores/functionItems'
 import BillCard, { type BillCardRecord } from './components/BillCard.vue'
+
+const deletingId = ref<number | null>(null)
 
 interface RecordItem {
   id: number
@@ -438,6 +441,46 @@ const handleReachBottom = async () => {
   }, 1000)
 }
 
+const handleDeleteRecord = (record: BillCardRecord) => {
+  if (deletingId.value) return
+
+  uni.showModal({
+    title: '删除记录',
+    content: '确定要删除这条记录吗？删除后不可恢复。',
+    confirmText: '删除',
+    confirmColor: '#FA3534',
+    cancelText: '取消',
+    success: async (res) => {
+      if (!res.confirm) return
+      deletingId.value = record.id
+      try {
+        const apiRes = await recordApi.deleteRecord(record.id)
+        if (apiRes.success) {
+          for (const [date, data] of pageData) {
+            const idx = data.list.findIndex((r) => r.id === record.id)
+            if (idx !== -1) {
+              data.list.splice(idx, 1)
+              if (data.list.length === 0) {
+                pageData.delete(date)
+              }
+              break
+            }
+          }
+          await loadMonthSummary()
+          uni.showToast({ title: '已删除', icon: 'success', duration: 1500 })
+        } else {
+          uni.showToast({ title: apiRes.message || '删除失败，请重试', icon: 'none' })
+        }
+      } catch (err) {
+        console.error('删除记录失败:', err)
+        uni.showToast({ title: '删除失败，请重试', icon: 'none' })
+      } finally {
+        deletingId.value = null
+      }
+    }
+  })
+}
+
 onMounted(() => {
   loadMonthData()
 })
@@ -454,6 +497,7 @@ onShow(() => {
   flex-direction: column;
   height: 100vh;
   background: #f5f6fa;
+  overflow-x: hidden;
 }
 
 .loading-state {
