@@ -7,10 +7,14 @@
       placeholder
       bordered
       safe-area-inset-top
-      right-text="+"
-      @click-right="handleAdd"
       @click-left="goBack"
-    />
+    >
+      <template #right>
+        <view class="nav-add-btn" @click="openAddPopup">
+          <text class="nav-add-icon">+</text>
+        </view>
+      </template>
+    </wd-navbar>
 
     <view class="content-scroll">
       <view v-if="loading" class="loading-state">
@@ -101,6 +105,8 @@
 
       <view class="safe-bottom"></view>
     </view>
+
+    <category-group-edit-popup ref="editPopupRef" @saved="loadGroups" />
   </view>
 </template>
 
@@ -109,6 +115,7 @@ import { ref, computed, onMounted } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import { categoryApi, type UserCategoryGroup } from '../../../api/category'
 import { navigateBack } from '../../../utils/navigate'
+import CategoryGroupEditPopup from './category-group-edit.vue'
 
 const loading = ref(false)
 const groups = ref<UserCategoryGroup[]>([])
@@ -118,6 +125,9 @@ const draggingIndex = ref(-1)
 const dragStartY = ref(0)
 const dragOffsetY = ref(0)
 const itemHeightPx = ref(70)
+const hasJustDragged = ref(false)
+
+const editPopupRef = ref<InstanceType<typeof CategoryGroupEditPopup> | null>(null)
 
 const hasGroups = computed(() => groups.value.length > 0)
 
@@ -171,77 +181,21 @@ function goBack() {
 }
 
 function goToCategoryList(group: UserCategoryGroup) {
+  if (hasJustDragged.value) {
+    hasJustDragged.value = false
+    return
+  }
   uni.navigateTo({
     url: `/pages/my/category-setting/category-list?groupId=${group.id}&groupName=${encodeURIComponent(group.name)}`
   })
 }
 
-async function handleAdd() {
-  uni.showModal({
-    title: '新增分类',
-    editable: true,
-    placeholderText: '请输入分类名称',
-    content: '',
-    success: async (res) => {
-      if (res.confirm) {
-        const name = (res.content || '').trim()
-        if (!name) {
-          uni.showToast({ title: '请输入分类名称', icon: 'none' })
-          return
-        }
-        const isDuplicate = groups.value.some(g => g.name === name)
-        if (isDuplicate) {
-          uni.showToast({ title: '分类名称已存在', icon: 'none' })
-          return
-        }
-        try {
-          const apiRes = await categoryApi.createUserGroup({ name })
-          if (apiRes.success) {
-            uni.showToast({ title: '新增成功', icon: 'success' })
-            loadGroups()
-          } else {
-            uni.showToast({ title: apiRes.message || '新增失败', icon: 'none' })
-          }
-        } catch (err) {
-          uni.showToast({ title: '网络错误', icon: 'none' })
-        }
-      }
-    }
-  })
+function openAddPopup() {
+  editPopupRef.value?.openAdd()
 }
 
-async function handleEdit(group: UserCategoryGroup) {
-  uni.showModal({
-    title: '编辑分类',
-    editable: true,
-    placeholderText: '请输入分类名称',
-    content: group.name,
-    success: async (res) => {
-      if (res.confirm) {
-        const name = (res.content || '').trim()
-        if (!name) {
-          uni.showToast({ title: '请输入分类名称', icon: 'none' })
-          return
-        }
-        const isDuplicate = groups.value.some(g => g.name === name && g.id !== group.id)
-        if (isDuplicate) {
-          uni.showToast({ title: '分类名称已存在', icon: 'none' })
-          return
-        }
-        try {
-          const apiRes = await categoryApi.updateUserGroup(group.id, { name })
-          if (apiRes.success) {
-            uni.showToast({ title: '编辑成功', icon: 'success' })
-            loadGroups()
-          } else {
-            uni.showToast({ title: apiRes.message || '编辑失败', icon: 'none' })
-          }
-        } catch (err) {
-          uni.showToast({ title: '网络错误', icon: 'none' })
-        }
-      }
-    }
-  })
+function handleEdit(group: UserCategoryGroup) {
+  editPopupRef.value?.openEdit(group)
 }
 
 async function handleToggle(group: UserCategoryGroup) {
@@ -304,6 +258,8 @@ function onDragMove(e: any) {
   const moveSteps = Math.round(deltaY / itemHeightPx.value)
   if (moveSteps === 0) return
 
+  hasJustDragged.value = true
+
   const fromIndex = draggingIndex.value
   const toIndex = Math.max(0, Math.min(groups.value.length - 1, fromIndex + moveSteps))
   if (fromIndex === toIndex) return
@@ -325,6 +281,9 @@ function onDragEnd() {
   categoryApi.reorderGroups(orderedIds).catch(() => {
     loadGroups()
   })
+  setTimeout(() => {
+    hasJustDragged.value = false
+  }, 0)
 }
 
 onShow(() => {
@@ -337,6 +296,29 @@ onShow(() => {
   overflow-x: hidden;
   min-height: 100vh;
   background-color: #F5F5F5;
+}
+
+.nav-add-btn {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: rgba(0, 191, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 150ms ease;
+}
+
+.nav-add-btn:active {
+  background: rgba(0, 191, 255, 0.2);
+  transform: scale(0.92);
+}
+
+.nav-add-icon {
+  font-size: 36rpx;
+  color: #00BFFF;
+  font-weight: 300;
+  line-height: 1;
 }
 
 .content-scroll {

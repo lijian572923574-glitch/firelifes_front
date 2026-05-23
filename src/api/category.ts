@@ -71,6 +71,7 @@ export interface CategoryResponse {
 export interface UserCategoryGroup {
   id: number
   name: string
+  type?: 'expense' | 'income'
   sortOrder: number
   isEnabled: boolean
   isUserCreated: boolean
@@ -168,7 +169,7 @@ export const categoryApi = {
   /**
    * 创建分类大类
    */
-  createUserGroup: (data: { name: string }) => {
+  createUserGroup: (data: { name: string; type?: 'income' | 'expense' }) => {
     return request<UserCategoryGroup>({
       url: '/api/category/user/groups',
       method: 'POST',
@@ -179,7 +180,7 @@ export const categoryApi = {
   /**
    * 更新分类大类
    */
-  updateUserGroup: (id: number, data: { name: string }) => {
+  updateUserGroup: (id: number, data: { name: string; type?: 'income' | 'expense' }) => {
     return request<UserCategoryGroup>({
       url: `/api/category/user/groups/${id}`,
       method: 'PUT',
