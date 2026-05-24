@@ -73,7 +73,6 @@ requirements/
     ├── user-auth.md
     ├── user-config.md                  ← 用户配置表设计
     ├── new-user-default-config.md      ← 新用户默认配置
-    ├── data-sync.md
     └── settings.md
 ```
 
@@ -84,8 +83,8 @@ requirements/
 | 01-记账省心 | 19 | 🔵 开发中 |
 | 02-资产有数 | 7 | 🔵 开发中 |
 | 03-FIRE可期 | 4 | 🔵 开发中 |
-| 04-系统配置 | 20 | 🟢 部分完成 |
-| **总计** | **50** | - |
+| 04-系统配置 | 18 | 🟢 部分完成 |
+| **总计** | **48** | - |
 
 ## 三支柱全链路设计
 

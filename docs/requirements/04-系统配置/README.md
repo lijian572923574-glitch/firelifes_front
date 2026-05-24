@@ -19,7 +19,6 @@
 | 预算设置（双预算体系） | budget-setting/budget-setting.md | v1.1 | 📋规划中 | P0 |
 | 预算进度（执行追踪+预警） | budget-setting/budget-progress.md | v1.1 | 📋规划中 | P0 |
 | 预算双体系设计 | budget-setting/budget-dual-system.md | v1.1 | 📋规划中 | P0 |
-| 数据同步 | data-sync.md | v1.0 | 🟡设计中 | P1 |
 
 ## 模块数据流
 
