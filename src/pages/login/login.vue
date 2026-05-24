@@ -1,33 +1,45 @@
 <template>
   <view class="login-container">
     <view class="logo-area">
-      <image class="logo" src="/static/logo.png" mode="aspectFit" />
+      <view class="logo-icon-box">
+        <text class="logo-emoji">💰</text>
+      </view>
       <text class="app-name">Fire生活家</text>
+      <text class="app-subtitle">财务独立 · 提早退休</text>
     </view>
 
     <view class="tab-area">
       <view class="tab-item" :class="{ active: loginType === 'password' }" @click="loginType = 'password'">
-        密码登录
+        <text class="tab-text">密码登录</text>
+        <view v-if="loginType === 'password'" class="tab-indicator"></view>
       </view>
       <view class="tab-item" :class="{ active: loginType === 'code' }" @click="loginType = 'code'">
-        验证码登录
+        <text class="tab-text">验证码登录</text>
+        <view v-if="loginType === 'code'" class="tab-indicator"></view>
       </view>
     </view>
 
-    <view class="form-area">
-      <view class="input-item">
+    <view class="form-card">
+      <view class="input-row">
+        <text class="input-icon">📱</text>
         <input class="input" v-model="phone" type="number" placeholder="请输入手机号" maxlength="11" />
       </view>
 
-      <view class="input-item" v-if="loginType === 'password'">
-        <input class="input" v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="请输入密码" />
+      <view class="input-row pw-row" v-if="loginType === 'password'">
+        <view class="input-left">
+          <text class="input-icon">🔒</text>
+          <input class="input" v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="请输入密码" />
+        </view>
         <view class="toggle-pwd" @click="showPassword = !showPassword">
-          {{ showPassword ? '隐藏' : '显示' }}
+          <text>{{ showPassword ? '🙈' : '👁' }}</text>
         </view>
       </view>
 
-      <view class="input-item" v-else>
-        <input class="input" v-model="code" type="number" placeholder="请输入验证码" maxlength="6" />
+      <view class="input-row code-row" v-else>
+        <view class="input-left">
+          <text class="input-icon">✉️</text>
+          <input class="input" v-model="code" type="number" placeholder="请输入验证码" maxlength="6" />
+        </view>
         <view class="send-code-btn" :class="{ disabled: isCounting }" @click="sendCode">
           {{ isCounting ? `${count}s` : '获取验证码' }}
         </view>
@@ -36,11 +48,11 @@
       <view class="agreement">
         <checkbox-group @change="toggleAgreement">
           <label class="checkbox-label">
-            <checkbox :checked="agreed" color="#00BFFF" />
-            <text>我已阅读并同意</text>
-            <text class="link" @click.stop="openAgreement('user')">《用户协议》</text>
-            <text>和</text>
-            <text class="link" @click.stop="openAgreement('privacy')">《隐私政策》</text>
+            <checkbox :checked="agreed" color="#0D9488" />
+            <text class="agreement-text">我已阅读并同意</text>
+            <text class="agreement-link" @click.stop="openAgreement('user')">《用户协议》</text>
+            <text class="agreement-text">和</text>
+            <text class="agreement-link" @click.stop="openAgreement('privacy')">《隐私政策》</text>
           </label>
         </checkbox-group>
       </view>
@@ -49,29 +61,35 @@
         {{ loading ? '登录中...' : '登录' }}
       </view>
 
-      <view class="wechat-login-btn" @click="handleWechatLogin">
+      <view class="divider-row">
+        <view class="divider-line"></view>
+        <text class="divider-text">其他方式登录</text>
+        <view class="divider-line"></view>
+      </view>
+
+      <view class="wechat-btn" @click="handleWechatLogin">
         <text>微信一键登录</text>
       </view>
 
       <view class="links">
         <text class="link" @click="goToRegister">注册账号</text>
-        <text class="divider">|</text>
-        <text class="link">忘记密码</text>
+        <text class="link-divider">|</text>
+        <text class="link" @click="goToForgotPassword">忘记密码</text>
       </view>
     </view>
-  </view>
 
-  <view v-if="showAgreementPopup" class="popup-overlay" @touchmove.stop.prevent @click="closeAgreement">
-    <view class="popup-sheet" @click.stop>
-      <view class="popup-header">
-        <text class="popup-title">{{ agreementTitle }}</text>
-      </view>
-      <view class="popup-divider"></view>
-      <scroll-view class="popup-content" scroll-y :style="{ height: contentHeight + 'px' }">
-        <text class="popup-text">{{ currentAgreementContent }}</text>
-      </scroll-view>
-      <view class="popup-close" @click.stop="closeAgreement">
-        <text class="close-text">关闭</text>
+    <view v-if="showAgreementPopup" class="popup-overlay" @touchmove.stop.prevent @click="closeAgreement">
+      <view class="popup-sheet" @click.stop>
+        <view class="popup-header">
+          <text class="popup-title">{{ agreementTitle }}</text>
+        </view>
+        <view class="popup-divider"></view>
+        <scroll-view class="popup-content" scroll-y :style="{ height: contentHeight + 'px' }">
+          <text class="popup-text">{{ currentAgreementContent }}</text>
+        </scroll-view>
+        <view class="popup-close" @click.stop="closeAgreement">
+          <text class="close-text">关闭</text>
+        </view>
       </view>
     </view>
   </view>
@@ -227,7 +245,7 @@ const sendCode = async () => {
     return
   }
   if (isCounting.value) return
-  
+
   try {
     await sendSmsCode(phone.value, 'login')
     uni.showToast({
@@ -242,7 +260,7 @@ const sendCode = async () => {
 
 const handleLogin = async () => {
   if (!canLogin.value || loading.value) return
-  
+
   loading.value = true
   try {
     let data
@@ -251,13 +269,13 @@ const handleLogin = async () => {
     } else {
       data = { phone: phone.value, code: code.value }
     }
-    
+
     const res = await login(data)
     console.log('[login] 登录响应', res)
-    
+
     userStore.setAuth(res.data.token, res.data.user)
     console.log('[login] token已保存', res.data.token.substring(0, 20) + '...')
-    
+
     uni.showToast({
       title: '登录成功',
       icon: 'success'
@@ -286,109 +304,156 @@ const goToRegister = () => {
     url: '/pages/login/register'
   })
 }
+
+const goToForgotPassword = () => {
+  uni.navigateTo({
+    url: '/pages/login/forgot-password'
+  })
+}
 </script>
 
 <style scoped>
 .login-container {
   min-height: 100vh;
-  background: #f5f5f5;
-  padding: 80rpx 60rpx;
+  background: #F5F7FA;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 120rpx;
 }
 
 .logo-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 80rpx;
+  margin-bottom: 60rpx;
 }
 
-.logo {
-  width: 160rpx;
-  height: 160rpx;
-  border-radius: 32rpx;
+.logo-icon-box {
+  width: 140rpx;
+  height: 140rpx;
+  background: #0D9488;
+  border-radius: 36rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 24rpx;
 }
 
+.logo-emoji {
+  font-size: 64rpx;
+}
+
 .app-name {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 8rpx;
+}
+
+.app-subtitle {
+  font-size: 26rpx;
+  color: #94A3B8;
 }
 
 .tab-area {
   display: flex;
-  margin-bottom: 60rpx;
-  border-bottom: 1px solid #e5e5e5;
+  justify-content: center;
+  margin-bottom: 32rpx;
+  width: 654rpx;
 }
 
 .tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 24rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 40rpx;
+}
+
+.tab-text {
   font-size: 30rpx;
-  color: #666;
-  position: relative;
+  color: #94A3B8;
+  margin-bottom: 8rpx;
 }
 
-.tab-item.active {
-  color: #00BFFF;
-  font-weight: bold;
+.tab-item.active .tab-text {
+  color: #0D9488;
+  font-weight: 600;
 }
 
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60rpx;
-  height: 4rpx;
-  background: #00BFFF;
-  border-radius: 2rpx;
+.tab-indicator {
+  width: 32rpx;
+  height: 6rpx;
+  background: #0D9488;
+  border-radius: 3rpx;
 }
 
-.form-area {
-  background: white;
+.form-card {
+  width: 654rpx;
+  background: #FFFFFF;
   border-radius: 24rpx;
-  padding: 40rpx;
+  padding: 44rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.06);
 }
 
-.input-item {
+.input-row {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #e5e5e5;
-  padding: 24rpx 0;
-  position: relative;
+  border-bottom: 2rpx solid #E2E8F0;
+  padding: 20rpx 0;
+  margin-bottom: 8rpx;
+}
+
+.input-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
 }
 
 .input {
   flex: 1;
-  font-size: 30rpx;
+  font-size: 28rpx;
+  color: #1E293B;
+}
+
+.input::placeholder {
+  color: #94A3B8;
+}
+
+.pw-row {
+  justify-content: space-between;
+}
+
+.input-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
 .toggle-pwd {
-  font-size: 26rpx;
-  color: #999;
+  font-size: 34rpx;
   padding: 8rpx;
 }
 
+.code-row {
+  justify-content: space-between;
+}
+
 .send-code-btn {
-  font-size: 26rpx;
-  color: #00BFFF;
-  padding: 8rpx 16rpx;
-  border: 1px solid #00BFFF;
-  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #0D9488;
+  background: #E6F7F5;
+  padding: 12rpx 24rpx;
+  border-radius: 20rpx;
+  white-space: nowrap;
 }
 
 .send-code-btn.disabled {
-  color: #ccc;
-  border-color: #ccc;
+  color: #94A3B8;
+  background: #F1F5F9;
 }
 
 .agreement {
-  padding: 32rpx 0;
-  font-size: 24rpx;
-  color: #666;
+  padding: 28rpx 0 20rpx;
 }
 
 .checkbox-label {
@@ -397,45 +462,82 @@ const goToRegister = () => {
   flex-wrap: wrap;
 }
 
-.link {
-  color: #00BFFF;
+.agreement-text {
+  font-size: 24rpx;
+  color: #94A3B8;
+}
+
+.agreement-link {
+  font-size: 24rpx;
+  color: #0D9488;
 }
 
 .login-btn {
-  background: #00BFFF;
-  color: white;
-  text-align: center;
-  padding: 28rpx;
-  border-radius: 50rpx;
+  width: 100%;
+  height: 96rpx;
+  background: #0D9488;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 24rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 32rpx;
 }
 
 .login-btn.disabled {
-  background: #ccc;
+  background: #CBD5E1;
 }
 
-.wechat-login-btn {
-  background: #07c160;
-  color: white;
-  text-align: center;
-  padding: 28rpx;
-  border-radius: 50rpx;
+.divider-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+}
+
+.divider-line {
+  width: 80rpx;
+  height: 2rpx;
+  background: #E2E8F0;
+}
+
+.divider-text {
+  font-size: 24rpx;
+  color: #CBD5E1;
+  margin: 0 20rpx;
+}
+
+.wechat-btn {
+  width: 100%;
+  height: 96rpx;
+  background: #07C160;
+  border-radius: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 32rpx;
-  font-weight: bold;
-  margin-bottom: 40rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 36rpx;
 }
 
 .links {
   display: flex;
   justify-content: center;
-  font-size: 26rpx;
-  color: #666;
+  align-items: center;
+  gap: 24rpx;
 }
 
-.divider {
-  margin: 0 16rpx;
+.link {
+  font-size: 26rpx;
+  color: #0D9488;
+}
+
+.link-divider {
+  font-size: 26rpx;
+  color: #E2E8F0;
 }
 
 .popup-overlay {
@@ -471,12 +573,12 @@ const goToRegister = () => {
 .popup-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #333;
+  color: #1E293B;
 }
 
 .popup-divider {
-  height: 1px;
-  background: #e5e5e5;
+  height: 2rpx;
+  background: #E2E8F0;
   flex-shrink: 0;
 }
 
@@ -487,7 +589,7 @@ const goToRegister = () => {
 
 .popup-text {
   font-size: 28rpx;
-  color: #333;
+  color: #475569;
   line-height: 1.8;
   white-space: pre-wrap;
 }
@@ -498,13 +600,12 @@ const goToRegister = () => {
   align-items: center;
   height: 104rpx;
   flex-shrink: 0;
-  border-top: 1px solid #f5f5f5;
-  z-index: 1;
+  border-top: 2rpx solid #F1F5F9;
 }
 
 .close-text {
   font-size: 30rpx;
-  color: #00BFFF;
+  color: #0D9488;
   width: 100%;
   text-align: center;
   line-height: 104rpx;

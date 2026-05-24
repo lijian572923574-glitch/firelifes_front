@@ -21,6 +21,13 @@
 			}
 		},
 		{
+			"path": "pages/login/forgot-password",
+			"style": {
+				"navigationBarTitleText": "忘记密码",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/detail/index",
 			"style": {
 				"navigationBarTitleText": "Detail",

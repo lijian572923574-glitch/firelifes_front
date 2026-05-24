@@ -117,6 +117,23 @@ export const getUserInfo = () => {
 }
 
 /**
+ * 重置密码（成功后自动登录）
+ * @param data 重置数据（手机号、验证码、新密码）
+ */
+export const resetPassword = (data: {
+  phone: string
+  code: string
+  password: string
+}) => {
+  return request({
+    url: '/auth/reset-password',
+    method: 'POST',
+    data,
+    needAuth: false
+  })
+}
+
+/**
  * 用户退出登录
  */
 export const logout = () => {
