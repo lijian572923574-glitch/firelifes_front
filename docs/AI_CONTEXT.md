@@ -383,10 +383,10 @@ syncThemeToServer()       // 主题变更时同步到服务端
 
 | 模块 | 路径 | 功能数 |
 |------|------|--------|
-| 01-记账省心 | `docs/requirements/01-记账省心/` | 15 |
-| 02-资产有数 | `docs/requirements/02-资产有数/` | 8 |
+| 01-记账省心 | `docs/requirements/01-记账省心/` | 19 |
+| 02-资产有数 | `docs/requirements/02-资产有数/` | 7 |
 | 03-FIRE可期 | `docs/requirements/03-FIRE可期/` | 4 |
-| 04-系统配置 | `docs/requirements/04-系统配置/` | 11+ |
+| 04-系统配置 | `docs/requirements/04-系统配置/` | 20 |
 
 关键需求文档快速定位:
 - 用户认证: `04-系统配置/login/`

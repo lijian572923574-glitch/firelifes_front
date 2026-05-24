@@ -92,9 +92,9 @@
 |------|------|
 | **拖拽手柄** | 卡片左侧 `☰` 图标（48rpx 宽），长按触发拖拽排序，拖拽中变为蓝色 |
 | **分类图标** | 展示子分类对应的 emoji 图标，置于 88rpx × 88rpx 圆角容器内，渐变浅蓝背景 |
-| **分类名称** | 子分类名称（32rpx，加粗，#333333） |
-| **默认标识** | `isUserCreated: false` 的子分类显示蓝色"默认"徽章，位于名称右侧 |
-| **禁用标识** | `isEnabled: false` 时显示"已禁用"标签（#FAAD14 警告色） |
+| **分类名称** | 子分类名称（32rpx，加粗，var(--color-text-primary)） |
+| **默认标识** | `isUserCreated: false` 的子分类显示"默认"徽章，位于名称右侧 |
+| **禁用标识** | `isEnabled: false` 时显示"已禁用"标签（var(--color-warning)） |
 
 ### 3.3 列表排序规则（v1.2 新增）
 
@@ -124,7 +124,7 @@
 
 - **触发方式**：长按左侧 `☰` 手柄拖拽
 - **视觉反馈**：
-  - 拖拽中的行：`opacity: 0.85` + `transform: scale(1.02)`，手柄变为蓝色（#00BFFF）
+  - 拖拽中的行：`opacity: 0.85` + `transform: scale(1.02)`，手柄变为主色（var(--color-primary)）
   - 目标位置：其他行平滑让位，通过 `transition` 动效过渡
 - **排序逻辑**：手指移动时实时计算目标位置，交换数组元素，更新视图
 - **持久化**：松手后调用 `reorderCategories` API 将新顺序提交到服务端
@@ -136,10 +136,10 @@
 
 | 子分类属性 | 左滑按钮 |
 |---------|---------|
-| 用户自创 + 启用 | 编辑（主色 #00BFFF）+ 删除（危险色 #FA3534） |
-| 用户自创 + 禁用 | 编辑（主色 #00BFFF）+ 删除（危险色 #FA3534） |
-| 默认 + 启用 | 编辑（主色 #00BFFF）+ 禁用（警告色 #FAAD14） |
-| 默认 + 禁用 | 编辑（主色 #00BFFF）+ 启用（警告色 #FAAD14） |
+| 用户自创 + 启用 | 编辑（var(--color-primary)）+ 删除（var(--color-danger)） |
+| 用户自创 + 禁用 | 编辑（var(--color-primary)）+ 删除（var(--color-danger)） |
+| 默认 + 启用 | 编辑（var(--color-primary)）+ 禁用（var(--color-warning)） |
+| 默认 + 禁用 | 编辑（var(--color-primary)）+ 启用（var(--color-warning)） |
 
 > **注意**：用户自创子分类不提供"禁用"功能（可直接删除），默认子分类不提供"删除"功能（保证分类体系完整性）。
 
@@ -259,7 +259,7 @@
 
 | 属性 | 值 |
 |------|-----|
-| 页面背景 | #F5F5F5 |
+| 页面背景 | var(--color-bg-page) |
 | 导航栏 | WdNavbar，`fixed` + `placeholder` 固定顶部 |
 | 内容区 | padding: 24rpx |
 | 卡片高度 | 120rpx |
@@ -268,36 +268,36 @@
 | 卡片间距 | 20rpx |
 | 卡片阴影 | 0 4rpx 12rpx rgba(0,0,0,0.04) |
 | 左滑区域 | 宽度 140rpx（编辑按钮 70rpx + 操作按钮 70rpx） |
-| 拖拽手柄 | 宽度 48rpx，☰ 图标 32rpx，颜色 #CCCCCC（拖拽中 #00BFFF） |
+| 拖拽手柄 | 宽度 48rpx，☰ 图标 32rpx，颜色 var(--color-text-secondary)（拖拽中 var(--color-primary)） |
 
-### 5.2 颜色（卡布里蓝体系 — 小米汽车蓝 #00BFFF）
+### 5.2 颜色（遵循项目 Token 体系，详见 `theme-settings/theme.md`）
 
-| 用途 | 颜色值 |
-|------|--------|
-| 主色调 | #00BFFF |
-| 页面背景 | #F5F5F5 |
-| 卡片背景 | #FFFFFF |
-| 标题文字 | #333333 |
-| 辅助文字 | #999999 |
-| 编辑按钮 | #00BFFF |
-| 删除按钮 | #FA3534 |
-| 禁用/启用按钮 | #FAAD14 |
-| 默认徽章 | 线性渐变 #00BFFF → #0099CC |
-| 拖拽手柄 | #CCCCCC（默认）→ #00BFFF（拖拽中） |
+| 用途 | CSS Variable |
+|------|------|
+| 主色调 | var(--color-primary) |
+| 页面背景 | var(--color-bg-page) |
+| 卡片背景 | var(--color-bg-card) |
+| 标题文字 | var(--color-text-primary) |
+| 辅助文字 | var(--color-text-secondary) |
+| 编辑按钮 | var(--color-primary) |
+| 删除按钮 | var(--color-danger) |
+| 禁用/启用按钮 | var(--color-warning) |
+| 默认徽章 | linear-gradient(var(--color-primary), var(--color-primary-dark)) |
+| 拖拽手柄 | var(--color-text-secondary)（默认）→ var(--color-primary)（拖拽中） |
 | 禁用卡片透明度 | opacity: 0.6 |
 
 ### 5.3 字体
 
 | 元素 | 规范 |
 |------|------|
-| 卡片标题 | 32rpx，font-weight 600，#333333 |
-| 默认徽章文字 | 20rpx，font-weight 500，#FFFFFF |
-| 禁用标签 | 24rpx，#FAAD14 |
-| 操作按钮文字 | 26rpx，font-weight 500，#FFFFFF |
-| 拖拽手柄 | 32rpx，#CCCCCC / #00BFFF（拖拽中） |
-| 弹窗标题 | 34rpx，font-weight 600，#333333 |
-| 弹窗标签 | 28rpx，#666666 |
-| 表单输入 | 28rpx，#333333 |
+| 卡片标题 | 32rpx，font-weight 600，var(--color-text-primary) |
+| 默认徽章文字 | 20rpx，font-weight 500，var(--color-text-inverse) |
+| 禁用标签 | 24rpx，var(--color-warning) |
+| 操作按钮文字 | 26rpx，font-weight 500，var(--color-text-inverse) |
+| 拖拽手柄 | 32rpx，var(--color-text-secondary) / var(--color-primary)（拖拽中） |
+| 弹窗标题 | 34rpx，font-weight 600，var(--color-text-primary) |
+| 弹窗标签 | 28rpx，var(--color-text-secondary) |
+| 表单输入 | 28rpx，var(--color-text-primary) |
 | 弹窗按钮 | 30rpx，font-weight 500 |
 
 ### 5.4 图标容器
@@ -318,13 +318,13 @@
 | 弹窗最大高度 | 80vh |
 | 弹窗内容区 | padding: 32rpx，flex-direction: column，gap: 32rpx |
 | 图标选择项 | 96rpx × 96rpx，圆角 20rpx，gap: 16rpx |
-| 图标选中态 | 边框 2rpx #00BFFF，渐变浅蓝背景 |
-| 名称输入框 | 高度 88rpx，背景 #F8F9FA，圆角 16rpx，padding 0 24rpx |
+| 图标选中态 | 边框 2rpx var(--color-primary)，渐变浅主色背景 |
+| 名称输入框 | 高度 88rpx，背景 var(--color-bg-card)，圆角 16rpx，padding 0 24rpx |
 | 类型按钮 | flex: 1，高度 96rpx，圆角 16rpx |
-| 类型按钮选中态 | 边框 2rpx #00BFFF，渐变浅蓝背景，文字色 #00BFFF |
+| 类型按钮选中态 | 边框 2rpx var(--color-primary)，渐变浅主色背景，文字色 var(--color-primary) |
 | 底部按钮区 | 双按钮，flex: 1，高度 88rpx，圆角 16rpx |
-| 取消按钮 | 背景 #F0F2F5，文字 #666666 |
-| 确定按钮 | 渐变 #00BFFF → #0099CC，文字 #FFFFFF |
+| 取消按钮 | 背景 var(--color-border-light)，文字 var(--color-text-secondary) |
+| 确定按钮 | 渐变 var(--color-primary) → var(--color-primary-dark)，文字 var(--color-text-inverse) |
 
 ### 5.6 动效
 
@@ -332,7 +332,7 @@
 |------|------|
 | 弹窗遮罩 | `fadeIn` 0.2s ease |
 | 弹窗面板 | `slideUp` 0.3s ease（底部滑入） |
-| 卡片按下 | `:active` 背景变为 #F8F9FA |
+| 卡片按下 | `:active` 背景变浅 |
 | 按钮按下 | `:active` opacity: 0.8 + transform: scale(0.98) |
 | 图标/类型选中 | transition all 150ms ease |
 | 拖拽中行 | transform: scale(1.02) + opacity: 0.85 |
@@ -476,8 +476,8 @@ interface ReorderCategoriesRequest {
 | ID | 测试项 | 预期结果 |
 |----|--------|---------|
 | UT-01 | 弹窗动画 | 遮罩 fadeIn 0.2s，面板 slideUp 0.3s |
-| UT-02 | 图标选中态 | 边框 2rpx #00BFFF + 渐变蓝背景 |
-| UT-03 | 类型选中态 | 边框 2rpx #00BFFF + 渐变蓝背景 + 文字 #00BFFF |
+| UT-02 | 图标选中态 | 边框 2rpx var(--color-primary) + 渐变浅主色背景 |
+| UT-03 | 类型选中态 | 边框 2rpx var(--color-primary) + 渐变浅主色背景 + 文字 var(--color-primary) |
 | UT-04 | 按钮按下态 | opacity: 0.8 + transform: scale(0.98) |
-| UT-05 | 拖拽手柄状态 | 默认 #CCCCCC，拖拽中 #00BFFF |
+| UT-05 | 拖拽手柄状态 | 默认 var(--color-text-secondary)，拖拽中 var(--color-primary) |
 | UT-06 | 拖拽行视觉 | opacity: 0.85 + transform: scale(1.02) |

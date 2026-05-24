@@ -83,7 +83,7 @@
 |------|------|
 | **拖拽手柄** | 左侧 `☰` 图标（48rpx 宽），长按拖拽可排序 |
 | **默认标识** | `isUserCreated: false` 的分类显示蓝色"默认"徽章（在名称左侧） |
-| **名称** | 分类大类名称（32rpx，加粗，#333333） |
+| **名称** | 分类大类名称（32rpx，加粗，var(--color-text-primary)） |
 | **子分类数量** | 副标题显示"X个子分类"（通过并行获取每个大类下的子分类数） |
 | **禁用状态** | `isEnabled: false` 时卡片 60% 透明度 + 警告色"已禁用"标签 |
 | **右箭头** | 纯文本 `›`，提示可点击进入子分类列表 |
@@ -102,10 +102,10 @@
 
 | 分类属性 | 左滑按钮 |
 |---------|---------|
-| 用户自创 + 启用 | 编辑（主色 #00BFFF）+ 删除（危险色 #FA3534） |
-| 用户自创 + 禁用 | 编辑（主色 #00BFFF）+ 删除（危险色 #FA3534） |
-| 默认 + 启用 | 编辑（主色 #00BFFF）+ 禁用（警告色 #FAAD14） |
-| 默认 + 禁用 | 编辑（主色 #00BFFF）+ 启用（警告色 #FAAD14） |
+| 用户自创 + 启用 | 编辑（var(--color-primary)）+ 删除（var(--color-danger)） |
+| 用户自创 + 禁用 | 编辑（var(--color-primary)）+ 删除（var(--color-danger)） |
+| 默认 + 启用 | 编辑（var(--color-primary)）+ 禁用（var(--color-warning)） |
+| 默认 + 禁用 | 编辑（var(--color-primary)）+ 启用（var(--color-warning)） |
 
 ### 3.5 卡片交互
 
@@ -174,7 +174,7 @@
 | 实现 | 说明 |
 |------|------|
 | 操作按钮 | 自定义 `.swipe-btn` 视图（非 WdButton），宽 70rpx |
-| 箭头 | 纯文本 `›`（非 WdIcon），字号 44rpx，#CCCCCC |
+| 箭头 | 纯文本 `›`（非 WdIcon），字号 44rpx，var(--color-text-secondary) |
 | 弹窗 | 大类新增/编辑使用 `uni.showModal`（`editable: true`）；子分类新增/编辑使用自定义底部 Sheet 弹窗 |
 | 默认徽章 | 自定义 `.default-badge`，蓝底白字"默认" |
 
@@ -187,43 +187,43 @@
 ### 5.1 布局
 | 属性 | 值 |
 |------|-----|
-| 页面背景 | #F5F5F5 |
+| 页面背景 | var(--color-bg-page) |
 | 导航栏 | WdNavbar，`fixed` + `placeholder` 固定顶部 |
 | 内容区 | padding: 24rpx |
 | 分类卡片 | 高度 120rpx，圆角 20rpx，padding 0 32rpx |
 | 卡片间距 | 20rpx |
 | 卡片阴影 | 0 4rpx 12rpx rgba(0,0,0,0.04) |
 | 左滑区域 | 宽度 140rpx（编辑 70rpx + 操作 70rpx） |
-| 拖拽手柄 | 宽度 48rpx，高度跟随卡片，☰ 图标 32rpx，颜色 #CCCCCC（拖拽中 #00BFFF） |
+| 拖拽手柄 | 宽度 48rpx，高度跟随卡片，☰ 图标 32rpx，颜色 var(--color-text-secondary)（拖拽中 var(--color-primary)） |
 
-### 5.2 颜色（卡布里蓝体系 — 小米汽车蓝 #00BFFF）
-| 用途 | 颜色值 |
-|------|--------|
-| 页面背景 | #F5F5F5 |
-| 卡片背景 | #FFFFFF |
-| 主色（编辑按钮、默认徽章、确定按钮） | #00BFFF |
-| 主色渐变 | linear-gradient(135deg, #00BFFF 0%, #0099CC 100%) |
-| 危险色（删除按钮） | #FA3534 |
-| 警告色（禁用/启用按钮、禁用标签） | #FAAD14 |
-| 主要文案 | #333333 |
-| 次要文案 | #999999 |
-| 箭头颜色 | #CCCCCC |
-| 卡片按压态 | #F8F9FA |
+### 5.2 颜色（遵循项目 Token 体系）
+| 用途 | CSS Variable |
+|------|------|
+| 页面背景 | var(--color-bg-page) |
+| 卡片背景 | var(--color-bg-card) |
+| 编辑按钮、默认徽章、确定按钮 | var(--color-primary) |
+| 主色渐变 | linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%) |
+| 删除按钮 | var(--color-danger) |
+| 禁用/启用按钮、禁用标签 | var(--color-warning) |
+| 主要文案 | var(--color-text-primary) |
+| 次要文案 | var(--color-text-secondary) |
+| 箭头颜色 | var(--color-text-secondary) |
+| 卡片按压态 | 变浅 |
 
 ### 5.3 字体
 | 用途 | 字号 | 字重 | 颜色 |
 |------|------|------|------|
-| 分类名称 | 32rpx | 600 | #333333 |
-| 默认徽章文字 | 20rpx | 500 | #FFFFFF |
-| 禁用标签 | 24rpx | — | #FAAD14 |
-| 操作按钮文字 | 26rpx | 500 | #FFFFFF |
+| 分类名称 | 32rpx | 600 | var(--color-text-primary) |
+| 默认徽章文字 | 20rpx | 500 | var(--color-text-inverse) |
+| 禁用标签 | 24rpx | — | var(--color-warning) |
+| 操作按钮文字 | 26rpx | 500 | var(--color-text-inverse) |
 | 加载/空状态图标 | 120rpx | — | opacity 0.4 |
-| 加载/空状态文字 | 28rpx | — | #999999 |
+| 加载/空状态文字 | 28rpx | — | var(--color-text-secondary) |
 
 ### 5.4 动效
 | 动效 | 实现 |
 |------|------|
-| 卡片按压反馈 | `:active` 状态 background-color 切换至 #F8F9FA |
+| 卡片按压反馈 | `:active` 状态背景变浅 |
 | WdSwipeAction 滑动 | 组件自带过渡动画 |
 | 空状态/加载状态 | 静态展示，无需额外动效 |
 
@@ -498,7 +498,7 @@ function goToCategoryList(group: UserCategoryGroup) {
 .page-container {
   overflow-x: hidden; /* 关键：禁止页面横向滚动，避免与 WdSwipeAction 冲突 */
   min-height: 100vh;
-  background-color: #F5F5F5;
+  background-color: var(--color-bg-page);
 }
 ```
 

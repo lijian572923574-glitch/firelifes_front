@@ -81,7 +81,7 @@
 │  ├──────────────────────────────┤  │
 │  │           或                   │  │  ← 分隔文字
 │  ├──────────────────────────────┤  │
-│  │   [ 微信图标 ] 微信一键注册    │  │  ← 微信注册按钮（绿色，微信品牌色 #07C160）
+│  │   [ 微信图标 ] 微信一键注册    │  │  ← 微信注册按钮（var(--color-wechat)）
 │  └──────────────────────────────┘  │
 │                                    │
 └────────────────────────────────────┘
@@ -238,19 +238,21 @@ const openAgreement = (type: 'user' | 'privacy') => {
 
 ### 4.1 颜色
 
-| 元素 | 色值 | 用途 |
+注册页颜色遵循项目统一主题 Token 体系（详见 `theme-settings/theme.md`）：
+
+| 元素 | CSS Variable | 说明 |
 |------|------|------|
-| 主色调 | `#00BFFF` | 发送验证码按钮文字+边框、注册按钮背景、链接文字（含协议链接）、checkbox选中色 |
-| 微信品牌色 | `#07C160` | 微信注册按钮背景 |
-| 按钮禁用 | `#CCCCCC` | 注册按钮 disabled 背景、发送按钮 disabled 文字+边框 |
-| 背景色 | `#F5F5F5` | 页面整体背景 |
-| 卡片背景 | `#FFFFFF` | 表单区域背景 |
-| 主文字 | `#333333` | 标题、按钮文字、弹窗标题 |
-| 辅助文字 | `#666666` | 协议文本（非链接部分）、登录跳转提示、分割线"或" |
-| 次要文字 | `#999999` | 密码显示/隐藏按钮 |
-| 分割线 | `#E5E5E5` | 输入项底部分割线 |
-| 弹窗背景 | `#FFFFFF` | 协议弹窗背景 |
-| 弹窗蒙层 | `rgba(0,0,0,0.5)` | 协议弹窗蒙层 |
+| 主色调 | `var(--color-primary)` | 发送验证码按钮文字+边框、注册按钮背景、链接文字、checkbox选中色 |
+| 微信品牌色 | `var(--color-wechat)` | 微信注册按钮背景（品牌色固定） |
+| 按钮禁用 | `var(--color-text-tertiary)` | 注册按钮 disabled 背景、发送按钮 disabled 文字+边框 |
+| 背景色 | `var(--color-bg-page)` | 页面整体背景 |
+| 卡片背景 | `var(--color-bg-card)` | 表单区域背景 |
+| 主文字 | `var(--color-text-primary)` | 标题、按钮文字、弹窗标题 |
+| 辅助文字 | `var(--color-text-secondary)` | 协议文本（非链接部分）、登录跳转提示、分割线"或" |
+| 次要文字 | `var(--color-text-secondary)` | 密码显示/隐藏按钮 |
+| 分割线 | `var(--color-border)` | 输入项底部分割线 |
+| 弹窗背景 | `var(--color-bg-card)` | 协议弹窗背景 |
+| 弹窗蒙层 | `var(--color-mask)` | 协议弹窗蒙层 |
 
 ### 4.2 字体与尺寸
 
@@ -294,11 +296,11 @@ const openAgreement = (type: 'user' | 'privacy') => {
 
 | 状态 | 表现 |
 |------|------|
-| 注册按钮可用 | 背景 `#00BFFF`，白色文字，可点击 |
-| 注册按钮禁用 | 背景 `#CCCCCC`，不可点击（条件：未勾选协议、手机号/验证码/密码校验未通过、两次密码不一致） |
-| 微信注册按钮 | 背景 `#07C160`，白色文字，微信图标 + "微信一键注册"，始终可点击 |
-| 发送验证码可用 | 文字 `#00BFFF`，边框 `1px solid #00BFFF` |
-| 发送验证码倒计时 | 文字 `#CCCCCC`，边框 `1px solid #CCCCCC`，显示 `Xs` |
+| 注册按钮可用 | 背景 `var(--color-primary)`，`var(--color-text-inverse)` 文字，可点击 |
+| 注册按钮禁用 | 背景 `var(--color-text-tertiary)`，不可点击（条件：未勾选协议、手机号/验证码/密码校验未通过、两次密码不一致） |
+| 微信注册按钮 | 背景 `var(--color-wechat)`，`var(--color-text-inverse)` 文字，微信图标 + "微信一键注册"，始终可点击 |
+| 发送验证码可用 | 文字 `var(--color-primary)`，边框 `1px solid var(--color-primary)` |
+| 发送验证码倒计时 | 文字 `var(--color-text-tertiary)`，边框 `1px solid var(--color-text-tertiary)`，显示 `Xs` |
 | 注册中 loading | 按钮文字变为"注册中..."，不可重复点击 |
 | 协议弹窗显示 | 从底部滑入，蒙层变暗，内容区域可滚动 |
 
@@ -499,7 +501,7 @@ import { sendSmsCode, register, wechatRegister } from '../../api/auth'
 ### 10.1 与登录页的关系
 
 注册页与登录页共享：
-- 相同的 UI 风格（`#00BFFF` 主色、白色卡片、灰色背景）
+- 相同的 UI 风格（主题 Token 体系、统一背景与卡片配色）
 - 相同的校验工具（`validatePhone`、`validatePassword`、`validateCode`）
 - 相同的倒计时工具（`useCountdown`）
 - 相同的 API 基址（`sendSmsCode` 共用端点，通过 `type` 参数区分）

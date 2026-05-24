@@ -166,7 +166,7 @@ recordApi.deleteRecord(id: number): Promise<ApiResponse<boolean>>
 |------|-----|
 | 组件 | `WdSwipeAction`（与账户列表、分类列表一致） |
 | 右侧按钮 | 1 个「删除」按钮，宽度 `140rpx` |
-| 删除按钮背景 | `#FA3534`（警示红） |
+| 删除按钮背景 | `var(--color-danger)`（警示红） |
 | 删除按钮文字 | `删除`，白色 `26rpx` |
 | Slot | `#default`（现有记录行）+ `#right`（删除按钮） |
 
@@ -178,7 +178,7 @@ recordApi.deleteRecord(id: number): Promise<ApiResponse<boolean>>
 | title | `"删除记录"` |
 | content | `"确定要删除这条记录吗？删除后不可恢复。"` |
 | `confirmText` | `"删除"` |
-| `confirmColor` | `"#FA3534"` |
+| `confirmColor` | `var(--color-danger)` |
 
 ### 编辑页删除按钮（⚠️ 已有）
 

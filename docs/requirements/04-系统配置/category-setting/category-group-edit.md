@@ -85,39 +85,39 @@
 ## UI 设计规范
 
 ### 布局
-- 页面背景：#F5F5F5
+- 页面背景：var(--color-bg-page)
 - 导航栏：WdNavbar 组件，`fixed` + `placeholder` 固定顶部
-- 表单容器：白色背景，margin 0 24rpx，圆角 16rpx，内边距 32rpx 24rpx
+- 表单容器：var(--color-bg-card) 背景，margin 0 24rpx，圆角 16rpx，内边距 32rpx 24rpx
 - 表单项间距：40rpx
 - 标签与输入框间距：16rpx
 - 图标项尺寸：96rpx × 96rpx，间距 16rpx
 - 类型标签：padding 12rpx 24rpx，圆角 40rpx，间距 12rpx
 - 保存按钮：WdButton `block` 通栏，高度 88rpx，圆角 44rpx，固定在底部
 
-### 颜色
-- 页面背景：#F5F5F5
-- 表单容器背景：#FFFFFF
-- 输入框背景：#F8F8F8（通过 WdInput `customStyle` 设置）
-- 选中边框：#00BFFF
+### 颜色（遵循项目 Token 体系）
+- 页面背景：var(--color-bg-page)
+- 表单容器背景：var(--color-bg-card)
+- 输入框背景：var(--color-bg-card)（通过 WdInput `customStyle` 设置）
+- 选中边框：var(--color-primary)
 - 选中背景：rgba(0, 191, 255, 0.1)
-- 标签文字：#333333
-- 占位文字：#CCCCCC
+- 标签文字：var(--color-text-primary)
+- 占位文字：var(--color-text-secondary)
 - 保存按钮：WdButton `type="primary"` 默认主题色
 - 禁用态：WdButton `disabled` 属性自动处理
 
 ### 字体
 - 导航标题：WdNavbar 默认样式
-- 表单标签：28rpx，font-weight 500，#333333
+- 表单标签：28rpx，font-weight 500，var(--color-text-primary)
 - 输入文字：WdInput 默认样式
 - 图标文字：48rpx
-- 类型标签文字：26rpx，#333333（选中态 #00BFFF，font-weight 500）
+- 类型标签文字：26rpx，var(--color-text-primary)（选中态 var(--color-primary)，font-weight 500）
 - 保存按钮：WdButton 默认样式，`customStyle` 设置 32rpx font-weight 600
 
 ### 交互状态
-- 图标项默认：背景 #F8F8F8，无边框
-- 图标项选中：边框 2rpx #00BFFF，背景 rgba(0, 191, 255, 0.1)
-- 类型标签默认：背景 #F8F8F8，无边框
-- 类型标签选中：边框 2rpx #00BFFF，背景 rgba(0, 191, 255, 0.1)，文字 #00BFFF
+- 图标项默认：背景 var(--color-bg-card)，无边框
+- 图标项选中：边框 2rpx var(--color-primary)，背景 rgba(0, 191, 255, 0.1)
+- 类型标签默认：背景 var(--color-bg-card)，无边框
+- 类型标签选中：边框 2rpx var(--color-primary)，背景 rgba(0, 191, 255, 0.1)，文字 var(--color-primary)
 - 输入框清除：WdInput `showClear` 聚焦/有内容时显示清除按钮
 - 保存按钮正常：WdButton `type="primary"` 正常态
 - 保存按钮禁用：WdButton `disabled` 自动置灰

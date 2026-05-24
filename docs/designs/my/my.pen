@@ -290,6 +290,70 @@
                           "fontWeight": "normal"
                         }
                       ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "THDIV1",
+                      "fill": "#F0F2F5",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "THEME1",
+                      "width": "fill_container",
+                      "height": 52,
+                      "padding": 14,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "THMLEFT",
+                          "gap": 14,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "THMICON",
+                              "width": 36,
+                              "height": 36,
+                              "fill": "#00bfff1a",
+                              "cornerRadius": 10,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "THMEMOJ",
+                                  "content": "🎨",
+                                  "fontFamily": "Inter",
+                                  "fontSize": 18,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "THMTEXT",
+                              "fill": "#333333",
+                              "content": "主题设置",
+                              "fontFamily": "Inter",
+                              "fontSize": 15,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "THMARRW",
+                          "fill": "#CCCCCC",
+                          "content": "›",
+                          "fontFamily": "Inter",
+                          "fontSize": 18,
+                          "fontWeight": "normal"
+                        }
+                      ]
                     }
                   ]
                 },

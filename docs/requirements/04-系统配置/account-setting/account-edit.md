@@ -7,7 +7,7 @@
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
-| v2.1 | 2026-05-21 | 代码 UI 全面升级：卡片分区布局、图标预览区（112×112大图+说明）、类型卡片（彩色圆点+emoji）、余额 ¥|分隔线|输入、开关双行说明、页面底色 #F0F2F5、TYPE_CONFIG 色值驱动 | AI |
+| v2.1 | 2026-05-21 | 代码 UI 全面升级：卡片分区布局、图标预览区（112×112大图+说明）、类型卡片（彩色圆点+emoji）、余额 ¥|分隔线|输入、开关双行说明、页面底色 var(--color-bg-page)、TYPE_CONFIG 色值驱动 | AI |
 | v2.0 | 2026-05-21 | 新增 Pencil 设计稿：`designs/my/account-setting/account-edit.pen`，完整可视化新增/编辑账户页面布局 | AI-UI设计 |
 | v1.0 | 2026-05-09 | 从 account-system.md 拆分，账户编辑页独立需求 | AI |
 | v1.1 | 2026-05-09 | 简化字段：只保留名称、类型、余额、说明、图标 | AI |
@@ -167,20 +167,20 @@
 ## UI 设计规范
 
 ### 布局（v2.1 升级版）
-- 页面背景：`#F0F2F5`（与全局一致）
+- 页面背景：`var(--color-bg-page)`（与全局一致）
 - 页面内边距：`16rpx`
-- 内容卡片：白色背景 `#FFFFFF`，圆角 `24rpx`，内边距 `32rpx 28rpx`，卡片间距 `20rpx`
+- 内容卡片：`var(--color-bg-card)` 背景，圆角 `24rpx`，内边距 `32rpx 28rpx`，卡片间距 `20rpx`
 - 导航栏：WdNavbar 组件，`fixed` + `placeholder` 固定顶部
-- 表单输入区背景：`#F5F6FA`（替代旧版 `#F8F8F8`）
+- 表单输入区背景：`var(--color-bg-card)`（替代旧版灰色）
 - 表单行间距：`32rpx`
-- 标签文字：`26rpx` `#666666` `font-weight: 500`，下间距 `12rpx`
+- 标签文字：`26rpx` `var(--color-text-secondary)` `font-weight: 500`，下间距 `12rpx`
 
 ### 图标选择区（卡片分区）
 - **大预览区**：112rpx × 112rpx，圆角 `24rpx`，背景 `rgba(0,191,255,0.08)`
   - 负债类时背景自动切换为 `rgba(250,53,52,0.08)`
 - **预览右侧**：双行说明文字（"选择图标" 30rpx 加粗 + "点击下方图标更换" 24rpx 灰色）
 - **小图标行**：每个 80rpx × 80rpx，圆角 `16rpx`，间距 `12rpx`，`flex-wrap`
-  - 默认：`#F5F6FA` 背景
+  - 默认：`var(--color-bg-card)` 背景
   - 选中：`rgba(0,191,255,0.1)` 背景
   - 点击反馈：`scale(0.92)`
 
@@ -200,25 +200,25 @@
 | 负债类 | `#FA3534` | 💳 | `rgba(250,53,52,0.06)` |
 
 ### 余额输入区
-- 外层容器：`#F5F6FA` 背景，圆角 `10rpx`，高 `88rpx`，padding `0 24rpx`
-- ¥ 前缀：`32rpx` `#333333` `font-weight: 700`
-- `1rpx × 36rpx` 竖线分隔符（`#E8E8E8`），左右间距 `20rpx`
+- 外层容器：`var(--color-bg-card)` 背景，圆角 `10rpx`，高 `88rpx`，padding `0 24rpx`
+- ¥ 前缀：`32rpx` `var(--color-text-primary)` `font-weight: 700`
+- `1rpx × 36rpx` 竖线分隔符（`var(--color-border)`），左右间距 `20rpx`
 - WdInput：透明背景，无边线，`flex: 1`
 
 ### 开关区（独立卡片）
 - 卡片无边距（`padding: 0`），内部行 `padding: 28rpx`
-- 分割线：`1rpx` `#F0F2F5`，左右留 `28rpx`
-- 双行说明：标题 `28rpx` `#333333` + 说明 `22rpx` `#999999`，间距 `6rpx`
+- 分割线：`1rpx` `var(--color-border-light)`，左右留 `28rpx`
+- 双行说明：标题 `28rpx` `var(--color-text-primary)` + 说明 `22rpx` `var(--color-text-secondary)`，间距 `6rpx`
 
 ### 保存按钮
 - WdButton `block`，高度 `96rpx`，圆角 `12rpx`
 - 固定在页面底部，`padding: 20rpx 32rpx` + 安全区
-- 底部背景 `#F0F2F5`
+- 底部背景 `var(--color-bg-page)`
 
 ### 交互状态
 - 所有卡片内元素点击反馈：`scale(0.92~0.96)` + `transition 150ms ease`
-- WdSwitch `activeColor="#00BFFF"`
-- 表单输入区统一 `#F5F6FA` 灰底色
+- WdSwitch `activeColor="var(--color-primary)"`
+- 表单输入区统一 `var(--color-bg-card)` 底色
 
 ## 数据结构
 

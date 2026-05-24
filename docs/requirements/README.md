@@ -1,45 +1,91 @@
 # FIRE生活家 - 需求文档索引
-> 全局版本：v1.3 | 最后更新：2026-05-21 | 中文名称：FIRE财务自由记账应用需求总索引
+> 全局版本：v1.5 | 最后更新：2026-05-24
 
 ## 文档结构
 
 ```
 requirements/
-├── README.md                       ← 需求文档索引（本文档）
+├── README.md                          ← 需求文档索引（本文档）
 │
-├── 01-记账省心/                     ← 模块1
-│   ├── README.md                   ← 模块概述
-│   ├── detail/                     ← 明细页子模块（月份切换/FIRE进度/储蓄率）
-│   │   ├── detail-month-switch.md
+├── 01-记账省心/                         ← 模块1
+│   ├── README.md                       ← 模块概述
+│   ├── detail/                         ← 明细页子模块
+│   │   ├── detail-list.md
+│   │   ├── detail-delete.md
 │   │   ├── fire-progress.md
 │   │   └── savings-rate.md
-│   └── record/                     ← 记账功能子模块
+│   └── record/                         ← 记账功能子模块
+│       ├── record.md
+│       ├── record-core.md
+│       ├── account-selector.md
+│       ├── amount-format.md
+│       ├── category-pinned.md
+│       ├── draft-auto-save.md
+│       ├── icon-fallback-fix.md
+│       ├── smart-remark.md
+│       └── transfer-record.md
+│   ├── auto-record.md
+│   ├── quick-amount.md
+│   ├── record-confirm-card.md
+│   ├── record-continue.md
+│   ├── record-reminder.md
+│   └── record-template.md
 │
-├── 02-资产有数/                     ← 模块2
-│   ├── README.md                   ← 模块概述
-│   └── [8个功能文档]
+├── 02-资产有数/                         ← 模块2
+│   ├── README.md                       ← 模块概述
+│   ├── account-detail.md
+│   ├── asset-overview.md
+│   ├── depreciating-asset.md
+│   ├── fixed-asset.md
+│   ├── investment-tracking.md
+│   ├── net-worth.md
+│   └── record-account-linkage.md
 │
-├── 03-FIRE可期/                     ← 模块3
-│   ├── README.md                   ← 模块概述
-│   └── [4个功能文档]
+├── 03-FIRE可期/                         ← 模块3
+│   ├── README.md                       ← 模块概述
+│   ├── fire-feedback.md
+│   ├── fire-goal.md
+│   ├── fire-time-price.md
+│   └── monthly-fire-report.md
 │
-└── 04-系统配置/                     ← 模块4
-    ├── README.md                   ← 模块概述
-    ├── budget-setting/              ← 预算设置子模块（预算设置/进度/双体系）
-    ├── account-setting/            ← 账户设置子模块
-    ├── category-setting/           ← 分类设置子模块
-    └── [其他文档]
+└── 04-系统配置/                         ← 模块4
+    ├── README.md                       ← 模块概述
+    ├── login/                          ← 登录注册子模块
+    │   ├── login.md
+    │   ├── register.md
+    │   └── forgot-password.md
+    ├── account-setting/                ← 账户设置子模块
+    │   ├── account-list.md
+    │   ├── account-edit.md
+    │   └── liability-rules.md
+    ├── budget-setting/                 ← 预算设置子模块
+    │   ├── budget-setting.md
+    │   ├── budget-progress.md
+    │   └── budget-dual-system.md
+    ├── category-setting/               ← 分类设置子模块
+    │   ├── category-group-list.md
+    │   ├── category-group-edit.md
+    │   ├── category-list.md
+    │   ├── category-edit.md
+    │   └── category-protect-and-ui.md
+    ├── theme-settings/                 ← 主题设置子模块
+    │   └── theme.md
+    ├── user-auth.md
+    ├── user-config.md                  ← 用户配置表设计
+    ├── new-user-default-config.md      ← 新用户默认配置
+    ├── data-sync.md
+    └── settings.md
 ```
 
 ## 模块概览
 
-| 模块 | 功能数 | 版本 | 状态 |
-|------|--------|------|------|
-| 01-记账省心 | 15 | v1.6 | 🔵开发中 |
-| 02-资产有数 | 8 | v1.1 | 🔵开发中 |
-| 03-FIRE可期 | 4 | v1.2 | 🔵开发中 |
-| 04-系统配置 | 11 | v1.4 | 🟢部分完成 |
-| **总计** | **38** | - | - |
+| 模块 | 功能数 | 状态 |
+|------|--------|------|
+| 01-记账省心 | 19 | 🔵 开发中 |
+| 02-资产有数 | 7 | 🔵 开发中 |
+| 03-FIRE可期 | 4 | 🔵 开发中 |
+| 04-系统配置 | 20 | 🟢 部分完成 |
+| **总计** | **50** | - |
 
 ## 三支柱全链路设计
 
@@ -167,20 +213,3 @@ docs: [模块] [功能] [操作] v[版本]
 - 生成需求文档
 - 更新需求文档
 - 提供架构建议
-
-## 与 Trae Spec 的关系
-
-每个功能的需求文档对应 `trae-specs/` 下的同名目录：
-```
-requirements/
-└── 01-记账省心/
-    └── record-continue.md      ← 需求文档
-
-trae-specs/
-└── record-continue/
-    ├── spec.md                 ← 产品规格（Goals/FR/AC）
-    ├── tasks.md                ← 实施计划
-    └── checklist.md            ← 验收清单
-```
-
-详见：[../trae-specs/README.md](../trae-specs/README.md)

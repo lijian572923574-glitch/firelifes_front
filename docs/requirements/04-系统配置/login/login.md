@@ -11,17 +11,19 @@
 - 视觉关键词：温暖、信任、简洁、现代
 
 ### 2.2 色彩体系
-| 角色 | 色值 | 用途 |
+登录页颜色遵循项目统一主题 Token 体系（详见 `theme-settings/theme.md`）：
+
+| 角色 | CSS Variable | 说明 |
 |---|---|---|
-| 主色（Primary） | `#FF7A45` | 按钮、激活态、品牌强调 |
-| 主色深（Primary Dark） | `#E8693A` | 按钮按下态 |
-| 背景色 | `#FFFBFA` | 页面背景，暖色调极浅 |
-| 卡片背景 | `#FFFFFF` | 表单卡片、弹框 |
-| 主文字 | `#1A1A2E` | 标题、正文 |
-| 次文字 | `#8C8CA1` | 辅助说明、placeholder |
-| 边框/分割线 | `#F0EDEB` | 输入框底线、分隔 |
-| 微信绿 | `#07C160` | 微信登录按钮 |
-| 危险色 | `#FF4D4F` | 错误提示 |
+| 主色 | `var(--color-primary)` | 按钮、激活态、品牌强调 |
+| 主色深 | `var(--color-primary-dark)` | 按钮按下态 |
+| 背景色 | `var(--color-bg-page)` | 页面背景 |
+| 卡片背景 | `var(--color-bg-card)` | 表单卡片、弹框 |
+| 主文字 | `var(--color-text-primary)` | 标题、正文 |
+| 次文字 | `var(--color-text-secondary)` | 辅助说明、placeholder |
+| 边框/分割线 | `var(--color-border)` | 输入框底线、分隔 |
+| 微信绿 | `var(--color-wechat)` | 微信登录按钮（品牌固定） |
+| 危险色 | `var(--color-danger)` | 错误提示 |
 
 ### 2.3 字体层级
 | 层级 | 字号(rpx) | 用途 |
