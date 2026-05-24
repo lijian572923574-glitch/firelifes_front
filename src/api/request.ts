@@ -61,7 +61,7 @@ const handle401Error = () => {
 
   setTimeout(() => {
     uni.reLaunch({
-      url: '/pages/login/index'
+      url: '/pages/login/login'
     })
     isHandling401 = false
   }, 800)

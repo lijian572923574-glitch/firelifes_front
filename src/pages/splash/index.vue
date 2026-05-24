@@ -25,7 +25,7 @@ const navigate = () => {
       userStore.clearAuth()
     }
     uni.reLaunch({
-      url: '/pages/login/index'
+      url: '/pages/login/login'
     })
   }
 }

@@ -105,19 +105,11 @@ const sendCode = async () => {
   if (isCounting.value) return
   
   try {
-    const res = await sendSmsCode(phone.value, 'login')
-    if (res.data?.code) {
-      uni.showToast({
-        title: `验证码: ${res.data.code}`,
-        icon: 'none',
-        duration: 3000
-      })
-    } else {
-      uni.showToast({
-        title: '验证码已发送',
-        icon: 'success'
-      })
-    }
+    await sendSmsCode(phone.value, 'login')
+    uni.showToast({
+      title: '验证码已发送',
+      icon: 'success'
+    })
     start()
   } catch (err) {
     console.error(err)
@@ -167,7 +159,7 @@ const handleWechatLogin = () => {
 
 const goToRegister = () => {
   uni.navigateTo({
-    url: '/pages/register/index'
+    url: '/pages/login/register'
   })
 }
 </script>

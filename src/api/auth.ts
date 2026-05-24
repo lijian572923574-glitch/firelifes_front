@@ -91,6 +91,22 @@ export const login = (data: {
 }
 
 /**
+ * 微信注册
+ * @param data 微信注册数据（授权code）
+ */
+export const wechatRegister = (data: {
+  code: string
+  phone?: string
+}) => {
+  return request({
+    url: '/auth/wechat-register',
+    method: 'POST',
+    data,
+    needAuth: false
+  })
+}
+
+/**
  * 获取当前登录用户信息
  */
 export const getUserInfo = () => {

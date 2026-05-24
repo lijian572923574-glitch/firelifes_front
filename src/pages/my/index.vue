@@ -63,7 +63,7 @@ const userStore = useUserStore()
 const handleUserCardClick = () => {
   if (!userStore.isLoggedIn()) {
     uni.redirectTo({
-      url: '/pages/login/index'
+      url: '/pages/login/login'
     })
   }
 }
@@ -103,7 +103,7 @@ const handleLogout = () => {
         } finally {
           userStore.clearAuth()
           uni.redirectTo({
-            url: '/pages/login/index'
+            url: '/pages/login/login'
           })
         }
       }
