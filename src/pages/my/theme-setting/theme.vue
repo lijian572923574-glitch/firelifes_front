@@ -185,11 +185,12 @@ const handleReset = () => {
 }
 
 const goBack = () => {
-  uni.navigateBack({
-    fail: () => {
-      uni.switchTab({ url: '/pages/my/index' })
-    },
-  })
+  const pages = getCurrentPages()
+  if (pages.length > 1) {
+    uni.navigateBack({ delta: 1 })
+  } else {
+    uni.reLaunch({ url: '/pages/my/index' })
+  }
 }
 
 onMounted(() => {

@@ -18,7 +18,7 @@
           <view class="bill-item" @tap="handleItemTap(item)">
             <view class="bill-item-left">
               <view class="category-icon" :style="{ backgroundColor: item.categoryColor }">
-                <text class="iconfont" :class="item.categoryIcon"></text>
+                <view class="category-icon-svg" :class="item.categoryIcon"></view>
               </view>
               <view class="bill-item-info">
                 <text class="bill-item-name">{{ item.displayName }}</text>
@@ -150,9 +150,9 @@ const formatAmount = (amount: number) => {
   flex-shrink: 0;
 }
 
-.category-icon .iconfont {
-  font-size: 36rpx;
-  color: var(--color-text-secondary, #94A3B8);
+.category-icon .category-icon-svg {
+  width: 28rpx;
+  height: 28rpx;
 }
 
 .bill-item-info {

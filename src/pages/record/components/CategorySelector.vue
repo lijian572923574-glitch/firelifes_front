@@ -13,7 +13,7 @@
           @click="selectCategoryItem(category)"
         >
           <view class="category-icon">
-            <text class="iconfont" :class="getIconClass(category.iconId, category.name)"></text>
+            <view class="category-icon-svg" :class="getIconClass(category.iconId, category.name)"></view>
           </view>
           <text class="category-name">{{ category.name }}</text>
         </view>
@@ -32,7 +32,7 @@
           @click="selectCategoryItem(category)"
         >
           <view class="category-icon">
-            <text class="iconfont" :class="getIconClass(category.iconId, category.name)"></text>
+            <view class="category-icon-svg" :class="getIconClass(category.iconId, category.name)"></view>
           </view>
           <text class="category-name">{{ category.name }}</text>
         </view>
@@ -45,6 +45,7 @@
 import { ref, watch, onMounted, computed } from 'vue'
 import { categoryApi, type CategoryGroup, type CategoryItem, type CategoryIcon } from '../../../api/category'
 import { getFrequentCategoryIds } from '../../../utils/category-frequency'
+import { getCategoryIconClass } from '../../../utils/category-icon-map'
 
 const props = defineProps<{
   transactionType: 'income' | 'expense'
@@ -84,51 +85,8 @@ const frequentGroup = computed(() => {
 const selectedCategoryId = ref<number>(0)
 const userIcons = ref<Map<number, string>>(new Map())
 
-// 分类名→iconfont类名映射
-const CATEGORY_ICON_MAP: Record<string, string> = {
-  // 饮食消费
-  '餐饮': 'icon-canyin', '饮料': 'icon-lingshi', '水果': 'icon-lingshi',
-  '零食': 'icon-lingshi', '咖啡': 'icon-lingshi',
-  // 居家居住
-  '住房': 'icon-fangzi', '居家': 'icon-fangzi', '居住': 'icon-fangzi',
-  '维修': 'icon-wj-zd', '快递': 'icon-qitadingdan',
-  // 交通出行
-  '交通': 'icon-jiaotong', '打车': 'icon-jiaotong', '汽车': 'icon-qiche',
-  // 服饰美容
-  '服饰': 'icon-yifu', '美发': 'icon-meirong', '美容': 'icon-meirong',
-  // 学习成长
-  '书籍': 'icon-jiaoyu', '学习': 'icon-jiaoyu', '教育': 'icon-jiaoyu',
-  // 休闲娱乐
-  '电影': 'icon-youxiyouxiji', '音乐': 'icon-youxiyouxiji',
-  '游戏': 'icon-youxiyouxiji', '旅行': 'icon-lvhang',
-  // 社交关系
-  '聚会聚餐': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin',
-  '亲友': 'icon-13', '宠物': 'icon-xiedaichongwu',
-  // 健康医疗
-  '医疗': 'icon-yiliao', '运动': 'icon-yundong-', '健身': 'icon-yundong-',
-  // 金融理财
-  '投资': 'icon-licaishouyi', '彩票': 'icon-licaishouyi',
-  // 其他支出
-  '其他': 'icon-qita', '日用': 'icon-riyongpin', '日用品': 'icon-riyongpin',
-  '捐赠': 'icon-jiangjinjilu',
-  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
-  '购物': 'icon-gouwuche',
-  '数码': 'icon-shumajiadianleimu', '保险': 'icon-shezhi',
-  // 历史兼容
-  '烟酒': 'icon-yanjiu', '数码家电': 'icon-shumajiadianleimu',
-  '娱乐': 'icon-youxiyouxiji', '社交': 'icon-13',
-  // 收入：薪资报酬
-  '工资': 'icon-gongzijianyi', '工资条': 'icon-gongzitiao',
-  '奖金': 'icon-jiangjinxiangqing', '兼职': 'icon-a-068_jianzhi',
-  // 收入：投资理财
-  '投资收入': 'icon-licaishouyi', '理财': 'icon-licaishouyi',
-  '理财收益': 'icon-licaishouyi',
-  // 收入：其他收入
-  '礼金收入': 'icon-a-068_lijin', '其他收入': 'icon-qita', '报销': 'icon-tuikuan',
-  // 收入历史兼容
-  '红包': 'icon-jiangjinjilu', '退款': 'icon-tuikuan', '闲置': 'icon-xianzhi',
-  // 通用
-  '设置': 'icon-shezhi', '账单': 'icon-zhangdan',
+const getIconClass = (_iconId: number, name: string): string => {
+  return getCategoryIconClass(name)
 }
 
 watch(() => props.transactionType, async () => {
@@ -182,19 +140,9 @@ const loadFrequentCategories = async () => {
   }
 }
 
-// 根据iconId或分类名返回iconfont类名
-const getIconClass = (iconId: number, name: string): string => {
-  // 优先使用分类名映射
-  if (CATEGORY_ICON_MAP[name]) {
-    return CATEGORY_ICON_MAP[name]
-  }
-  // fallback到API返回的iconUrl或默认图标
-  return 'icon-qita'
-}
-
-// 保留getIconUrl方法但不再在模板中使用
+// 根据分类名返回 SVG 图标 class
 const getIconUrl = (iconId: number): string => {
-  return userIcons.value.get(iconId) || 'icon-qita'
+  return userIcons.value.get(iconId) || ''
 }
 
 const selectCategoryItem = (category: CategoryItem) => {

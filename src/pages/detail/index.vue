@@ -75,6 +75,7 @@ import DetailHeader from './components/DetailHeader.vue'
 import FunctionBar, { type FunctionItem } from './components/FunctionBar.vue'
 import { useFunctionItemsStore } from '../../stores/functionItems'
 import BillCard, { type BillCardRecord } from './components/BillCard.vue'
+import { getCategoryIconClass } from '../../utils/category-icon-map'
 
 const deletingId = ref<number | null>(null)
 
@@ -156,57 +157,13 @@ const handleRecordTap = (record: BillCardRecord) => {
   })
 }
 
-// 分类名→iconfont类名映射
-const CATEGORY_ICON_MAP: Record<string, string> = {
-  // 饮食消费
-  '餐饮': 'icon-canyin', '饮料': 'icon-lingshi', '水果': 'icon-lingshi',
-  '零食': 'icon-lingshi', '咖啡': 'icon-lingshi',
-  // 居家居住
-  '住房': 'icon-fangzi', '居家': 'icon-fangzi', '居住': 'icon-fangzi',
-  '维修': 'icon-wj-zd', '快递': 'icon-qitadingdan',
-  // 交通出行
-  '交通': 'icon-jiaotong', '汽车': 'icon-qiche',
-  // 形象与消费
-  '服饰': 'icon-yifu', '美发': 'icon-meirong', '美容': 'icon-meirong',
-  '购物': 'icon-gouwuche',
-  // 兴趣与成长
-  '运动': 'icon-yundong-', '健身': 'icon-yundong-', '旅行': 'icon-lvhang',
-  '书籍': 'icon-jiaoyu', '学习': 'icon-jiaoyu', '教育': 'icon-jiaoyu',
-  '娱乐': 'icon-youxiyouxiji', '电影': 'icon-youxiyouxiji',
-  '音乐': 'icon-youxiyouxiji', '游戏': 'icon-youxiyouxiji',
-  // 社交关系
-  '社交': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin',
-  '亲友': 'icon-13', '宠物': 'icon-xiedaichongwu',
-  // 健康与医疗
-  '医疗': 'icon-yiliao',
-  // 职场工作
-  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
-  // 金融理财
-  '投资': 'icon-licaishouyi', '彩票': 'icon-licaishouyi',
-  // 其他
-  '其他': 'icon-qita', '日用': 'icon-riyongpin', '日用品': 'icon-riyongpin',
-  '捐赠': 'icon-jiangjinjilu',
-  // 历史兼容
-  '烟酒': 'icon-yanjiu', '数码家电': 'icon-shumajiadianleimu',
-  // 收入
-  '工资': 'icon-gongzijianyi', '工资条': 'icon-gongzitiao',
-  '奖金': 'icon-jiangjinxiangqing', '兼职': 'icon-a-068_jianzhi',
-  '投资收入': 'icon-licaishouyi', '理财': 'icon-licaishouyi',
-  '理财收益': 'icon-licaishouyi', '报销': 'icon-tuikuan',
-  '礼金收入': 'icon-a-068_lijin', '其他收入': 'icon-qita',
-  // 收入历史兼容
-  '红包': 'icon-jiangjinjilu', '退款': 'icon-tuikuan', '闲置': 'icon-xianzhi',
-  // 通用
-  '设置': 'icon-shezhi', '账单': 'icon-zhangdan',
-}
-
 const CATEGORY_BG_COLOR = 'var(--color-primary-light)'
 
 const getCategoryInfo = (typeId: number): { name: string; icon: string; color: string } => {
   for (const group of categories.value) {
     for (const cat of group.children) {
       if (cat.id === typeId) {
-        const icon = CATEGORY_ICON_MAP[cat.name] || userIconsMap.value.get(cat.iconId) || cat.iconUrl || 'icon-qita'
+        const icon = getCategoryIconClass(cat.name)
         return { name: cat.name, icon, color: CATEGORY_BG_COLOR }
       }
     }

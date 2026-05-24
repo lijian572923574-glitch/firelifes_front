@@ -130,7 +130,7 @@
             <view v-for="item in categoryBudgets" :key="item.typeId" class="category-card">
               <view class="category-main-row">
                 <view class="category-info">
-                  <text class="category-icon-text" :class="getCategoryIcon(item.typeId)"></text>
+                  <view class="category-icon-text category-icon-svg" :class="getCategoryIcon(item.typeId)"></view>
                   <view class="category-name-block">
                     <text class="category-name">{{ item.name }}</text>
                     <text class="category-meta">年 ¥{{ formatAmount(item.yearlyAmount) }} · 月 ¥{{ formatAmount(item.yearlyAmount / 12) }}</text>
@@ -207,7 +207,7 @@
             class="picker-item"
             @tap="addCategoryBudget(cat)"
           >
-            <text class="picker-item-icon iconfont" :class="getCategoryIcon(cat.id)"></text>
+            <view class="picker-item-icon category-icon-svg" :class="getCategoryIcon(cat.id)"></view>
             <view class="picker-item-info">
               <text class="picker-item-name">{{ cat.name }}</text>
               <text class="picker-item-group">{{ cat.groupName }}</text>
@@ -229,6 +229,7 @@ import { ref, computed, onMounted } from 'vue'
 import { budgetApi, type AnnualBudgetItem } from '../../../api/budget'
 import { categoryApi, type UserCategory } from '../../../api/category'
 import BudgetBar from '../../../components/BudgetBar.vue'
+import { getCategoryIconClass } from '../../../utils/category-icon-map'
 
 const currentYear = new Date().getFullYear()
 const currentMonth = new Date().getMonth() + 1
@@ -290,35 +291,10 @@ const formatAmount = (val: number) => {
   return Math.abs(val).toLocaleString('zh-CN', { maximumFractionDigits: 0 })
 }
 
-const CATEGORY_ICON_MAP: Record<string, string> = {
-  '餐饮': 'icon-canyin', '饮料': 'icon-lingshi', '水果': 'icon-lingshi',
-  '零食': 'icon-lingshi', '咖啡': 'icon-lingshi',
-  '住房': 'icon-fangzi', '居家': 'icon-fangzi', '居住': 'icon-fangzi',
-  '维修': 'icon-wj-zd', '快递': 'icon-qitadingdan',
-  '交通': 'icon-jiaotong', '汽车': 'icon-qiche',
-  '服饰': 'icon-yifu', '美发': 'icon-meirong', '美容': 'icon-meirong',
-  '购物': 'icon-gouwuche',
-  '运动': 'icon-yundong-', '健身': 'icon-yundong-', '旅行': 'icon-lvhang',
-  '书籍': 'icon-jiaoyu', '学习': 'icon-jiaoyu', '教育': 'icon-jiaoyu',
-  '娱乐': 'icon-youxiyouxiji', '电影': 'icon-youxiyouxiji',
-  '音乐': 'icon-youxiyouxiji', '游戏': 'icon-youxiyouxiji',
-  '社交': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin',
-  '亲友': 'icon-13', '宠物': 'icon-xiedaichongwu',
-  '医疗': 'icon-yiliao',
-  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
-  '投资': 'icon-licaishouyi', '彩票': 'icon-licaishouyi',
-  '其他': 'icon-qita', '日用': 'icon-riyongpin', '日用品': 'icon-riyongpin',
-  '捐赠': 'icon-jiangjinjilu',
-  '烟酒': 'icon-yanjiu', '数码家电': 'icon-shumajiadianleimu',
-  '工资': 'icon-gongzijianyi', '奖金': 'icon-jiangjinxiangqing',
-  '红包': 'icon-jiangjinjilu', '兼职': 'icon-a-068_jianzhi',
-  '退款': 'icon-tuikuan', '闲置': 'icon-xianzhi', '理财收益': 'icon-licaishouyi',
-}
-
 function getCategoryIcon(typeId: number): string {
   const cat = expenseCategories.value.find((c) => c.id === typeId)
-  if (!cat) return 'icon-qita'
-  return CATEGORY_ICON_MAP[cat.name] || 'icon-qita'
+  if (!cat) return 'category-icon-qita'
+  return getCategoryIconClass(cat.name)
 }
 
 async function loadData() {

@@ -38,7 +38,7 @@
                 :class="{ 'icon-item-active': formIconId === icon.id }"
                 @click="formIconId = icon.id"
               >
-                <text class="icon-emoji">{{ icon.url }}</text>
+                <view class="category-icon-svg icon-picker-icon" :class="getIconClass(icon)"></view>
               </view>
             </view>
           </scroll-view>
@@ -77,6 +77,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { categoryApi, type UserCategory, type UserIcon } from '../../../api/category'
+import { getCategoryIconClass } from '../../../utils/category-icon-map'
 
 const emit = defineEmits<{
   (e: 'saved'): void
@@ -101,6 +102,10 @@ const canSave = computed(() => {
   const name = formName.value.trim()
   return name.length > 0 && name.length <= 6 && !saving.value && formIconId.value > 0
 })
+
+const getIconClass = (icon: UserIcon): string => {
+  return getCategoryIconClass(icon.name)
+}
 
 function onNameInput() {
   // handled by maxlength and v-model
@@ -347,6 +352,11 @@ defineExpose({ openAdd, openEdit, close })
 .icon-emoji {
   font-size: 52rpx;
   line-height: 1;
+}
+
+.icon-picker-icon {
+  width: 52rpx;
+  height: 52rpx;
 }
 
 .popup-footer {

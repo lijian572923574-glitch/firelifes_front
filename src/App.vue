@@ -67,7 +67,7 @@ onError((err) => {
 
 <style>
 /* 全局样式 */
-@import url("./static/iconfont/iconfont.css");
+@import url("./styles/category-icons.css");
 @import url("./theme/variables.css");
 * {
   margin: 0;

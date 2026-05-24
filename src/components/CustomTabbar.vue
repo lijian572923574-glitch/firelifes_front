@@ -7,8 +7,8 @@
       @click="switchTab(item.pagePath)"
     >
       <view class="tab-icon">
-        <text class="iconfont" :class="[item.iconClass, { 'active': selectedTab === item.pagePath }]">
-        </text>
+        <view class="category-icon-svg" :class="[item.iconClass, { 'active': selectedTab === item.pagePath }]">
+        </view>
       </view>
       <text class="tab-text" :class="{ 'active': selectedTab === item.pagePath }">
         {{ item.text }}
@@ -19,33 +19,34 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
+import { getSystemIconClass } from '../utils/category-icon-map'
 
 const selectedTab = ref('pages/detail/index')
 
 const tabList = [
   {
     pagePath: 'pages/detail/index',
-    iconClass: 'icon-zhangdan',
+    iconClass: getSystemIconClass('账单'),
     text: '明细'
   },
   {
     pagePath: 'pages/statistics/index',
-    iconClass: 'icon-tongji',
+    iconClass: getSystemIconClass('统计'),
     text: '统计'
   },
   {
     pagePath: 'pages/record/index',
-    iconClass: 'icon-ico_hushigongzuozhan_jizhangguanli',
+    iconClass: getSystemIconClass('记账'),
     text: '记账'
   },
   {
     pagePath: 'pages/analysis/index',
-    iconClass: 'icon-zichan',
+    iconClass: getSystemIconClass('资产'),
     text: '资产'
   },
   {
     pagePath: 'pages/my/index',
-    iconClass: 'icon-wode',
+    iconClass: getSystemIconClass('我的'),
     text: '我的'
   }
 ]
@@ -112,13 +113,14 @@ onUnmounted(() => {
   justify-content: center;
 }
 
-.iconfont {
-  font-size: 24px;
+.tab-icon .category-icon-svg {
+  width: 24px;
+  height: 24px;
   color: var(--color-text-secondary, #94A3B8);
   opacity: 0.7;
 }
 
-.iconfont.active {
+.tab-icon .category-icon-svg.active {
   opacity: 1;
   color: var(--color-primary, #0D9488);
 }

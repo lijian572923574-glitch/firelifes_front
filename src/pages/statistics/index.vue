@@ -34,7 +34,7 @@
           <view v-for="(item, index) in categoryBreakdown" :key="item.typeId" class="category-row">
             <text class="rank-num">{{ index + 1 }}</text>
             <view class="category-icon" :style="{ backgroundColor: getIconBg() }">
-              <text class="iconfont" :class="item.icon"></text>
+              <view class="category-icon-svg" :class="item.icon"></view>
             </view>
             <text class="category-name">{{ item.name }}</text>
             <view class="category-bar-wrap">
@@ -83,28 +83,14 @@ import { ref, computed, onMounted } from 'vue'
 import { recordApi } from '../../api/record'
 import { categoryApi } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
-
-const CATEGORY_ICON_MAP: Record<string, string> = {
-  '餐饮': 'icon-canyin', '零食': 'icon-lingshi', '水果': 'icon-lingshi', '饮料': 'icon-lingshi', '咖啡': 'icon-lingshi',
-  '住房': 'icon-fangzi', '居家': 'icon-fangzi', '维修': 'icon-wj-zd', '快递': 'icon-qitadingdan',
-  '交通': 'icon-jiaotong', '汽车': 'icon-qiche',
-  '服饰': 'icon-yifu', '美发': 'icon-meirong', '美容': 'icon-meirong', '购物': 'icon-gouwuche',
-  '运动': 'icon-yundong-', '健身': 'icon-yundong-', '旅行': 'icon-lvhang', '书籍': 'icon-jiaoyu', '学习': 'icon-jiaoyu',
-  '娱乐': 'icon-youxiyouxiji', '电影': 'icon-youxiyouxiji', '音乐': 'icon-youxiyouxiji', '游戏': 'icon-youxiyouxiji',
-  '社交': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin', '亲友': 'icon-13', '宠物': 'icon-xiedaichongwu',
-  '医疗': 'icon-yiliao',
-  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
-  '投资': 'icon-licaishouyi', '彩票': 'icon-licaishouyi',
-  '日用': 'icon-riyongpin', '捐赠': 'icon-jiangjinjilu',
-  '其他': 'icon-qita',
-}
+import { getCategoryIconClass } from '../../utils/category-icon-map'
 
 const ICON_BG = 'rgba(0, 191, 255, 0.08)'
 
 const getIconBg = () => ICON_BG
 
 const getCategoryIcon = (categoryName: string): string => {
-  return CATEGORY_ICON_MAP[categoryName] || 'icon-qita'
+  return getCategoryIconClass(categoryName)
 }
 
 const today = new Date()
@@ -357,9 +343,9 @@ onMounted(() => {
   flex-shrink: 0;
 }
 
-.category-icon .iconfont {
-  font-size: 28rpx;
-  color: var(--color-primary, #0D9488);
+.category-icon .category-icon-svg {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .category-name {
