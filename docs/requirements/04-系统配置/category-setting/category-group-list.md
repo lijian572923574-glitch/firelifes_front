@@ -406,7 +406,6 @@ export interface UserIcon {
 | 子分类列表页 | `src/pages/my/category-setting/category-list.vue` → `pages/my/category-setting/category-list` | 子分类管理页面 |
 | 分类 API | `src/api/category.ts` | 分类相关全部接口 |
 | 导航工具 | `src/utils/navigate.ts` | 返回兜底路由映射 |
-| 需求文档 - 默认保护 | `docs/requirements/04-系统配置/category-setting/category-protect-and-ui.md` | 默认数据保护与UI规范 |
 | 需求文档 - 大类编辑 | `docs/requirements/04-系统配置/category-setting/category-group-edit.md` | 大类编辑页（设计中） |
 
 ---
