@@ -1,5 +1,24 @@
 <template>
   <view class="category-selector">
+    <view v-if="frequentGroup" class="group-section">
+      <view class="group-header">
+        <text class="group-name">常用</text>
+      </view>
+      <view class="category-grid">
+        <view
+          v-for="category in frequentGroup.children"
+          :key="category.id"
+          class="category-item"
+          :class="{ selected: selectedCategoryId === category.id }"
+          @click="selectCategoryItem(category)"
+        >
+          <view class="category-icon">
+            <text class="iconfont" :class="getIconClass(category.iconId, category.name)"></text>
+          </view>
+          <text class="category-name">{{ category.name }}</text>
+        </view>
+      </view>
+    </view>
     <view v-for="group in categoryGroups" :key="group.id" class="group-section">
       <view class="group-header">
         <text class="group-name">{{ group.name }}</text>
@@ -23,8 +42,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { categoryApi, type CategoryGroup, type CategoryItem, type CategoryIcon } from '../../../api/category'
+import { getFrequentCategoryIds } from '../../../utils/category-frequency'
 
 const props = defineProps<{
   transactionType: 'income' | 'expense'
@@ -36,6 +56,31 @@ const emit = defineEmits<{
 }>()
 
 const categoryGroups = ref<CategoryGroup[]>([])
+const frequentCategoryIds = ref<number[]>([])
+
+const frequentGroup = computed(() => {
+  if (frequentCategoryIds.value.length === 0) return null
+
+  const allChildren: CategoryItem[] = []
+  for (const group of categoryGroups.value) {
+    for (const child of group.children) {
+      allChildren.push(child)
+    }
+  }
+
+  const topChildren = frequentCategoryIds.value
+    .map(id => allChildren.find(c => c.id === id))
+    .filter((c): c is CategoryItem => !!c)
+
+  if (topChildren.length === 0) return null
+
+  return {
+    id: -1,
+    name: '常用',
+    sortOrder: -1,
+    children: topChildren
+  } as CategoryGroup
+})
 const selectedCategoryId = ref<number>(0)
 const userIcons = ref<Map<number, string>>(new Map())
 
@@ -86,6 +131,7 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
 watch(() => props.transactionType, async () => {
   selectedCategoryId.value = 0
   await loadCategories()
+  await loadFrequentCategories()
 })
 
 watch(() => props.selectedCategoryId, (newVal) => {
@@ -95,6 +141,7 @@ watch(() => props.selectedCategoryId, (newVal) => {
 onMounted(async () => {
   await loadIcons()
   await loadCategories()
+  await loadFrequentCategories()
 })
 
 const loadIcons = async () => {
@@ -120,6 +167,15 @@ const loadCategories = async () => {
     }
   } catch (error) {
     console.error('加载分类失败:', error)
+  }
+}
+
+const loadFrequentCategories = async () => {
+  try {
+    const frequencies = await getFrequentCategoryIds(props.transactionType)
+    frequentCategoryIds.value = frequencies.map(f => f.typeId)
+  } catch {
+    frequentCategoryIds.value = []
   }
 }
 

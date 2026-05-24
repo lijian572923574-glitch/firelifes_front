@@ -1,124 +1,162 @@
 # 常用分类智能置顶
 &gt; 文件：`category-pinned.md` | 中文名称：记账分类使用频率智能排序置顶功能 | 所属模块：记账省心
-&gt; 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
+&gt; 版本：v1.2 | 状态：✅已完成 | 最后更新：2026-05-24
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.2 | 2026-05-24 | 新增 Pencil 设计稿 `designs/record/category-selector.pen`；「常用」组颜色统一为 Teal（#0D9488），与其他大类风格一致 | AI |
+| v1.1 | 2026-05-24 | 实现完成：新增 category-frequency.ts + CategorySelector 添加虚拟「常用」大类 | AI |
 | v1.0 | 2026-05-09 | 初始版本 | AI |
 
 ---
 
-&gt; 最后更新：2026-05-09
+## 功能概述
+
+记账页分类选择器顶部新增**虚拟「常用」大类**，展示最近 30 天内使用频次最高的 4 个子分类。支出和收入 Tab 各自独立计算 Top 4。
+
+### 核心规则
+
+| 规则 | 说明 |
+|------|------|
+| 数据源 | 最近 30 天该类型（支出/收入）的记账记录 |
+| 统计维度 | 按 `typeId` 分组计数 |
+| 展示数量 | Top 4（不足 4 个则显示实际数量） |
+| 排序 | 频次降序 → 最近使用日期降序 |
+| 无数据时 | 不显示「常用」组 |
+| 切换 Tab | 支出/收入各自重新计算 |
+
+## 用户故事
+
+作为用户，我每周都多次记录"餐饮"和"交通"分类，希望这些常用分类能在分类列表最顶部优先展示，而不是每次都要在众多分类中翻找。
 
 ---
 
-## 功能概述
-根据用户记账频率自动将常用分类置顶显示。最近7天使用频次最高的前4个分类，会显示在各自所属分组的最前面，并标注"常用"标签。
-
-## 用户故事
-作为用户，我每周都会多次记录"餐饮"和"交通"分类，希望这些常用分类能优先展示，而不是每次都要滚动查找。这样可以显著提升我的记账效率。
-
 ## 交互设计
 
-### 页面结构
+### 分类选择器（支出 Tab 示例）
+
 ```
-分类选择器
 ┌────────────────────────────────────┐
-│  🍽️ 餐饮 [常用]                    │ ← 置顶显示
-│  ├───────────────────────────────  │
-│  ├── 🍜 早餐                       │
-│  ├── 🍛 午餐                       │
-│  ├── 🍜 晚餐                       │
-│  └── 🍺 聚会                       │
+│  常用                     ← 主色标签│
+│  ────────────────────────────────  │
+│  🍔 餐饮   🚇 交通   🛒 购物   ☕ 咖啡  │
 │                                     │
-│  🚌 交通                           │
-│  ├───────────────────────────────  │
-│  ├── 🚇 地铁    [常用]             │
-│  ├── 🚌 公交                       │
-│  └── 🚕 打车    [常用]             │
-│                                     │
-│  🛒 购物                           │
-│  ├───────────────────────────────  │
-│  └── ...                           │
+│  饮食消费                           │
+│  ────────────────────────────────  │
+│  🍔 餐饮   🍕 外卖   🍺 酒水   🍿 零食  │
+│  ...                                │
 └────────────────────────────────────┘
 ```
 
 ### 交互流程
-1. 用户进入记账页，分类选择器加载
-2. 系统查询最近7天用户记账记录
-3. 统计各分类使用频次
-4. 按频次排序，取前4个分类
-5. 在对应分组内，将这些分类移至分组顶部
-6. 显示"常用"标签
+
+1. 用户进入记账页，默认显示支出 Tab
+2. `CategorySelector` 并行加载：分类列表 + 近 30 天记账记录
+3. 前端计算频次 → 构建虚拟「常用」组 → 插入列表最顶部
+4. 用户切换支出/收入 Tab → 重新计算
+5. 用户选择常用分类 → 与普通分类行为完全一致
 
 ### 状态变化
+
 | 状态 | 触发条件 | 行为 |
 |------|----------|------|
-| 加载中 | 页面初始化 | 显示默认分类顺序 |
-| 已计算 | 获取使用频次后 | 调整分类顺序 |
-| 无数据 | 新用户/无历史 | 不显示"常用"标签 |
-| 刷新 | 下拉刷新 | 重新计算频次 |
+| 有常用数据 | 近 30 天有 ≥1 条记录 | 「常用」组显示在列表顶部，橙色标签 |
+| 无常用数据 | 新用户 / 30 天无记录 | 「常用」组不渲染 |
+| 不足 4 个 | 近 30 天只用过 2 种分类 | 「常用」组仅显示 2 个 |
+| 切换 Tab | 点击支出/收入 | 重新加载 + 重新计算 |
 
-## UI 设计规范
+---
 
-### 布局
-- 分类图标：80rpx × 80rpx
-- 分类名称：24rpx
-- "常用"标签：高度 32rpx，字体 20rpx
-- 标签位置：分类名称右侧
+## 技术实现
 
-### 颜色
-- 常用标签背景：#E0F7FA
-- 常用标签文字：#00BFFF
-- 分隔线：#E5E5E5
-- 分类名称：#333333
+&gt; 🎨 **Pencil 设计稿**: `designs/record/category-selector.pen` — 在编辑器中使用 Pencil 插件打开，可视化查看「常用」虚拟大类 + 分类网格布局。
 
-### 字体
-- 分类名称：24rpx
-- "常用"标签：20rpx，#00BFFF
+### 新增文件
 
-### 动效
-- 置顶动画：category-item 从原位置滑动到顶部，时长 200ms
-- 新增分类到常用：淡入 + 轻微放大
+| 文件 | 说明 |
+|------|------|
+| `src/utils/category-frequency.ts` | 最近 30 天分类使用频次计算，返回 Top 4 typeId 列表 |
+| `docs/designs/record/category-selector.pen` | Pencil 设计稿：分类选择器（支出 Tab 含常用） |
 
-## 数据结构
+### 修改文件
 
-### 新增接口
+| 文件 | 改动 |
+|------|------|
+| `src/pages/record/components/CategorySelector.vue` | 新增 `frequentGroup` computed + `loadFrequentCategories()`；模板新增虚拟「常用」组；样式新增 `.frequent-header` / `.frequent-name` |
+
+### 数据流
+
+```
+CategorySelector.onMounted
+  │
+  ├── loadCategories(type) → categoryGroups          （原有）
+  │
+  └── loadFrequentCategories(type)
+        │
+        ├── recordApi.getAllRecords()
+        │     └── 过滤：date >= 30天前 && type === transactionType
+        │
+        ├── 按 typeId count 降序，count 相同时按 lastUsedAt 降序
+        │
+        ├── 取 Top 4 → frequentCategoryIds
+        │
+        └── computed frequentGroup：
+              从 categoryGroups 所有 children 中匹配 Top 4 CategoryItem
+              → 构建虚拟 group: { id: -1, name: '常用', children: top4 }
+```
+
+### 核心代码
+
 ```typescript
-// GET /api/categories/usage - 获取分类使用频次
-interface GetCategoryUsageRequest {
-  days?: number;  // 统计天数，默认7
-}
+// src/utils/category-frequency.ts
+export async function getFrequentCategoryIds(type: 'income' | 'expense') {
+  const res = await recordApi.getAllRecords()
+  const cutoff = 30 天前的日期字符串
+  const freqMap = new Map<number, { count: number; lastUsedAt: string }>()
 
-interface GetCategoryUsageResponse {
-  code: number;
-  data: {
-    topCategories: {
-      categoryId: string;
-      count: number;      // 使用次数
-      lastUsedAt: string; // 最后使用时间
-    }[];
-  };
+  for (const record of res.data) {
+    if (record.date < cutoff || record.type !== type) continue
+    // 计数 + 更新 lastUsedAt
+  }
+  // 排序：count DESC → lastUsedAt DESC → TOP 4
 }
 ```
 
-### 本地存储
-```typescript
-// 缓存分类频次（减少接口调用）
-const CATEGORY_USAGE_CACHE_KEY = 'category_usage_cache';
-const CATEGORY_USAGE_CACHE_EXPIRE = 60 * 60 * 1000; // 1小时
-```
+---
 
-## 与现有功能的关联
-- 依赖分类数据：`src/pages/record/components/CategorySelector.vue`
-- 被 `smart-remark` 功能引用（获取当前分类ID）
-- 新增 API：`src/api/category.ts`
+## UI 设计规范（遵循项目 Token 体系）
+
+| 元素 | 色值 |
+|------|------|
+| 常用组下划线 | `var(--color-primary)`（与其他大类一致） |
+| 常用组标签文字 | `var(--color-primary)`（与其他大类一致） |
+| 常用组内子分类 | 与普通子分类完全一致 |
+
+- 分类网格：4 列 `grid-template-columns: repeat(4, 1fr)`
+- 间隔：`gap: 30rpx 20rpx`
+
+---
 
 ## 边界情况
-1. **新用户**：无历史数据，不显示"常用"标签
-2. **分类被删除**：如果常用分类被删除，不显示
-3. **分类使用频次相同**：按最后使用时间排序
-4. **同一分类多次使用同一笔记录**：只计算一次
-5. **跨设备数据**：使用服务端统计数据
-6. **缓存过期**：下次进入时重新计算
+
+1. **新用户（无记录）** → 不显示「常用」组
+2. **分类被删除** → 从 categoryGroups 中匹配不到，自动排除
+3. **频次相同** → 按最近使用日期排序
+4. **统计范围** → 严格 30 天，31 天前的记录不纳入
+5. **切换 Tab** → 立即触发重新加载和计算
+6. **API 失败** → 静默失败，不显示「常用」组，不影响其他分类展示
+
+---
+
+## 测试要点
+
+| # | 场景 | 步骤 | 预期 |
+|---|------|------|------|
+| 1 | 常用展示 | 近 30 天记餐饮 5 笔、交通 3 笔、购物 2 笔、咖啡 1 笔 → 进入记账页 | 支出 Tab 顶部显示「常用」，含 4 个分类，按频次排序 |
+| 2 | 切换 Tab | 收入有工资 2 笔 → 切到收入 Tab | 收入 Tab 顶部显示「常用」，仅含"工资" |
+| 3 | 不足 4 个 | 近 30 天只记过餐饮、交通 | 「常用」组仅 2 个 |
+| 4 | 新用户 | 无任何记录 → 进入 | 不显示「常用」组 |
+| 5 | 超过 30 天 | 31 天前记过餐饮 → 今天 | 不纳入统计 |
+| 6 | 频次相同 | 餐饮 3 次、交通 3 次，交通最近使用 | 餐饮在前（先按频次），交通在后 |
+| 7 | 切换 Tab 刷新 | 记一笔新支出 → 切回支出 Tab | 「常用」重新计算，新分类可能出现 |
