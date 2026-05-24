@@ -1,10 +1,11 @@
 # 记账功能（核心+账户选择+转账+还债）
 &gt; 文件：`record.md` | 中文名称：记账功能（核心+账户选择+转账+还债） | 所属模块：记账省心
-&gt; 版本：v2.0 | 状态：🟡设计中 | 最后更新：2026-05-14
+&gt; 版本：v2.1 | 状态：✅已完成 | 最后更新：2026-05-24
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v2.1 | 2026-05-24 | 状态更新：核心+转账+还债全部已实现；修正过时描述 | AI |
 | v2.0 | 2026-05-14 | 细化账户选择机制：支出账户/收入账户/还债/转账差异化逻辑 | AI |
 | v1.0 | 2026-05-10 | 合并核心记账和账户选择转账功能 | AI |
 
@@ -320,12 +321,12 @@
 └────────────────────────────────────┘
 ```
 
-### 颜色规范
-- **主色调**：#00BFFF（蓝）
-- **渐变色**：linear-gradient(135deg, #00BFFF 0%, #0099CC 100%)
-- **背景色**：#FAF9F6 → #F5F3EF（米黄色渐变）
-- **文字色**：#333（主文字），#999（次要文字）
-- **选中状态**：白色图标 + 蓝色渐变背景
+### 颜色规范（遵循项目 Token 体系）
+- **主色调**：`var(--color-primary)`
+- **渐变色**：`linear-gradient(135deg, var(--color-primary), var(--color-primary-dark))`
+- **背景色**：`var(--color-bg-page)`
+- **文字色**：`var(--color-text-primary)`（主文字），`var(--color-text-secondary)`（次要文字）
+- **选中状态**：`var(--color-text-inverse)` 文字 + `var(--color-primary)` 渐变背景
 
 ### 动效
 - **Tab切换**：底部指示器滑入动画
@@ -419,28 +420,23 @@ interface Account {
   id: number
   name: string
   icon: string
-  type: 'asset' | 'liability'
+  type: 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability'
   balance: number
-  isDefault: boolean  // 是否默认账户
+  isDefaultExpense: boolean   // 是否默认支出账户
+  isDefaultIncome: boolean    // 是否默认收入账户
   isDeleted: boolean
   order: number
 }
 ```
 
 ### 默认账户
-新用户注册后自动创建以下账户，无需手动添加：
+新用户注册后自动创建 3 个默认账户（定义在 `firelifes_back/src/service/account.service.ts`），无需手动添加：
 
 ```
 📦 资产类
-├── 💵 现金         余额：0  （cash）
-├── 🏦 储蓄卡       余额：0  （cash）
-├── 💚 微信零钱     余额：0  （cash）
-└── 💙 支付宝余额   余额：0  （cash）
-
-💳 负债类
-├── 💳 信用卡       余额：0  （liability）
-├── 🌸 花呗         余额：0  （liability）
-└── 🏠 房贷         余额：0  （liability）
+├── 💵 现金         余额：0  （cash，默认支出+收入账户）
+├── � 折旧资产     余额：0  （depreciable_asset）
+└── 🏠 固定资产     余额：0  （fixed_asset）
 ```
 
 ### 默认分类
@@ -475,7 +471,7 @@ interface Account {
 - `src/pages/record/components/AccountSelector.vue`：账户选择器（支持按类型过滤）
 
 ### 需后端配合
-- 用户注册接口：自动创建默认账户（4个资产类 + 3个负债类）
+- 用户注册接口：自动创建 3 个默认账户（现金 + 折旧资产 + 固定资产）
 - 记账接口：支持 type='repayment'，支持 accountId + toAccountId
 - 账户余额更新：
   - 支出：accountId 对应账户余额减少
@@ -488,10 +484,10 @@ interface Account {
 ---
 
 ## 智能默认逻辑
-- 记住上次使用的账户，下次默认选中
-- 支出时默认选中上次使用的资产账户
-- 收入时默认选中上次使用的资产账户
-- 转账时默认选中上次的转出/转入组合
+- 使用账户属性 `isDefaultExpense` / `isDefaultIncome` 标记默认账户（由用户注册时自动设置：现金账户同时为默认支出和收入账户）
+- 支出时优先选择 `isDefaultExpense: true` 的账户
+- 收入时优先选择 `isDefaultIncome: true` 的账户
+- 转账/还债时同样优先使用默认账户作为初始选中
 
 ---
 

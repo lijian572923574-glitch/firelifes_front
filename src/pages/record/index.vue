@@ -12,6 +12,20 @@
     </view>
 
     <view class="content">
+      <view v-if="showDraftBanner" class="draft-banner">
+        <view class="draft-banner-inner">
+          <text class="draft-icon">📋</text>
+          <text class="draft-text">有未完成的记账草稿</text>
+          <view class="draft-actions">
+            <view class="draft-btn dismiss-btn" @tap="dismissDraft">
+              <text class="draft-btn-text">放弃</text>
+            </view>
+            <view class="draft-btn restore-btn" @tap="restoreDraft">
+              <text class="draft-btn-text">恢复</text>
+            </view>
+          </view>
+        </view>
+      </view>
       <CategorySelector ref="categorySelectorRef" :transactionType="transactionType" :selectedCategoryId="selectedCategory?.id || 0" @select="selectCategory" />
     </view>
 
@@ -70,6 +84,7 @@ import type { Account } from '../../types/account'
 import type { DepreciatingAssetData } from '../../types/asset'
 import type { RecordType, CreateRecordData } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
+import { draft, type RecordDraft } from '../../utils/draft'
 
 const transactionType = ref<'income' | 'expense'>('expense')
 const selectedCategory = ref<{ id: number; name: string; icon: string } | null>(null)
@@ -86,6 +101,8 @@ const selectedAccount = ref<Account | null>(null)
 const fromAccount = ref<Account | null>(null)
 const toAccount = ref<Account | null>(null)
 const assetData = ref<DepreciatingAssetData | null>(null)
+const showDraftBanner = ref(false)
+let draftData: RecordDraft | null = null
 
 const isTransfer = computed(() => selectedCategory.value?.name === '转账')
 const isRepayment = computed(() => selectedCategory.value?.name === '还债')
@@ -100,10 +117,16 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  saveDraft()
 })
 
 onShow(() => {
-  resetForm()
+  if (draft.hasValidDraft()) {
+    draftData = draft.load()
+    showDraftBanner.value = true
+  } else {
+    resetForm()
+  }
 })
 
 const resetForm = () => {
@@ -124,6 +147,55 @@ const switchType = (type: 'income' | 'expense') => {
   selectedAccount.value = null
   fromAccount.value = null
   toAccount.value = null
+}
+
+const saveDraft = () => {
+  const hasData = selectedCategory.value || displayAmount.value || remark.value
+  if (!hasData && transactionType.value === 'expense') return
+
+  draft.save({
+    transactionType: transactionType.value,
+    categoryId: selectedCategory.value?.id || null,
+    categoryName: selectedCategory.value?.name || '',
+    categoryIcon: selectedCategory.value?.icon || '',
+    displayAmount: displayAmount.value,
+    remark: remark.value,
+    selectedDate: selectedDate.value,
+    accountId: selectedAccount.value ? Number(selectedAccount.value.id) : null,
+    accountName: selectedAccount.value?.name || '',
+    accountIcon: selectedAccount.value?.icon || '',
+    fromAccountId: fromAccount.value ? Number(fromAccount.value.id) : null,
+    fromAccountName: fromAccount.value?.name || '',
+    toAccountId: toAccount.value ? Number(toAccount.value.id) : null,
+    toAccountName: toAccount.value?.name || '',
+  })
+}
+
+const dismissDraft = () => {
+  draft.remove()
+  showDraftBanner.value = false
+  draftData = null
+  resetForm()
+}
+
+const restoreDraft = () => {
+  if (!draftData) return
+  const d = draftData
+  transactionType.value = d.transactionType
+  selectedDate.value = d.selectedDate
+  displayAmount.value = d.displayAmount
+  remark.value = d.remark
+
+  if (d.categoryId) {
+    selectedCategory.value = {
+      id: d.categoryId,
+      name: d.categoryName,
+      icon: d.categoryIcon
+    }
+  }
+
+  showDraftBanner.value = false
+  draftData = null
 }
 
 const selectCategory = async (category: { id: number; name: string; icon: string }) => {
@@ -165,9 +237,11 @@ const selectCategory = async (category: { id: number; name: string; icon: string
 
 const handleCloseTransactionForm = () => {
   showTransactionForm.value = false
+  saveDraft()
 }
 
 const handleCancel = () => {
+  saveDraft()
   uni.reLaunch({ url: '/pages/detail/index' })
 }
 
@@ -235,6 +309,7 @@ const handleComplete = async () => {
     const res = await recordApi.createRecord(payload)
 
     if (res.success) {
+      draft.remove()
       submitStatus.value = 'idle'
       isSubmitting.value = false
       showTransactionForm.value = false
@@ -456,5 +531,65 @@ const handleComplete = async () => {
   color: var(--color-text-primary, #1E293B);
   font-size: 28rpx;
   font-weight: 500;
+}
+
+.draft-banner {
+  margin: 16rpx 24rpx 0 24rpx;
+  animation: draftSlideDown 0.2s ease;
+}
+
+@keyframes draftSlideDown {
+  from { opacity: 0; transform: translateY(-16rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.draft-banner-inner {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  background: rgba(13, 148, 136, 0.08);
+  border-radius: 16rpx;
+}
+
+.draft-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+}
+
+.draft-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--color-text-primary, #1E293B);
+}
+
+.draft-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.draft-btn {
+  padding: 8rpx 24rpx;
+  border-radius: 24rpx;
+}
+
+.draft-btn-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.dismiss-btn {
+  background: transparent;
+}
+
+.dismiss-btn .draft-btn-text {
+  color: var(--color-text-secondary, #94A3B8);
+}
+
+.restore-btn {
+  background: var(--color-primary, #0D9488);
+}
+
+.restore-btn .draft-btn-text {
+  color: var(--color-text-inverse, #FFFFFF);
 }
 </style>

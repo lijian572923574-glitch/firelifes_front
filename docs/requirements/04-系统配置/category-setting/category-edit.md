@@ -1,14 +1,14 @@
 # 新增/编辑子分类弹窗 — 需求文档
 
-> 关联页面：`src/pages/my/category-setting/category-edit.vue`（需使用 uni-app 原生底部弹窗组件 `uni-popup` 实现）
+> 关联页面：`src/pages/my/category-setting/category-edit.vue`（底部弹窗组件，自定义实现）
 > 上级调用页面路由：`pages/my/category-setting/category-list`
-> 设计文件：`designs/my/category-setting/category-edit.pen`
 
-> 版本：v1.0 | 状态：🟡需求整理 | 最后更新：2026-05-23
+> 版本：v1.1 | 状态：✅已完成 | 最后更新：2026-05-24
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.1 | 2026-05-24 | 状态更新：功能已实现；修正为自定义弹窗（非 uni-popup） | AI |
 | v1.0 | 2026-05-23 | 初始版本：新增/编辑子分类弹窗需求文档，所属大类+收支类型改为只读展示 | AI |
 
 ---
@@ -329,6 +329,5 @@ interface EditFormState {
 | 项目 | 内容 |
 |------|------|
 | 上级页面 | `src/pages/my/category-setting/category-list.vue` |
-| 弹窗实现 | 使用 `uni-popup` 底部弹出组件 |
-| 设计文件 | `designs/my/category-setting/category-edit.pen` |
+| 弹窗实现 | 自定义底部弹窗（`v-if="visible"` + CSS `position: fixed`） |
 | 关联需求 | [category-list.md](./category-list.md) — 第 3.6 节 |

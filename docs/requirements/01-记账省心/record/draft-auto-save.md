@@ -1,122 +1,147 @@
 # 记账草稿自动保存
 &gt; 文件：`draft-auto-save.md` | 中文名称：记账中途草稿自动保存与恢复功能 | 所属模块：记账省心
-&gt; 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-09
+&gt; 版本：v1.1 | 状态：✅已完成 | 最后更新：2026-05-24
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.1 | 2026-05-24 | 实现完成：新增 draft.ts 工具类 + record/index.vue 草稿逻辑 | AI |
 | v1.0 | 2026-05-09 | 初始版本 | AI |
 
 ---
 
-&gt; 最后更新：2026-05-09
+## 功能概述
+记账中途退出时自动暂存当前状态，下次进入记账页时弹窗询问是否恢复。草稿存储在 localStorage，24 小时过期后自动忽略。
+
+## 用户故事
+作为用户，我正在输入一笔记账记录，突然需要回复微信消息或接听电话。我希望离开记账页时内容自动保存，回来时能选择恢复继续编辑。
 
 ---
 
-## 功能概述
-记账中途退出时自动暂存当前状态，下次进入记账页自动恢复。暂存数据存储在 localStorage，24小时过期后自动清理。
-
-## 用户故事
-作为用户，我正在输入一笔复杂的记账记录，突然需要回复微信消息或接听电话。我希望离开记账页时内容自动保存，回来时能继续编辑，而不是重新开始。
-
 ## 交互设计
 
-### 页面结构
+### 草稿恢复提示条（仅在有未过期草稿时显示）
+
 ```
-记账页（草稿恢复场景）
 ┌────────────────────────────────────┐
-│  ← 返回     记一笔                  │
-│  [📋 草稿已恢复]                   │ ← 提示条
+│  支出 | 收入             取消      │  ← Tab 栏
+├────────────────────────────────────┤
+│  📋 有未完成的记账草稿              │  ← 提示条（浅主色背景）
+│         [ 放弃 ]  [ 恢复 ]         │
+│  ────────────────────────────── │
 │                                     │
-│  [餐饮 ▼]                          │
-│                                     │
-│  ┌─────────────────────────────┐   │
-│  │         ¥ 156.00           │   │
-│  └─────────────────────────────┘   │
-│                                     │
-│  ┌─────────────────────────────┐   │
-│  │ 麦当劳套餐                   │   │
-│  └─────────────────────────────┘   │
-│                                     │
-│  [👛 微信钱包]                     │
-│                                     │
+│  分类网格区域...                     │
 └────────────────────────────────────┘
 ```
 
+| 状态 | 图标 | 说明 |
+|------|------|------|
+| 有草稿 | 📋 | 显示提示条，用户可选择恢复或放弃 |
+| 恢复后 | 无 | 提示条消失，表单数据回填 |
+| 放弃后 | 无 | 提示条消失，表单恢复默认空状态 |
+| 正常提交成功 | 无 | 草稿自动清除，下次进入无提示 |
+| 草稿过期（>24h） | 无 | 静默忽略，不显示提示条 |
+
 ### 交互流程
+
 1. 用户进入记账页
-2. 检查 localStorage 是否有草稿
-3. 如果有草稿且未过期，显示恢复提示
-4. 用户可选择：
-   - 恢复草稿：填充表单
-   - 放弃草稿：清空草稿，重新开始
-5. 用户正常提交后，清空草稿
-6. 用户退出页面时，自动保存草稿
+2. `onShow` 检查 localStorage 是否有草稿
+3. 如果有草稿且未过期 → 显示提示条，**表单不自动填充**
+4. 用户点击「恢复」→ 回填 `transactionType`、`selectedCategory`、`displayAmount`、`remark`、`selectedDate`
+5. 用户点击「放弃」→ 清空草稿，显示默认空表单
+6. 用户正常提交成功后 → 清空草稿
+7. 用户退出页面时 → `onUnmounted` 自动保存草稿
+8. 用户点击取消 → 保存草稿后跳转
 
-### 状态变化
-| 状态 | 触发条件 | 行为 |
-|------|----------|------|
-| 无草稿 | 首次进入 | 正常显示空白表单 |
-| 有草稿 | 进入页面 | 显示恢复提示 |
-| 恢复 | 点击恢复 | 填充表单数据 |
-| 放弃 | 点击放弃 | 清空草稿 |
-| 保存 | 退出/失焦 | 保存当前状态 |
-| 过期 | 24小时后 | 自动清理 |
+---
 
-## UI 设计规范
+## 技术实现
 
-### 布局
-- 提示条：高度 64rpx，背景 #E0F7FA
-- 提示文字：24rpx，#00BFFF
-- 按钮：提示条右侧
+### 新增文件
 
-### 颜色
-- 提示条背景：#E0F7FA
-- 提示文字：#00BFFF
-- 恢复按钮：#00BFFF
-- 放弃按钮：#999999
+| 文件 | 说明 |
+|------|------|
+| `src/utils/draft.ts` | 草稿保存/恢复/清除/过期检查 |
 
-### 字体
-- 提示文字：24rpx
+### 修改文件
 
-### 动效
-- 提示条滑入：从顶部滑入，时长 200ms
+| 文件 | 改动 |
+|------|------|
+| `src/pages/record/index.vue` | 3 处：新增 `saveDraft` / `dismissDraft` / `restoreDraft` 方法；`onShow` 检查草稿；`onUnmounted` 保存草稿；`handleCancel` 保存草稿；`handleComplete` 成功后清除草稿；`handleCloseTransactionForm` 保存草稿；模板新增草稿提示条 |
 
-## 数据结构
+### 数据结构
 
-### 本地存储
 ```typescript
-const DRAFT_KEY = 'record_draft';
-const DRAFT_EXPIRE = 24 * 60 * 60 * 1000; // 24小时
-
 interface RecordDraft {
-  type: 'expense' | 'income' | 'transfer';
-  categoryId?: string;
-  amount: string;
-  remark: string;
-  accountId?: string;
-  fromAccountId?: string;
-  toAccountId?: string;
-  date: string;
-  savedAt: number;  // 时间戳
-}
-
-// 检查草稿是否过期
-function isDraftExpired(draft: RecordDraft): boolean {
-  return Date.now() - draft.savedAt > DRAFT_EXPIRE;
+  transactionType: 'income' | 'expense'
+  categoryId: number | null
+  categoryName: string
+  categoryIcon: string
+  displayAmount: string
+  remark: string
+  selectedDate: string
+  accountId: number | null
+  accountName: string
+  accountIcon: string
+  fromAccountId: number | null
+  fromAccountName: string
+  toAccountId: number | null
+  toAccountName: string
+  savedAt: number
 }
 ```
 
-## 与现有功能的关联
-- 修改记账页：`src/pages/record/index.vue`
-- 新增草稿管理工具：`src/utils/draft.ts`
-- 与所有记账输入组件联动
+### 保存时机
+
+| 触发 | 行为 |
+|------|------|
+| `onUnmounted` | 保存当前所有 ref 状态 |
+| `handleCancel` | 保存草稿后跳转首页 |
+| `handleCloseTransactionForm` | 关闭弹窗时保存草稿 |
+
+### 恢复时机
+
+| 触发 | 行为 |
+|------|------|
+| `onShow` + 有效草稿 | 显示提示条，等待用户选择 |
+
+### 清除时机
+
+| 触发 | 行为 |
+|------|------|
+| `handleComplete` 成功 | `draft.remove()` |
+| 用户点击「放弃」 | `draft.remove()` |
+| 草稿过期（>24h） | `draft.hasValidDraft()` 返回 false，静默忽略 |
+
+### 空状态优化
+
+- 仅 `transactionType === 'expense'` 且 `selectedCategory`、`displayAmount`、`remark` 均为空时不保存草稿
+- 切换到收入 Tab 但无其他操作时仍保存（`transactionType: 'income'` 属于有意义的变更）
+
+---
+
+## UI 设计规范
+
+| 元素 | 色值 |
+|------|------|
+| 提示条背景 | `rgba(13, 148, 136, 0.08)`（基于 `var(--color-primary)`） |
+| 提示文字 | `var(--color-text-primary)` |
+| 恢复按钮背景 | `var(--color-primary)` |
+| 恢复按钮文字 | `var(--color-text-inverse)` |
+| 放弃按钮文字 | `var(--color-text-secondary)` |
+
+- 提示条高度：`72rpx`（含 padding `16rpx 24rpx`）
+- 动效：`slideDown` 200ms ease
+- 按钮圆角：`24rpx`
+
+---
 
 ## 边界情况
-1. **提交成功后**：清空草稿
-2. **草稿已过期**：静默清理，不显示恢复提示
-3. **存储已满**：清理最旧的草稿
-4. **页面切换Tab**：不触发草稿保存
-5. **App 被杀**：草稿仍保留
-6. **多设备同步**：各设备独立草稿
-7. **草稿与当前输入冲突**：提示用户选择
+
+1. **提交成功后** → 清除草稿
+2. **草稿已过期（24小时）** → 静默忽略
+3. **存储已满** → localStorage 失败时 catch 静默处理
+4. **切换 Tab** → 不触发草稿保存（仅在 `onUnmounted` / `handleCancel` / `handleCloseTransactionForm` 时保存）
+5. **App 被杀** → 草稿保留（localStorage 持久化）
+6. **草稿与当前输入冲突** → 弹窗询问，用户自主选择恢复或放弃
+7. **空状态不保存** → 默认支出 + 无分类 + 无金额 + 无备注 = 不保存草稿

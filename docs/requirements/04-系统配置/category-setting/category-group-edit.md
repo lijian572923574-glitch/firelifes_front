@@ -1,19 +1,22 @@
 
 # 分类大类编辑页
 &gt; 文件：`category-group-edit.md` | 中文名称：分类大类编辑 | 所属模块：系统配置（我的页面子模块）
-&gt; 页面路径：`pages/my/category-group-edit.vue`
+&gt; 页面路径：`src/pages/my/category-setting/category-group-edit.vue`（底部弹窗组件）
 
-&gt; 版本：v1.0 | 状态：🟡设计中 | 最后更新：2026-05-10
+&gt; 版本：v1.1 | 状态：✅已完成 | 最后更新：2026-05-24
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.1 | 2026-05-24 | 状态更新：功能已实现为底部弹窗组件；修正页面路径 | AI |
 | v1.0 | 2026-05-10 | 初始版本：分类大类编辑页独立需求 | AI |
 
 ---
 
 ## 功能概述
-分类大类编辑页支持新增大类和编辑两种模式，提供分类大类信息的基本维护功能。
+分类大类编辑以**底部弹窗（Sheet）**形式实现，从 `category-group-list.vue` 中调用。支持新增大类和编辑两种模式。
+
+> **实现差异**：需求原设计为独立页面（WdNavbar），实际实现为底部弹窗组件。轻量化交互体验更好，用户无需跳转页面即可完成新增/编辑。
 
 ## 用户故事
 作为用户，我希望能灵活添加和修改分类大类信息，这样可以让我的记账分类更有条理。
@@ -22,27 +25,25 @@
 
 ## 交互设计
 
-### 页面结构
+### 页面结构（实际实现：底部弹窗）
 
 ```
-分类大类编辑页
+分类大类编辑弹窗（底部 Sheet）
 ┌────────────────────────────────────┐
-│  ← 新增大类 / 编辑大类  (WdNavbar) │
+│  新增大类 / 编辑大类          ×   │  ← 弹窗标题栏
 ├────────────────────────────────────┤
-│
-│                                      │
-│  大类名称                     (WdInput)│
-│  ┌────────────────────────────────┐ │
-│  │ 请输入大类名称              [x] │ │
-│  └────────────────────────────────┘ │
-│                                      │
-│  分类类型                            │
-│  ┌────────────────────────────────┐ │
-│  │ [支出] [收入]                  │ │
-│  └────────────────────────────────┘ │
-│                                      │
+│  大类名称                          │
+│  ┌──────────────────────────────┐  │
+│  │ 请输入大类名称            [x] │  │  ← input, maxlength=20
+│  └──────────────────────────────┘  │
+│                                    │
+│  分类类型                          │
+│  ┌──────────────────────────────┐  │
+│  │ [支出]  [收入]               │  │  ← pill标签，编辑模式只读
+│  └──────────────────────────────┘  │
+│                                    │
 ├────────────────────────────────────┤
-│       [ 保 存 ]  (WdButton)         │
+│  [ 取消 ]          [ 创建/保存 ]  │  ← 底部双按钮
 └────────────────────────────────────┘
 ```
 
@@ -62,7 +63,7 @@
 ### 交互细节
 
 - **默认值填充**：类型默认expense（支出）
-- **保存按钮**：使用 WdButton 组件，固定在页面底部，`disabled` 置灰不可点击，`loading` 显示加载中状态
+- **保存按钮**：自定义双按钮栏，取消按钮 + 创建/保存按钮，`canSave` 控制确认按钮可用性
 - **保存反馈**：调用API成功后toast提示"创建成功"/"修改成功"，1.5秒后自动 `navigateBack` 返回列表页
 - **清除按钮**：WdInput 组件 `showClear` 属性提供一键清除功能
 
@@ -70,29 +71,22 @@
 
 ## UI 组件使用
 
-页面使用 WotUI (`@wot-ui/ui`) 组件库，通过 `@uni-helper/vite-plugin-uni-components` 自动按需导入。
-
 | 组件 | 用途 | 关键属性 |
 |------|------|---------|
-| WdNavbar | 顶部导航栏 | `title`, `leftArrow`, `fixed`, `placeholder`, `bordered`, `safeAreaInsetTop` |
-| WdInput | 大类名称输入 | `v-model`, `placeholder`, `maxlength=20`, `showClear` |
-| WdButton | 保存按钮 | `type="primary"`, `block`, `:disabled`, `:loading` |
-
-&gt; **注意**：图标选择器和类型选择器保持自定义实现，WotUI 无直接对应的 emoji 选择器组件，pill 标签样式比 WdRadio 更符合设计需求。
+| 自定义弹窗 | 底部 Sheet 容器 | `v-if="visible"`, `position: fixed; bottom: 0` |
+| 自定义 input | 大类名称输入 | `v-model`, `placeholder`, `maxlength=20` |
+| 自定义按钮 | 取消/创建（保存） | `@click` 事件绑定，`canSave` 控制 disabled |
 
 ---
 
 ## UI 设计规范
 
 ### 布局
-- 页面背景：var(--color-bg-page)
-- 导航栏：WdNavbar 组件，`fixed` + `placeholder` 固定顶部
-- 表单容器：var(--color-bg-card) 背景，margin 0 24rpx，圆角 16rpx，内边距 32rpx 24rpx
-- 表单项间距：40rpx
-- 标签与输入框间距：16rpx
-- 图标项尺寸：96rpx × 96rpx，间距 16rpx
-- 类型标签：padding 12rpx 24rpx，圆角 40rpx，间距 12rpx
-- 保存按钮：WdButton `block` 通栏，高度 88rpx，圆角 44rpx，固定在底部
+- 弹窗蒙层：`position: fixed; top/left/right/bottom: 0; background: rgba(0,0,0,0.5)`
+- 弹窗面板：`width: 100%`, `border-radius: 32rpx 32rpx 0 0`, 从底部滑入动画
+- 表单容器：`var(--color-bg-card)` 背景，padding `32rpx`，flex column 布局
+- 表单行间距：`32rpx`
+- 底部按钮：双按钮布局，`flex: 1`，高度 `88rpx`，圆角 `16rpx`
 
 ### 颜色（遵循项目 Token 体系）
 - 页面背景：var(--color-bg-page)
@@ -102,30 +96,27 @@
 - 选中背景：rgba(0, 191, 255, 0.1)
 - 标签文字：var(--color-text-primary)
 - 占位文字：var(--color-text-secondary)
-- 保存按钮：WdButton `type="primary"` 默认主题色
-- 禁用态：WdButton `disabled` 属性自动处理
+- 保存按钮：`禁用态: canSave=false 灰色`、`加载中: saving=true 不可点击`、`正常: var(--color-primary) 渐变`
+- 输入框背景：var(--color-bg-card)（通过 WdInput `customStyle` 设置）
 
 ### 字体
-- 导航标题：WdNavbar 默认样式
-- 表单标签：28rpx，font-weight 500，var(--color-text-primary)
-- 输入文字：WdInput 默认样式
-- 图标文字：48rpx
-- 类型标签文字：26rpx，var(--color-text-primary)（选中态 var(--color-primary)，font-weight 500）
-- 保存按钮：WdButton 默认样式，`customStyle` 设置 32rpx font-weight 600
+- 弹窗标题：`34rpx`，`font-weight: 600`，`var(--color-text-primary)`
+- 表单标签：`28rpx`，`font-weight: 500`，`var(--color-text-primary)`
+- 输入文字：`28rpx`，`var(--color-text-primary)`，placeholder `var(--color-text-secondary)`
+- 类型标签文字：`26rpx`，`var(--color-text-primary)`（选中态 `var(--color-primary)`，`font-weight: 500`）
+- 底部按钮：`30rpx`，`font-weight: 500`
 
 ### 交互状态
-- 图标项默认：背景 var(--color-bg-card)，无边框
-- 图标项选中：边框 2rpx var(--color-primary)，背景 rgba(0, 191, 255, 0.1)
-- 类型标签默认：背景 var(--color-bg-card)，无边框
-- 类型标签选中：边框 2rpx var(--color-primary)，背景 rgba(0, 191, 255, 0.1)，文字 var(--color-primary)
-- 输入框清除：WdInput `showClear` 聚焦/有内容时显示清除按钮
-- 保存按钮正常：WdButton `type="primary"` 正常态
-- 保存按钮禁用：WdButton `disabled` 自动置灰
-- 保存按钮加载：WdButton `loading` 显示加载动画
+- 类型标签默认：背景 `var(--color-bg-card)`，无边框
+- 类型标签选中：边框 `2rpx var(--color-primary)`，背景 `rgba(0, 191, 255, 0.1)`，文字 `var(--color-primary)`
+- 编辑模式类型标签：只读样式，选中项高亮显示，其他半透明
+- 取消按钮：`var(--color-border-light)` 背景，文字 `var(--color-text-secondary)`
+- 确认按钮正常：`var(--color-primary)` 渐变背景
+- 确认按钮禁用：`opacity: 0.5`，不可点击
 
 ### 动效
-- 图标/类型选中切换：transition all 0.2s ease
-- 保存按钮状态切换：transition opacity 0.2s ease
+- 弹窗打开：蒙层 `fadeIn 0.2s ease` + 面板 `slideUp 0.3s ease`
+- 类型选中切换：`transition all 0.2s ease`
 
 ---
 
@@ -229,7 +220,7 @@ const canSave = computed(() =&gt; {
          formData.value.name.length &lt;= 20;
 });
 
-// WdButton 绑定：:disabled="!canSave" :loading="saving"
+// 确认按钮绑定：`:class="{ 'footer-btn-disabled': !canSave }"` `@click="handleSave"`
 ```
 
 ---
@@ -238,7 +229,7 @@ const canSave = computed(() =&gt; {
 
 1. **网络错误**：catch 捕获后 toast "网络错误"，`saving = false`
 2. **分类不存在**：API 返回 success=false，toast 显示 message
-3. **名称为空**：canSave 为 false，WdButton `disabled` 置灰不可点击
+3. **名称为空**：canSave 为 false，确认按钮置灰不可点击
 4. **名称超长**：WdInput `maxlength=20` 自动限制，canSave 为 false
 5. **编辑模式加载失败**：toast 提示错误信息，用户可手动返回
 6. **重复提交防护**：`saving` 状态为 true 时 `handleSave` 直接 return，防止重复提交
