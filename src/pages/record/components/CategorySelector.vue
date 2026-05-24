@@ -93,35 +93,38 @@ const CATEGORY_ICON_MAP: Record<string, string> = {
   '住房': 'icon-fangzi', '居家': 'icon-fangzi', '居住': 'icon-fangzi',
   '维修': 'icon-wj-zd', '快递': 'icon-qitadingdan',
   // 交通出行
-  '交通': 'icon-jiaotong', '汽车': 'icon-qiche',
-  // 形象与消费
+  '交通': 'icon-jiaotong', '打车': 'icon-jiaotong', '汽车': 'icon-qiche',
+  // 服饰美容
   '服饰': 'icon-yifu', '美发': 'icon-meirong', '美容': 'icon-meirong',
-  '购物': 'icon-gouwuche',
-  // 兴趣与成长
-  '运动': 'icon-yundong-', '健身': 'icon-yundong-', '旅行': 'icon-lvhang',
+  // 学习成长
   '书籍': 'icon-jiaoyu', '学习': 'icon-jiaoyu', '教育': 'icon-jiaoyu',
-  '娱乐': 'icon-youxiyouxiji', '电影': 'icon-youxiyouxiji',
-  '音乐': 'icon-youxiyouxiji', '游戏': 'icon-youxiyouxiji',
+  // 休闲娱乐
+  '电影': 'icon-youxiyouxiji', '音乐': 'icon-youxiyouxiji',
+  '游戏': 'icon-youxiyouxiji', '旅行': 'icon-lvhang',
   // 社交关系
-  '社交': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin',
+  '聚会聚餐': 'icon-13', '礼物': 'icon-jiangjinjilu', '礼金': 'icon-a-068_lijin',
   '亲友': 'icon-13', '宠物': 'icon-xiedaichongwu',
-  // 健康与医疗
-  '医疗': 'icon-yiliao',
-  // 职场工作
-  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
+  // 健康医疗
+  '医疗': 'icon-yiliao', '运动': 'icon-yundong-', '健身': 'icon-yundong-',
   // 金融理财
   '投资': 'icon-licaishouyi', '彩票': 'icon-licaishouyi',
-  // 其他
+  // 其他支出
   '其他': 'icon-qita', '日用': 'icon-riyongpin', '日用品': 'icon-riyongpin',
   '捐赠': 'icon-jiangjinjilu',
+  '办公': 'icon-shezhi', '通讯': 'icon-shouji',
+  '购物': 'icon-gouwuche',
+  '数码': 'icon-shumajiadianleimu', '保险': 'icon-shezhi',
   // 历史兼容
   '烟酒': 'icon-yanjiu', '数码家电': 'icon-shumajiadianleimu',
-  // 收入
+  '娱乐': 'icon-youxiyouxiji', '社交': 'icon-13',
+  // 收入：薪资报酬
   '工资': 'icon-gongzijianyi', '工资条': 'icon-gongzitiao',
   '奖金': 'icon-jiangjinxiangqing', '兼职': 'icon-a-068_jianzhi',
+  // 收入：投资理财
   '投资收入': 'icon-licaishouyi', '理财': 'icon-licaishouyi',
-  '理财收益': 'icon-licaishouyi', '报销': 'icon-tuikuan',
-  '礼金收入': 'icon-a-068_lijin', '其他收入': 'icon-qita',
+  '理财收益': 'icon-licaishouyi',
+  // 收入：其他收入
+  '礼金收入': 'icon-a-068_lijin', '其他收入': 'icon-qita', '报销': 'icon-tuikuan',
   // 收入历史兼容
   '红包': 'icon-jiangjinjilu', '退款': 'icon-tuikuan', '闲置': 'icon-xianzhi',
   // 通用

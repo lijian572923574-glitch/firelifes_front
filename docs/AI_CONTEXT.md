@@ -186,7 +186,7 @@ firelifes_back/
 │   │   ├── auth.service.ts     #   注册/登录/微信登录 (含新用户初始化调用)
 │   │   ├── user.service.ts     #   用户信息 + 用户配置CRUD + initUserConfig
 │   │   ├── account.service.ts  #   账户CRUD + 3个默认账户创建
-│   │   ├── category.service.ts #   分类CRUD + 新用户108条数据初始化（13个大类）
+│   │   ├── category.service.ts #   分类CRUD + 新用户111条数据初始化（13个大类）
 │   │   ├── record.service.ts   #   记账记录CRUD
 │   │   ├── budget.service.ts   #   预算双体系
 │   │   ├── net-worth.service.ts #  净资产计算引擎
@@ -318,15 +318,15 @@ firelifes_back/
 
 ## 6. 核心业务逻辑
 
-### 6.1 新用户注册初始化链路 (108 条数据自动创建)
+### 6.1 新用户注册初始化链路 (111 条数据自动创建)
 
 ```
 注册 → auth.service.ts
   ├── users 表                      1条
   ├── categoryService.initUserCategories()
   │   ├── user_category_groups      13条 (10个支出大类+3个收入大类)
-  │   ├── user_icons                45条 (45个emoji图标)
-  │   └── user_category_customizations 45条 (37支出+8收入分类)
+  │   ├── user_icons                47条 (47个emoji图标)
+  │   └── user_category_customizations 46条 (38支出+8收入分类)
   ├── accountService.createDefaultAccounts()
   │   └── accounts                  3条 (现金💵/折旧资产📱/固定资产🏠)
   └── userService.initUserConfig()
