@@ -99,3 +99,24 @@ export function resetToDefault() {
 export function getThemeState(): ThemeState {
   return readThemeState()
 }
+
+export function getThemeSnapshot(): { theme: ThemeState } {
+  return { theme: readThemeState() }
+}
+
+export function applyConfigTheme(config: Record<string, any>) {
+  if (!config || !config.theme) return
+
+  const theme = config.theme as ThemeState
+  if (theme.mode === 'preset') {
+    setPresetTheme(theme.presetName)
+  } else if (theme.mode === 'custom') {
+    if (theme.presetName) {
+      uni.setStorageSync(STORAGE_KEY_PRESET, theme.presetName)
+    }
+    uni.setStorageSync(STORAGE_KEY_MODE, 'custom')
+    uni.setStorageSync(STORAGE_KEY_CUSTOM, JSON.stringify(theme.customColors || {}))
+    const colors = getCurrentColors()
+    applyTheme(colors)
+  }
+}

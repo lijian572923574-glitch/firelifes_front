@@ -112,8 +112,10 @@ import {
   resetToDefault,
   getThemeState,
 } from '../../../theme'
+import { useUserStore } from '../../../stores/user'
 
 const presets = themePresets
+const store = useUserStore()
 
 const activePreset = ref('teal')
 const state = reactive({
@@ -143,6 +145,7 @@ const loadState = () => {
 const selectPreset = (name: string) => {
   setPresetTheme(name)
   loadState()
+  store.syncThemeToServer()
 }
 
 const openPicker = (token: { key: string; label: string }) => {
@@ -171,12 +174,14 @@ const confirmPicker = () => {
   }
   setCustomColor(pickerTarget.value.key, v)
   loadState()
+  store.syncThemeToServer()
   closePicker()
 }
 
 const handleReset = () => {
   resetToDefault()
   loadState()
+  store.syncThemeToServer()
 }
 
 const goBack = () => {

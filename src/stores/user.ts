@@ -19,6 +19,8 @@ import { ref } from 'vue'
 import config from '../config/index'
 import { storage } from '../utils/storage'
 import type { User } from '../api/auth'
+import { getUserConfig, updateUserConfig } from '../api/user-config'
+import { applyConfigTheme, getThemeSnapshot, getThemeState } from '../theme'
 
 export const useUserStore = defineStore('user', () => {
   const LOGIN_EXPIRE_DAYS = 15
@@ -28,6 +30,53 @@ export const useUserStore = defineStore('user', () => {
   const token = ref<string | null>(storage.get(config.tokenKey))
   // 当前用户的信息
   const user = ref<User | null>(storage.get(config.userKey))
+  // 用户配置（主题等偏好）
+  const userConfig = ref<Record<string, any> | null>(null)
+
+  const fetchUserConfig = async () => {
+    try {
+      const res = await getUserConfig()
+      if (res.success && res.data) {
+        userConfig.value = res.data
+        if (res.data.theme) {
+          applyConfigTheme(res.data)
+        } else {
+          migrateLocalTheme()
+        }
+      } else {
+        migrateLocalTheme()
+      }
+    } catch {
+      migrateLocalTheme()
+    }
+  }
+
+  const syncThemeToServer = async () => {
+    try {
+      const snapshot = getThemeSnapshot()
+      await updateUserConfig(snapshot)
+      if (userConfig.value) {
+        userConfig.value.theme = snapshot.theme
+      } else {
+        userConfig.value = { theme: snapshot.theme }
+      }
+    } catch {
+      // 静默失败，本地已生效，下次登录重试
+    }
+  }
+
+  const migrateLocalTheme = async () => {
+    const state = getThemeState()
+    if (state.mode === 'custom' || state.presetName !== 'teal') {
+      try {
+        const snapshot = getThemeSnapshot()
+        await updateUserConfig(snapshot)
+        userConfig.value = { theme: snapshot.theme }
+      } catch {
+        // 静默失败
+      }
+    }
+  }
 
   /**
    * 设置用户认证信息（登录时调用）
@@ -40,6 +89,7 @@ export const useUserStore = defineStore('user', () => {
     storage.set(config.tokenKey, newToken)
     storage.set(config.userKey, newUser)
     storage.set('login_timestamp', Date.now())
+    fetchUserConfig()
   }
 
   /**
@@ -48,6 +98,7 @@ export const useUserStore = defineStore('user', () => {
   const clearAuth = () => {
     token.value = null
     user.value = null
+    userConfig.value = null
     storage.remove(config.tokenKey)
     storage.remove(config.userKey)
     storage.remove('login_timestamp')
@@ -82,11 +133,14 @@ export const useUserStore = defineStore('user', () => {
   return {
     token,
     user,
+    userConfig,
     setAuth,
     clearAuth,
     updateUser,
     isLoggedIn,
     isLoginExpired,
+    fetchUserConfig,
+    syncThemeToServer,
     LOGIN_EXPIRE_DAYS
   }
 })
