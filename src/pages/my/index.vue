@@ -42,6 +42,13 @@
         </view>
         <text class="arrow">›</text>
       </view>
+      <view class="menu-item" @click="navigateToTheme">
+        <view class="menu-left">
+          <text class="menu-emoji">🎨</text>
+          <text class="menu-text">主题设置</text>
+        </view>
+        <text class="arrow">›</text>
+      </view>
     </view>
 
     <!-- 退出登录按钮 -->
@@ -89,6 +96,13 @@ const navigateToBudget = () => {
   })
 }
 
+// 跳转到主题设置
+const navigateToTheme = () => {
+  uni.navigateTo({
+    url: '/pages/my/theme-setting/theme'
+  })
+}
+
 // 退出登录
 const handleLogout = () => {
   uni.showModal({
@@ -115,12 +129,12 @@ const handleLogout = () => {
 <style scoped>
 .my-container {
   min-height: 100vh;
-  background: #F0F2F5;
+  background: var(--color-bg-page, #F0F2F5);
   padding-bottom: 80px;
 }
 
 .user-card {
-  background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
+  background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
   padding: calc(80rpx + env(safe-area-inset-top)) 32rpx 80rpx;
   box-shadow: 0 8rpx 24rpx rgba(0, 191, 255, 0.25);
 }
@@ -150,7 +164,7 @@ const handleLogout = () => {
 }
 
 .nickname {
-  color: white;
+  color: var(--color-text-inverse, white);
   font-size: 36rpx;
   font-weight: 700;
   margin-bottom: 8rpx;
@@ -162,7 +176,7 @@ const handleLogout = () => {
 }
 
 .menu-list {
-  background: white;
+  background: var(--color-bg-card, white);
   margin: 24rpx;
   border-radius: 20rpx;
   overflow: hidden;
@@ -175,7 +189,7 @@ const handleLogout = () => {
   align-items: center;
   padding: 0 28rpx;
   height: 96rpx;
-  border-bottom: 1rpx solid #F0F2F5;
+  border-bottom: 1rpx solid var(--color-border-light, #F0F2F5);
   transition: all 150ms ease;
 }
 
@@ -184,7 +198,7 @@ const handleLogout = () => {
 }
 
 .menu-item:active {
-  background: rgba(0, 191, 255, 0.05);
+  background: var(--color-primary-light, rgba(0, 191, 255, 0.05));
   transform: scale(0.99);
 }
 
@@ -197,7 +211,7 @@ const handleLogout = () => {
   width: 72rpx;
   height: 72rpx;
   border-radius: 20rpx;
-  background: rgba(0, 191, 255, 0.1);
+  background: var(--color-primary-light, rgba(0, 191, 255, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -208,19 +222,19 @@ const handleLogout = () => {
 
 .menu-text {
   font-size: 30rpx;
-  color: #333333;
+  color: var(--color-text-primary, #333333);
   font-weight: 500;
 }
 
 .arrow {
   font-size: 36rpx;
-  color: #CCCCCC;
+  color: var(--color-text-tertiary, #CCCCCC);
 }
 
 .logout-btn {
   margin: 40rpx 24rpx;
-  background: white;
-  color: #FA3534;
+  background: var(--color-bg-card, white);
+  color: var(--color-danger, #FA3534);
   text-align: center;
   padding: 32rpx;
   border-radius: 20rpx;

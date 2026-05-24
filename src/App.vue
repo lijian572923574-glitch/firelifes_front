@@ -7,6 +7,7 @@
 import { onLaunch, onError } from "@dcloudio/uni-app";
 import config from './config/index';
 import { storage } from './utils/storage';
+import { initTheme } from './theme'
 
 const LOGIN_EXPIRE_MS = 15 * 24 * 60 * 60 * 1000
 
@@ -41,6 +42,7 @@ const checkLoginExpiry = () => {
 
 onLaunch(() => {
   console.log('[app] 应用启动');
+  initTheme()
   setStatusBarHeight();
   checkLoginExpiry()
 
@@ -66,6 +68,7 @@ onError((err) => {
 <style>
 /* 全局样式 */
 @import url("./static/iconfont/iconfont.css");
+@import url("./theme/variables.css");
 * {
   margin: 0;
   padding: 0;
@@ -74,8 +77,8 @@ onError((err) => {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-  background: #F5F5F5;
-  color: #333;
+  background: var(--color-bg-page, #F5F5F5);
+  color: var(--color-text-primary, #333);
   -webkit-font-smoothing: antialiased;
 }
 </style>

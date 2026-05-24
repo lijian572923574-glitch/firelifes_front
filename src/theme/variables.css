@@ -1,0 +1,25 @@
+:root {
+  --color-primary: #0D9488;
+  --color-primary-light: #E6F7F5;
+  --color-primary-dark: #0B7A70;
+
+  --color-bg-page: #F5F7FA;
+  --color-bg-card: #FFFFFF;
+  --color-bg-input: #F8FAFC;
+
+  --color-text-primary: #1E293B;
+  --color-text-secondary: #94A3B8;
+  --color-text-tertiary: #CBD5E1;
+  --color-text-inverse: #FFFFFF;
+
+  --color-border: #E2E8F0;
+  --color-border-light: #F1F5F9;
+
+  --color-success: #10B981;
+  --color-danger: #EF4444;
+  --color-warning: #F59E0B;
+  --color-wechat: #07C160;
+  --color-info: #3B82F6;
+
+  --color-mask: rgba(0, 0, 0, 0.5);
+}

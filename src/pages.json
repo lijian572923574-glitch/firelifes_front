@@ -135,6 +135,13 @@
 				"navigationBarTitleText": "编辑账户",
 				"navigationStyle": "custom"
 			}
+		},
+		{
+			"path": "pages/my/theme-setting/theme",
+			"style": {
+				"navigationBarTitleText": "主题设置",
+				"navigationStyle": "custom"
+			}
 		}
 	],
 

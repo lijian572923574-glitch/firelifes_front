@@ -37,7 +37,7 @@
       <view class="agreement">
         <checkbox-group @change="toggleAgreement">
           <label class="checkbox-label">
-            <checkbox :checked="agreed" color="#00BFFF" />
+            <checkbox :checked="agreed" color="#0D9488" />
             <text>我已阅读并同意</text>
             <text class="link" @click.stop="openAgreement('user')">《用户协议》</text>
             <text>和</text>
@@ -407,7 +407,7 @@ const goToLogin = () => {
 <style scoped>
 .register-container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--color-bg-page, #f5f5f5);
 }
 
 .header {
@@ -419,7 +419,7 @@ const goToLogin = () => {
 
 .back-btn {
   font-size: 48rpx;
-  color: #333;
+  color: var(--color-text-primary, #333);
   padding: 8rpx;
 }
 
@@ -429,11 +429,11 @@ const goToLogin = () => {
   transform: translateX(-50%);
   font-size: 36rpx;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text-primary, #333);
 }
 
 .form-area {
-  background: white;
+  background: var(--color-bg-card, white);
   margin: 40rpx 30rpx;
   border-radius: 24rpx;
   padding: 40rpx;
@@ -442,7 +442,7 @@ const goToLogin = () => {
 .input-item {
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid var(--color-border, #e5e5e5);
   padding: 24rpx 0;
   position: relative;
 }
@@ -454,27 +454,27 @@ const goToLogin = () => {
 
 .toggle-pwd {
   font-size: 26rpx;
-  color: #999;
+  color: var(--color-text-secondary, #999);
   padding: 8rpx;
 }
 
 .send-code-btn {
   font-size: 26rpx;
-  color: #00BFFF;
+  color: var(--color-primary, #0D9488);
   padding: 8rpx 16rpx;
-  border: 1px solid #00BFFF;
+  border: 1px solid var(--color-primary, #0D9488);
   border-radius: 8rpx;
 }
 
 .send-code-btn.disabled {
-  color: #ccc;
-  border-color: #ccc;
+  color: var(--color-text-tertiary, #ccc);
+  border-color: var(--color-text-tertiary, #ccc);
 }
 
 .agreement {
   padding: 32rpx 0;
   font-size: 24rpx;
-  color: #666;
+  color: var(--color-text-secondary, #666);
 }
 
 .checkbox-label {
@@ -484,12 +484,12 @@ const goToLogin = () => {
 }
 
 .link {
-  color: #00BFFF;
+  color: var(--color-primary, #0D9488);
 }
 
 .register-btn {
-  background: #00BFFF;
-  color: white;
+  background: var(--color-primary, #0D9488);
+  color: var(--color-text-inverse, white);
   text-align: center;
   padding: 28rpx;
   border-radius: 50rpx;
@@ -505,7 +505,7 @@ const goToLogin = () => {
 .login-link {
   text-align: center;
   font-size: 26rpx;
-  color: #666;
+  color: var(--color-text-secondary, #666);
   margin-bottom: 30rpx;
 }
 
@@ -519,13 +519,13 @@ const goToLogin = () => {
 .divider-line {
   width: 60rpx;
   height: 1px;
-  background: #e5e5e5;
+  background: var(--color-border, #e5e5e5);
 }
 
 .divider-text {
   margin: 0 16rpx;
   font-size: 26rpx;
-  color: #999;
+  color: var(--color-text-secondary, #999);
 }
 
 .wechat-btn {
@@ -617,7 +617,7 @@ const goToLogin = () => {
 
 .close-text {
   font-size: 30rpx;
-  color: #00BFFF;
+  color: var(--color-primary, #0D9488);
   width: 100%;
   text-align: center;
   line-height: 104rpx;
