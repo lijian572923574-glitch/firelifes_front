@@ -14,7 +14,7 @@
     <view v-if="accounts.length > 0" class="section">
       <text class="section-title">账户余额</text>
       <view v-for="account in accounts" :key="account.id" class="account-row" @tap="goToAccountRecords(account)">
-        <text class="account-icon">{{ account.icon }}</text>
+        <view class="account-icon category-icon-svg" :class="account.icon"></view>
         <view class="account-info">
           <text class="account-name">{{ account.name }}</text>
           <text class="account-type">{{ typeLabel(account.type) }}</text>
@@ -189,8 +189,10 @@ onMounted(() => {
 }
 
 .account-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
   margin-right: 18rpx;
+  color: var(--color-text-primary, #333);
 }
 
 .account-info {

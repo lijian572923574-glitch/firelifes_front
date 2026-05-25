@@ -2,7 +2,7 @@
   <view class="login-container">
     <view class="logo-area">
       <view class="logo-icon-box">
-        <text class="logo-emoji">💰</text>
+        <view class="logo-emoji logo-icon-fire"></view>
       </view>
       <text class="app-name">Fire生活家</text>
       <text class="app-subtitle">财务独立 · 提早退休</text>
@@ -21,23 +21,23 @@
 
     <view class="form-card">
       <view class="input-row">
-        <text class="input-icon">📱</text>
+        <view class="input-icon category-icon-svg login-icon-phone"></view>
         <input class="input" v-model="phone" type="number" placeholder="请输入手机号" maxlength="11" />
       </view>
 
       <view class="input-row pw-row" v-if="loginType === 'password'">
         <view class="input-left">
-          <text class="input-icon">🔒</text>
+          <view class="input-icon category-icon-svg login-icon-lock"></view>
           <input class="input" v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="请输入密码" />
         </view>
         <view class="toggle-pwd" @click="showPassword = !showPassword">
-          <text>{{ showPassword ? '🙈' : '👁' }}</text>
+          <view class="toggle-pwd-icon category-icon-svg" :class="showPassword ? 'login-icon-eye' : 'login-icon-eye-off'"></view>
         </view>
       </view>
 
       <view class="input-row code-row" v-else>
         <view class="input-left">
-          <text class="input-icon">✉️</text>
+          <view class="input-icon category-icon-svg login-icon-mail"></view>
           <input class="input" v-model="code" type="number" placeholder="请输入验证码" maxlength="6" />
         </view>
         <view class="send-code-btn" :class="{ disabled: isCounting }" @click="sendCode">
@@ -341,7 +341,9 @@ const goToForgotPassword = () => {
 }
 
 .logo-emoji {
-  font-size: 64rpx;
+  width: 64rpx;
+  height: 64rpx;
+  color: var(--color-primary, #00BFFF);
 }
 
 .app-name {
@@ -405,8 +407,10 @@ const goToForgotPassword = () => {
 }
 
 .input-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
   margin-right: 16rpx;
+  color: var(--color-text-secondary, #94A3B8);
 }
 
 .input {
@@ -430,8 +434,13 @@ const goToForgotPassword = () => {
 }
 
 .toggle-pwd {
-  font-size: 34rpx;
   padding: 8rpx;
+}
+
+.toggle-pwd-icon {
+  width: 34rpx;
+  height: 34rpx;
+  color: var(--color-text-secondary, #94A3B8);
 }
 
 .code-row {

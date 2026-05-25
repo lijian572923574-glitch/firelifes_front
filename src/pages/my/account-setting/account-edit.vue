@@ -15,7 +15,7 @@
       <view class="card">
         <view class="icon-preview-row">
           <view class="icon-preview" :class="{ 'preview-liability': formData.type === 'liability' }">
-            <text class="icon-preview-text">{{ formData.icon }}</text>
+            <view class="icon-preview-svg category-icon-svg" :class="formData.icon"></view>
           </view>
           <view class="icon-preview-info">
             <text class="icon-preview-title">选择图标</text>
@@ -30,7 +30,7 @@
             :class="{ active: formData.icon === icon }"
             @click="formData.icon = icon"
           >
-            <text class="icon-item-text">{{ icon }}</text>
+            <view class="icon-item-svg category-icon-svg" :class="icon"></view>
           </view>
         </view>
       </view>
@@ -275,7 +275,7 @@
           :class="{ selected: formData.linkedAssetAccountId === account.id }"
           @click="selectLinkedAccount(account.id)"
         >
-          <text class="picker-icon">{{ account.icon }}</text>
+          <view class="picker-icon category-icon-svg" :class="account.icon"></view>
           <text class="picker-name">{{ account.name }}</text>
           <text v-if="formData.linkedAssetAccountId === account.id" class="check-icon">✓</text>
         </view>
@@ -341,7 +341,7 @@ const linkedAccountName = computed(() => {
 
 const formData = ref<AccountRequest>({
   name: '',
-  icon: '💵',
+  icon: 'account-icon-wallet',
   type: 'cash',
   balance: 0,
   description: '',
@@ -571,8 +571,10 @@ onLoad((options: any) => {
   background: var(--color-danger-light, #FEF2F2);
 }
 
-.icon-preview-text {
-  font-size: 60rpx;
+.icon-preview-svg {
+  width: 60rpx;
+  height: 60rpx;
+  color: #FFFFFF;
 }
 
 .icon-preview-info {
@@ -618,8 +620,14 @@ onLoad((options: any) => {
   background: var(--color-primary-light, #E6F7F5);
 }
 
-.icon-item-text {
-  font-size: 40rpx;
+.icon-item-svg {
+  width: 40rpx;
+  height: 40rpx;
+  color: var(--color-text-primary, #333);
+}
+
+.icon-item.active .icon-item-svg {
+  color: var(--color-primary, #00BFFF);
 }
 
 /* 类型选择 */
@@ -917,8 +925,10 @@ onLoad((options: any) => {
 }
 
 .picker-icon {
-  font-size: 40rpx;
+  width: 36rpx;
+  height: 36rpx;
   margin-right: 16rpx;
+  color: var(--color-text-primary, #1E293B);
 }
 
 .picker-name {

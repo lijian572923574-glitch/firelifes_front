@@ -43,7 +43,7 @@
         <view v-for="group in groupedAccounts" :key="group.type" class="group-section">
           <view class="group-title">
             <view class="title-bar" :style="{ background: getTypeColor(group.type) }"></view>
-            <text class="title-emoji">{{ getTypeEmoji(group.type) }}</text>
+            <view class="title-icon category-icon-svg" :class="getTypeIconClass(group.type)"></view>
             <text class="title-text">{{ getTypeLabel(group.type) }}</text>
             <text class="title-count">({{ group.accounts.length }})</text>
           </view>
@@ -57,7 +57,7 @@
               <template #default>
                 <view class="account-card" @click="goToEdit(account.id)">
                   <view class="card-bar" :style="{ background: getTypeColor(account.type) }"></view>
-                  <text class="account-icon">{{ account.icon }}</text>
+                  <view class="account-icon category-icon-svg" :class="account.icon"></view>
                   <view class="account-info">
                     <view class="name-row">
                       <text class="account-name">{{ account.name }}</text>
@@ -163,15 +163,15 @@ const getTypeColor = (type: AccountType): string => {
   return map[type] || '#00BFFF'
 }
 
-const getTypeEmoji = (type: AccountType): string => {
+const getTypeIconClass = (type: AccountType): string => {
   const map: Record<AccountType, string> = {
-    cash: '💰',
-    investment: '📈',
-    fixed_asset: '🏠',
-    depreciable_asset: '📱',
-    liability: '💳',
+    cash: 'account-icon-wallet',
+    investment: 'account-icon-trending',
+    fixed_asset: 'account-icon-house',
+    depreciable_asset: 'account-icon-mobile',
+    liability: 'account-icon-credit-card',
   }
-  return map[type] || '💰'
+  return map[type] || 'account-icon-wallet'
 }
 
 const formatBalance = (balance: number): string => {
@@ -420,9 +420,11 @@ onShow(() => {
   flex-shrink: 0;
 }
 
-.title-emoji {
-  font-size: 36rpx;
+.title-icon {
+  width: 36rpx;
+  height: 36rpx;
   margin-right: 10rpx;
+  color: var(--color-text-secondary, #94A3B8);
 }
 
 .title-text {
@@ -470,11 +472,11 @@ onShow(() => {
 }
 
 .account-icon {
-  font-size: 52rpx;
-  width: 64rpx;
-  text-align: center;
+  width: 52rpx;
+  height: 52rpx;
   flex-shrink: 0;
   margin-right: 20rpx;
+  color: var(--color-text-primary, #333);
 }
 
 .account-info {

@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <view class="account-header">
-      <text class="account-icon">{{ accountInfo.icon }}</text>
+      <view class="account-icon category-icon-svg" :class="accountInfo.icon"></view>
       <text class="account-name">{{ accountInfo.name }}</text>
       <text class="account-balance" :class="{ negative: accountInfo.balance < 0 }">
         {{ formatAmount(accountInfo.balance) }}
@@ -247,8 +247,10 @@ onMounted(() => {
 }
 
 .account-icon {
-  font-size: 64rpx;
+  width: 64rpx;
+  height: 64rpx;
   margin-bottom: 12rpx;
+  color: #FFFFFF;
 }
 
 .account-name {

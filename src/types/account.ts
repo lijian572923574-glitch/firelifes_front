@@ -53,7 +53,7 @@ export interface AccountRequest {
 export const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt'>[] = [
   {
     name: '现金',
-    icon: '💵',
+    icon: 'account-icon-wallet',
     type: 'cash',
     balance: 0,
     description: '日常现金备用',
@@ -65,7 +65,7 @@ export const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'up
   },
   {
     name: '折旧资产',
-    icon: '📱',
+    icon: 'account-icon-mobile',
     type: 'depreciable_asset',
     balance: 0,
     description: '手机、电脑等折旧物品',
@@ -77,7 +77,7 @@ export const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'up
   },
   {
     name: '固定资产',
-    icon: '🏠',
+    icon: 'account-icon-house',
     type: 'fixed_asset',
     balance: 0,
     description: '房产、车位等高价值物品',
@@ -98,9 +98,25 @@ export const ACCOUNT_TYPE_OPTIONS = [
   { value: 'liability' as AccountType, label: '负债类' }
 ]
 
-// 预设图标
+// 预设图标 (SVG 图标类名，与 category-icons.css 中的 .account-icon-* 对应)
 export const ACCOUNT_ICONS = [
-  '💵', '🏦', '💚', '📈', '🏠', '🚗', '💳', '📱', '💻', '🎮', '📷', '🎵', '📚', '🎁'
+  'account-icon-wallet',
+  'account-icon-bank',
+  'account-icon-piggy',
+  'account-icon-trending',
+  'account-icon-house',
+  'account-icon-car',
+  'account-icon-credit-card',
+  'account-icon-mobile',
+  'account-icon-laptop',
+  'account-icon-game',
+  'account-icon-camera',
+  'account-icon-music',
+  'account-icon-book',
+  'account-icon-gift',
+  'account-icon-coins',
+  'account-icon-scan',
+  'account-icon-shield',
 ]
 
 // 获取账户类型的余额颜色

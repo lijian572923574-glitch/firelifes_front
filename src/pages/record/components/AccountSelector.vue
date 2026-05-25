@@ -14,7 +14,7 @@
           :class="{ selected: selectedId === account.id }"
           @click="selectAccount(account)"
         >
-          <text class="account-icon">{{ account.icon }}</text>
+          <view class="account-icon category-icon-svg" :class="account.icon"></view>
           <view class="account-info">
             <text class="account-name">{{ account.name }}</text>
           </view>
@@ -34,7 +34,7 @@
           :class="{ selected: selectedId === account.id }"
           @click="selectAccount(account)"
         >
-          <text class="account-icon">{{ account.icon }}</text>
+          <view class="account-icon category-icon-svg" :class="account.icon"></view>
           <view class="account-info">
             <text class="account-name">{{ account.name }}</text>
           </view>
@@ -266,10 +266,10 @@ defineExpose({
 }
 
 .account-icon {
-  font-size: 40rpx;
+  width: 40rpx;
+  height: 40rpx;
   margin-right: 20rpx;
-  width: 60rpx;
-  text-align: center;
+  color: var(--color-text-primary, #333);
 }
 
 .account-info {
