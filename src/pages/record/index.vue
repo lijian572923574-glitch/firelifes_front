@@ -85,6 +85,7 @@ import type { DepreciatingAssetData } from '../../types/asset'
 import type { RecordType, CreateRecordData } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 import { draft, type RecordDraft } from '../../utils/draft'
+import { saveAccountMemory, findAccountByMemory } from '../../utils/record-memory'
 
 const transactionType = ref<'income' | 'expense'>('expense')
 const selectedCategory = ref<{ id: number; name: string; icon: string } | null>(null)
@@ -103,6 +104,8 @@ const toAccount = ref<Account | null>(null)
 const assetData = ref<DepreciatingAssetData | null>(null)
 const showDraftBanner = ref(false)
 let draftData: RecordDraft | null = null
+/** 标记是否刚完成记账（用于区分 onShow 是记账成功回跳还是用户主动进入） */
+let justCompleted = false
 
 const isTransfer = computed(() => selectedCategory.value?.name === '转账')
 const isRepayment = computed(() => selectedCategory.value?.name === '还债')
@@ -124,10 +127,26 @@ onShow(() => {
   if (draft.hasValidDraft()) {
     draftData = draft.load()
     showDraftBanner.value = true
+  } else if (justCompleted) {
+    // 记账成功后 reLaunch 回来，不重置日期，保持连续记账状态
+    justCompleted = false
+    partialReset()
   } else {
+    // 用户主动进入记账页，全量重置
     resetForm()
   }
 })
+
+/** 记账成功后的部分重置：清空金额/备注，保留日期/分类/账户，方便连续记账 */
+const partialReset = () => {
+  displayAmount.value = ''
+  remark.value = ''
+  assetData.value = null
+  // 以下字段保持不变，延续上一笔：
+  // selectedDate — 沿用上一笔日期
+  // selectedCategory — 保持当前分类，方便继续记同分类
+  // selectedAccount / fromAccount / toAccount — 保持当前账户
+}
 
 const resetForm = () => {
   transactionType.value = 'expense'
@@ -212,20 +231,44 @@ const selectCategory = async (category: { id: number; name: string; icon: string
       const accounts = res.data.filter(a => !a.isDeleted && a.isVisible)
 
       if (category.name === '转账') {
+        // 先查记忆
+        const memoryFrom = findAccountByMemory('transfer_from', undefined, accounts)
         const nonLiability = accounts.filter(a => a.type !== 'liability')
-        fromAccount.value = nonLiability.find(a => a.isDefaultExpense) || nonLiability[0] || null
-        toAccount.value = accounts.find(a => a.id !== fromAccount.value?.id) || null
+        if (memoryFrom) {
+          fromAccount.value = memoryFrom as Account
+        } else {
+          fromAccount.value = nonLiability.find(a => a.isDefaultExpense) || nonLiability[0] || null
+        }
+        const memoryTo = findAccountByMemory('transfer_to', undefined, accounts.filter(a => a.id !== fromAccount.value?.id))
+        toAccount.value = memoryTo
+          ? (memoryTo as Account)
+          : accounts.find(a => a.id !== fromAccount.value?.id) || null
       } else if (category.name === '还债') {
         const nonLiability = accounts.filter(a => a.type !== 'liability')
         const liabilities = accounts.filter(a => a.type === 'liability')
-        fromAccount.value = nonLiability.find(a => a.isDefaultExpense) || nonLiability[0] || null
-        toAccount.value = liabilities.find(a => a.isDefaultIncome) || liabilities[0] || null
+        // 先查记忆
+        const memoryFrom = findAccountByMemory('repayment_from', undefined, nonLiability)
+        fromAccount.value = memoryFrom
+          ? (memoryFrom as Account)
+          : nonLiability.find(a => a.isDefaultExpense) || nonLiability[0] || null
+        const memoryTo = findAccountByMemory('repayment_to', undefined, liabilities)
+        toAccount.value = memoryTo
+          ? (memoryTo as Account)
+          : liabilities[0] || null
       } else if (transactionType.value === 'expense') {
         const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
-        selectedAccount.value = expenseAccounts.find(a => a.isDefaultExpense) || expenseAccounts[0] || null
+        // 先查记忆
+        const memoryAccount = findAccountByMemory('expense', category.id, expenseAccounts)
+        selectedAccount.value = memoryAccount
+          ? (memoryAccount as Account)
+          : expenseAccounts.find(a => a.isDefaultExpense) || expenseAccounts[0] || null
       } else {
         const incomeAccounts = accounts.filter(a => a.type !== 'liability')
-        selectedAccount.value = incomeAccounts.find(a => a.isDefaultIncome) || incomeAccounts[0] || null
+        // 先查记忆
+        const memoryAccount = findAccountByMemory('income', category.id, incomeAccounts)
+        selectedAccount.value = memoryAccount
+          ? (memoryAccount as Account)
+          : incomeAccounts.find(a => a.isDefaultIncome) || incomeAccounts[0] || null
       }
     }
   } catch (error) {
@@ -309,10 +352,24 @@ const handleComplete = async () => {
     const res = await recordApi.createRecord(payload)
 
     if (res.success) {
+      // 写入账户记忆
+      if (isTransfer.value) {
+        if (fromAccount.value) saveAccountMemory('transfer_from', undefined, fromAccount.value.id)
+        if (toAccount.value) saveAccountMemory('transfer_to', undefined, toAccount.value.id)
+      } else if (isRepayment.value) {
+        if (fromAccount.value) saveAccountMemory('repayment_from', undefined, fromAccount.value.id)
+        if (toAccount.value) saveAccountMemory('repayment_to', undefined, toAccount.value.id)
+      } else if (transactionType.value === 'expense' && selectedAccount.value) {
+        saveAccountMemory('expense', selectedCategory.value!.id, selectedAccount.value.id)
+      } else if (transactionType.value === 'income' && selectedAccount.value) {
+        saveAccountMemory('income', selectedCategory.value!.id, selectedAccount.value.id)
+      }
+
       draft.remove()
       submitStatus.value = 'idle'
       isSubmitting.value = false
       showTransactionForm.value = false
+      justCompleted = true
       uni.showToast({ title: '记账成功', icon: 'success' })
       setTimeout(() => {
         uni.reLaunch({ url: '/pages/detail/index' })
