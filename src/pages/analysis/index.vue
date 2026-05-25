@@ -13,7 +13,7 @@
 
     <view v-if="accounts.length > 0" class="section">
       <text class="section-title">账户余额</text>
-      <view v-for="account in accounts" :key="account.id" class="account-row">
+      <view v-for="account in accounts" :key="account.id" class="account-row" @tap="goToAccountRecords(account)">
         <text class="account-icon">{{ account.icon }}</text>
         <view class="account-info">
           <text class="account-name">{{ account.name }}</text>
@@ -22,6 +22,7 @@
         <text class="account-balance" :class="{ negative: account.balance < 0 }">
           {{ formatAmount(account.balance) }}
         </text>
+        <text class="account-arrow">›</text>
       </view>
     </view>
 
@@ -83,6 +84,10 @@ const formatAmount = (val: number) => {
   return prefix + Math.abs(val).toFixed(2)
 }
 const typeLabel = (type: string) => ACCOUNT_TYPE_LABELS[type] || type
+
+const goToAccountRecords = (account: any) => {
+  uni.navigateTo({ url: `/pages/analysis/account-records?accountId=${account.id}` })
+}
 
 const loadAssets = async () => {
   loadingNetWorth.value = true
@@ -214,6 +219,12 @@ onMounted(() => {
 
 .account-balance.negative {
   color: var(--color-danger, #EF4444);
+}
+
+.account-arrow {
+  font-size: 32rpx;
+  color: var(--color-text-secondary, #CCCCCC);
+  margin-left: 8rpx;
 }
 
 .asset-row {

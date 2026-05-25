@@ -160,6 +160,14 @@ export const recordApi = {
     })
   },
 
+  getRecordsByAccount: (accountId: number, page: number = 1, pageSize: number = 50) => {
+    return request({
+      url: `/record/by-account/${accountId}`,
+      method: 'GET',
+      data: { page, pageSize },
+    })
+  },
+
   /**
    * 获取当前净资产
    */

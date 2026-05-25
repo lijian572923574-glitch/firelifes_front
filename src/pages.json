@@ -102,6 +102,12 @@
 			}
 		},
 		{
+			"path": "pages/analysis/account-records",
+			"style": {
+				"navigationBarTitleText": "账户交易明细"
+			}
+		},
+		{
 			"path": "pages/my/index",
 			"style": {
 				"navigationBarTitleText": "My",
