@@ -73,8 +73,8 @@
                     <text v-if="account.description" class="account-desc">{{ account.description }}</text>
                   </view>
                   <view class="card-right">
-                    <text class="balance" :style="{ color: getBalanceColor(account.type) }">
-                      ¥{{ formatBalance(account.balance) }}
+                    <text class="balance" :style="{ color: getBalanceColor(account.type, account.balance) }">
+                      {{ formatBalance(account.balance) }}
                     </text>
                     <text class="card-arrow">›</text>
                   </view>
@@ -175,7 +175,8 @@ const getTypeEmoji = (type: AccountType): string => {
 }
 
 const formatBalance = (balance: number): string => {
-  return Math.abs(balance).toLocaleString('zh-CN', {
+  const prefix = balance < 0 ? '-¥' : '¥'
+  return prefix + Math.abs(balance).toLocaleString('zh-CN', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })

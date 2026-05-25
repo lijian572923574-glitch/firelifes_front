@@ -104,7 +104,10 @@ export const ACCOUNT_ICONS = [
 ]
 
 // 获取账户类型的余额颜色
-export const getBalanceColor = (type: AccountType): string => {
+export const getBalanceColor = (type: AccountType, balance?: number): string => {
+  if (balance !== undefined && balance < 0) {
+    return '#FA3534'
+  }
   if (type === 'liability') {
     return '#FA3534'
   }

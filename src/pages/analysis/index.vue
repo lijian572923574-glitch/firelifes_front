@@ -20,7 +20,7 @@
           <text class="account-type">{{ typeLabel(account.type) }}</text>
         </view>
         <text class="account-balance" :class="{ negative: account.balance < 0 }">
-          ¥{{ formatAmount(account.balance) }}
+          {{ formatAmount(account.balance) }}
         </text>
       </view>
     </view>
@@ -78,7 +78,10 @@ const loadingNetWorth = ref(true)
 const accounts = ref<Account[]>([])
 const depreciatingAssets = ref<any[]>([])
 
-const formatAmount = (val: number) => Math.abs(val).toFixed(2)
+const formatAmount = (val: number) => {
+  const prefix = val < 0 ? '-¥' : '¥'
+  return prefix + Math.abs(val).toFixed(2)
+}
 const typeLabel = (type: string) => ACCOUNT_TYPE_LABELS[type] || type
 
 const loadAssets = async () => {
