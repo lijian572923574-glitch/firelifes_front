@@ -14,7 +14,7 @@
     <view v-if="accounts.length > 0" class="section">
       <text class="section-title">账户余额</text>
       <view v-for="account in accounts" :key="account.id" class="account-row" @tap="goToAccountRecords(account)">
-        <view class="account-icon category-icon-svg" :class="account.icon"></view>
+        <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
         <view class="account-info">
           <text class="account-name">{{ account.name }}</text>
           <text class="account-type">{{ typeLabel(account.type) }}</text>
@@ -60,6 +60,7 @@ import { ref, onMounted } from 'vue'
 import { recordApi } from '../../api/record'
 import { getAccountList } from '../../api/account'
 import type { Account } from '../../types/account'
+import { getAccountIconClass } from '../../types/account'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const ACCOUNT_TYPE_LABELS: Record<string, string> = {

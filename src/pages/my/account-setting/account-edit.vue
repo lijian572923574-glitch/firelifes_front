@@ -275,7 +275,7 @@
           :class="{ selected: formData.linkedAssetAccountId === account.id }"
           @click="selectLinkedAccount(account.id)"
         >
-          <view class="picker-icon category-icon-svg" :class="account.icon"></view>
+          <view class="picker-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
           <text class="picker-name">{{ account.name }}</text>
           <text v-if="formData.linkedAssetAccountId === account.id" class="check-icon">✓</text>
         </view>
@@ -297,7 +297,7 @@ import { onLoad } from '@dcloudio/uni-app'
 import { getAccountDetail, createAccount, updateAccount, getAccountList } from '../../../api/account'
 import { navigateBack } from '../../../utils/navigate'
 import type { Account, AccountRequest, AccountType, RepaymentMethod } from '../../../types/account'
-import { ACCOUNT_ICONS } from '../../../types/account'
+import { ACCOUNT_ICONS, getAccountIconClass } from '../../../types/account'
 
 const accountId = ref<string | null>(null)
 const isEdit = computed(() => !!accountId.value)

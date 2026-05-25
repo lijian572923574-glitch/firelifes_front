@@ -129,3 +129,60 @@ export const getBalanceColor = (type: AccountType, balance?: number): string => 
   }
   return '#19BE6B'
 }
+
+/**
+ * Emoji → SVG图标类名映射表
+ * 用于兼容旧用户数据库中仍为emoji的icon字段
+ * 调用后端迁移接口后可移除此兼容逻辑
+ */
+const EMOJI_TO_SVG_MAP: Record<string, string> = {
+  '💵': 'account-icon-wallet',
+  '💰': 'account-icon-wallet',
+  '🏦': 'account-icon-bank',
+  '💚': 'account-icon-piggy',
+  '📈': 'account-icon-trending',
+  '🏠': 'account-icon-house',
+  '🚗': 'account-icon-car',
+  '💳': 'account-icon-credit-card',
+  '📱': 'account-icon-mobile',
+  '💻': 'account-icon-laptop',
+  '🎮': 'account-icon-game',
+  '📷': 'account-icon-camera',
+  '🎵': 'account-icon-music',
+  '📚': 'account-icon-book',
+  '🎁': 'account-icon-gift',
+  '💼': 'account-icon-briefcase',
+  '🔧': 'account-icon-wrench',
+  '✈️': 'account-icon-plane',
+  '🏖️': 'account-icon-umbrella',
+  '🎓': 'account-icon-graduation',
+  '🏥': 'account-icon-hospital',
+}
+
+/** 按账户类型给默认SVG图标（兜底） */
+const DEFAULT_ICON_BY_TYPE: Record<AccountType, string> = {
+  cash: 'account-icon-wallet',
+  investment: 'account-icon-trending',
+  fixed_asset: 'account-icon-house',
+  depreciable_asset: 'account-icon-mobile',
+  liability: 'account-icon-credit-card',
+}
+
+/**
+ * 获取账户图标的CSS类名（兼容emoji）
+ * 如果icon已经是SVG类名则直接返回，如果是emoji则映射为SVG类名
+ */
+export const getAccountIconClass = (icon: string, type?: AccountType): string => {
+  if (icon.startsWith('account-icon-') || icon.startsWith('login-icon-')) {
+    return icon
+  }
+  // emoji → SVG映射
+  if (EMOJI_TO_SVG_MAP[icon]) {
+    return EMOJI_TO_SVG_MAP[icon]
+  }
+  // 兜底：按类型给默认图标
+  if (type && DEFAULT_ICON_BY_TYPE[type]) {
+    return DEFAULT_ICON_BY_TYPE[type]
+  }
+  return 'account-icon-wallet'
+}

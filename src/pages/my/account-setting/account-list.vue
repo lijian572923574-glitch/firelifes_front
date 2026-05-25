@@ -57,7 +57,7 @@
               <template #default>
                 <view class="account-card" @click="goToEdit(account.id)">
                   <view class="card-bar" :style="{ background: getTypeColor(account.type) }"></view>
-                  <view class="account-icon category-icon-svg" :class="account.icon"></view>
+                  <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
                   <view class="account-info">
                     <view class="name-row">
                       <text class="account-name">{{ account.name }}</text>
@@ -126,7 +126,7 @@ import { onShow } from '@dcloudio/uni-app'
 import { getAccountList, deleteAccount } from '../../../api/account'
 import { navigateBack } from '../../../utils/navigate'
 import type { Account, AccountType } from '../../../types/account'
-import { ACCOUNT_TYPE_OPTIONS, getBalanceColor } from '../../../types/account'
+import { ACCOUNT_TYPE_OPTIONS, getBalanceColor, getAccountIconClass } from '../../../types/account'
 
 const loading = ref(false)
 const accounts = ref<Account[]>([])

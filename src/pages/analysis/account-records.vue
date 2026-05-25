@@ -1,7 +1,7 @@
 <template>
   <view class="page-container">
     <view class="account-header">
-      <view class="account-icon category-icon-svg" :class="accountInfo.icon"></view>
+      <view class="account-icon category-icon-svg" :class="getAccountIconClass(accountInfo.icon, accountInfo.type)"></view>
       <text class="account-name">{{ accountInfo.name }}</text>
       <text class="account-balance" :class="{ negative: accountInfo.balance < 0 }">
         {{ formatAmount(accountInfo.balance) }}
@@ -69,6 +69,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { recordApi } from '../../api/record'
+import { getAccountIconClass } from '../../types/account'
 
 const accountId = ref(0)
 const loading = ref(true)

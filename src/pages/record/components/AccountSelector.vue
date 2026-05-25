@@ -14,7 +14,7 @@
           :class="{ selected: selectedId === account.id }"
           @click="selectAccount(account)"
         >
-          <view class="account-icon category-icon-svg" :class="account.icon"></view>
+          <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
           <view class="account-info">
             <text class="account-name">{{ account.name }}</text>
           </view>
@@ -34,7 +34,7 @@
           :class="{ selected: selectedId === account.id }"
           @click="selectAccount(account)"
         >
-          <view class="account-icon category-icon-svg" :class="account.icon"></view>
+          <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
           <view class="account-info">
             <text class="account-name">{{ account.name }}</text>
           </view>
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import type { Account } from '../../../types/account'
+import { getAccountIconClass } from '../../../types/account'
 
 const props = defineProps<{
   filterType?: 'expense' | 'income' | 'transfer' | 'repayment'
