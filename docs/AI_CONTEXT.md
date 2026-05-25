@@ -45,7 +45,7 @@
 UI 组件:  Wot Design Uni (wd-* 前缀)
 状态管理: Pinia (stores/)
 路由:     pages.json 配置式路由
-样式:     SCSS + CSS Variables (主题系统) + iconfont 字体图标
+样式:     SCSS + CSS Variables (主题系统) + iconfont 字体图标 + SVG 分类图标 (47个统一风格)
 HTTP:     src/api/request.ts (统一拦截器, 默认 needAuth: true)
 ```
 
@@ -318,20 +318,32 @@ firelifes_back/
 
 ## 6. 核心业务逻辑
 
-### 6.1 新用户注册初始化链路 (111 条数据自动创建)
+### 6.1 新用户注册初始化链路 (112 条数据自动创建)
 
 ```
 注册 → auth.service.ts
   ├── users 表                      1条
   ├── categoryService.initUserCategories()
   │   ├── user_category_groups      13条 (10个支出大类+3个收入大类)
-  │   ├── user_icons                47条 (47个emoji图标)
-  │   └── user_category_customizations 46条 (38支出+8收入分类)
+  │   ├── user_icons                47条 (SVG图标, styles/category-icons.css)
+  │   └── user_category_customizations 47条 (39支出+8收入分类)
   ├── accountService.createDefaultAccounts()
-  │   └── accounts                  3条 (现金💵/折旧资产📱/固定资产🏠)
+  │   └── accounts                  3条 (现金/折旧资产/固定资产)
   └── userService.initUserConfig()
       └── user_configs              1条 (theme: teal预设)
 ```
+
+### 6.1.1 全局种子数据初始化 (服务启动时)
+
+```
+configuration.ts → onReady(container)
+  └── CategoryService.seedGlobalData()
+      ├── icons 表                  47条 (全局图标, findOne 查重后写入)
+      ├── category_groups 表        13条 (全局大类, findOne 查重后写入)
+      └── categories 表             47条 (全局分类, findOne 查重后写入)
+```
+
+> **注意**: 种子逻辑必须在 `onReady` 生命周期通过 `container.getAsync(CategoryService)` 调用，不能在 `@Init()` 中执行，因为后者执行时 TypeORM Repository 代理尚未就绪。
 
 ### 6.2 账户体系 (5 种类型)
 
@@ -412,20 +424,33 @@ syncThemeToServer()       // 主题变更时同步到服务端
 
 ---
 
-## 9. 需求文档索引
+## 9. 需求文档索引 (共 39 篇)
 
-| 模块 | 路径 | 功能数 |
-|------|------|--------|
-| 01-记账省心 | `docs/requirements/01-记账省心/` | 19 |
-| 02-资产有数 | `docs/requirements/02-资产有数/` | 7 |
-| 03-FIRE可期 | `docs/requirements/03-FIRE可期/` | 4 |
-| 04-系统配置 | `docs/requirements/04-系统配置/` | 18 |
+| 模块 | 路径 | 文档数 | 文档列表 |
+|------|------|--------|----------|
+| 01-记账省心 | `docs/requirements/01-记账省心/` | 11 | |
+| | `detail/` | 2 | detail-delete.md, detail-list.md |
+| | `record/` | 7 | record.md, account-selector.md, amount-format.md, category-pinned.md, draft-auto-save.md, icon-fallback-fix.md, smart-remark.md |
+| | `moreFunctions/` | 2 | fire-progress.md, savings-rate.md |
+| 02-资产有数 | `docs/requirements/02-资产有数/` | 7 | account-detail.md, asset-overview.md, depreciating-asset.md, fixed-asset.md, investment-tracking.md, net-worth.md, record-account-linkage.md |
+| 03-FIRE可期 | `docs/requirements/03-FIRE可期/` | 4 | fire-feedback.md, fire-goal.md, fire-time-price.md, monthly-fire-report.md |
+| 04-系统配置 | `docs/requirements/04-系统配置/` | 17 | |
+| | `login/` | 5 | login.md, register.md, forgot-password.md, user-config.md, new-user-default-config.md |
+| | `category-setting/` | 4 | category-group-list.md, category-group-edit.md, category-list.md, category-edit.md |
+| | `account-setting/` | 3 | account-list.md, account-edit.md, liability-rules.md |
+| | `budget-setting/` | 3 | budget-dual-system.md, budget-setting.md, budget-progress.md |
+| | `theme-settings/` | 1 | theme.md |
+| | 根目录 | 1 | my.md |
 
 关键需求文档快速定位:
-- 用户认证: `04-系统配置/login/`
-- 用户配置表: `04-系统配置/user-config.md`
-- 新用户默认配置: `04-系统配置/new-user-default-config.md`
+- 用户认证: `04-系统配置/login/` (login.md, register.md, forgot-password.md)
+- 用户配置表: `04-系统配置/login/user-config.md`
+- 新用户默认配置: `04-系统配置/login/new-user-default-config.md`
 - 主题设置: `04-系统配置/theme-settings/theme.md`
+- 记账核心: `01-记账省心/record/record.md`
+- 预算双体系: `04-系统配置/budget-setting/budget-dual-system.md`
+- 净资产: `02-资产有数/net-worth.md`
+- FIRE目标: `03-FIRE可期/fire-goal.md`
 
 ---
 

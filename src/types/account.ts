@@ -2,7 +2,7 @@
 export type AccountType = 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability';
 
 // 还款方式类型
-export type RepaymentMethod = 'equal_principal_interest' | 'equal_principal' | 'interest_first' | 'flexible';
+export type RepaymentMethod = 'equal_principal_interest' | 'equal_principal' | 'interest_first';
 
 // 账户数据结构
 export interface Account {

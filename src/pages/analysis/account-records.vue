@@ -69,6 +69,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { recordApi } from '../../api/record'
 import { getAccountIconClass } from '../../types/account'
+import type { AccountType } from '../../types/account'
 import { getCategoryIconClass } from '../../utils/category-icon-map'
 
 const accountId = ref(0)
@@ -82,7 +83,7 @@ const accountInfo = ref({
   icon: '',
   name: '',
   balance: 0,
-  type: 'cash' as string,
+  type: 'cash' as AccountType,
 })
 
 const monthlySummary = ref({

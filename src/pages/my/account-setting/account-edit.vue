@@ -142,7 +142,7 @@
       </view>
 
       <!-- 负债类账户专用字段 -->
-      <view v-if="formData.type === 'liability' && formData.repaymentMethod !== 'flexible'" class="card liability-form">
+      <view v-if="formData.type === 'liability'" class="card liability-form">
         <view class="liability-header">贷款参数</view>
 
         <view class="form-row">
@@ -189,7 +189,7 @@
           </view>
         </view>
 
-        <view v-if="formData.repaymentMethod !== 'flexible'" class="form-row">
+        <view class="form-row">
           <text class="form-label">总还款期数</text>
           <WdInput
             v-model.number="formData.totalMonths"
@@ -203,7 +203,7 @@
           </WdInput>
         </view>
 
-        <view v-if="formData.repaymentMethod !== 'flexible'" class="form-row">
+        <view class="form-row">
           <text class="form-label">剩余还款期数</text>
           <WdInput
             v-model.number="formData.remainingMonths"
@@ -217,7 +217,7 @@
           </WdInput>
         </view>
 
-        <view v-if="formData.repaymentMethod !== 'flexible'" class="form-row">
+        <view class="form-row">
           <text class="form-label">每月还款日</text>
           <view class="day-grid">
             <view
@@ -323,7 +323,6 @@ const repaymentMethods: { value: RepaymentMethod; label: string }[] = [
   { value: 'equal_principal_interest', label: '等额本息' },
   { value: 'equal_principal', label: '等额本金' },
   { value: 'interest_first', label: '先息后本' },
-  { value: 'flexible', label: '灵活还款' },
 ]
 
 const assetAccounts = ref<Account[]>([])
