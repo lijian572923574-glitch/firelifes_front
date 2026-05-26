@@ -5,7 +5,7 @@
       left-arrow
       fixed
       placeholder
-      bordered
+      :bordered="false"
       safe-area-inset-top
       @click-left="goBack"
     >
@@ -30,22 +30,19 @@
 
       <view v-else-if="!hasAccounts" class="empty-state">
         <view class="empty-icon-wrap">
-          <text class="empty-icon-emoji">💳</text>
+          <view class="empty-icon category-icon-svg account-icon-wallet"></view>
         </view>
         <text class="empty-title">还没有添加账户</text>
         <text class="empty-subtitle">添加你的第一个账户开始记账吧</text>
         <view class="empty-btn" @click="goToAdd">
-          <text class="empty-btn-text">+ 添加账户</text>
+          <text class="empty-btn-text">添加账户</text>
         </view>
       </view>
 
       <view v-else>
         <view v-for="group in groupedAccounts" :key="group.type" class="group-section">
           <view class="group-title">
-            <view class="title-bar" :style="{ background: getTypeColor(group.type) }"></view>
-            <view class="title-icon category-icon-svg" :class="getTypeIconClass(group.type)"></view>
             <text class="title-text">{{ getTypeLabel(group.type) }}</text>
-            <text class="title-count">({{ group.accounts.length }})</text>
           </view>
 
           <view class="account-list">
@@ -56,13 +53,12 @@
             >
               <template #default>
                 <view class="account-card" @click="goToEdit(account.id)">
-                  <view class="card-bar" :style="{ background: getTypeColor(account.type) }"></view>
                   <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
                   <view class="account-info">
                     <view class="name-row">
                       <text class="account-name">{{ account.name }}</text>
                       <view class="badges-row">
-                        <view v-if="account.isDefaultExpense" class="default-badge">
+                        <view v-if="account.isDefaultExpense" class="default-badge expense">
                           <text class="badge-text">默认支出</text>
                         </view>
                         <view v-if="account.isDefaultIncome" class="default-badge income">
@@ -73,7 +69,7 @@
                     <text v-if="account.description" class="account-desc">{{ account.description }}</text>
                   </view>
                   <view class="card-right">
-                    <text class="balance" :style="{ color: getBalanceColor(account.type, account.balance) }">
+                    <text class="balance" :class="{ negative: account.balance < 0 }">
                       {{ formatBalance(account.balance) }}
                     </text>
                     <text class="card-arrow">›</text>
@@ -152,17 +148,6 @@ const getTypeLabel = (type: AccountType): string => {
   return option?.label || type
 }
 
-const getTypeColor = (type: AccountType): string => {
-  const map: Record<AccountType, string> = {
-    cash: '#00BFFF',
-    investment: '#FF9800',
-    fixed_asset: '#9C27B0',
-    depreciable_asset: '#00BCD4',
-    liability: '#FA3534',
-  }
-  return map[type] || '#00BFFF'
-}
-
 const getTypeIconClass = (type: AccountType): string => {
   const map: Record<AccountType, string> = {
     cash: 'account-icon-wallet',
@@ -175,8 +160,8 @@ const getTypeIconClass = (type: AccountType): string => {
 }
 
 const formatBalance = (balance: number): string => {
-  const prefix = balance < 0 ? '-¥' : '¥'
-  return prefix + Math.abs(balance).toLocaleString('zh-CN', {
+  const prefix = balance < 0 ? '-' : ''
+  return prefix + '¥' + Math.abs(balance).toLocaleString('zh-CN', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
@@ -243,18 +228,18 @@ onShow(() => {
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .page-container {
   overflow-x: hidden;
   min-height: 100vh;
-  background-color: var(--color-bg-page, #F5F7FA);
+  background-color: #F8F9FA;
 }
 
 .nav-add-btn {
-  width: 56rpx;
-  height: 56rpx;
+  width: 52rpx;
+  height: 52rpx;
   border-radius: 50%;
-  background: var(--color-primary-light, #E6F7F5);
+  background: $uni-color-primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -262,19 +247,20 @@ onShow(() => {
 }
 
 .nav-add-btn:active {
-  background: var(--color-primary-light, #E6F7F5);
+  opacity: 0.85;
   transform: scale(0.92);
 }
 
 .nav-add-icon {
-  font-size: 36rpx;
-  color: var(--color-primary, #0D9488);
+  font-size: 32rpx;
+  color: $uni-text-color-inverse;
   font-weight: 300;
   line-height: 1;
 }
 
 .content-scroll {
   padding: 24rpx;
+  padding-top: 16rpx;
 }
 
 .skeleton-container {
@@ -284,20 +270,20 @@ onShow(() => {
 }
 
 .skeleton-card {
-  height: 120rpx;
-  background-color: var(--color-bg-card, #FFFFFF);
-  border-radius: 20rpx;
-  padding: 0 28rpx;
+  height: 96rpx;
+  background-color: $uni-bg-color;
+  border-radius: 12rpx;
+  padding: 0 24rpx;
   display: flex;
   align-items: center;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+  border: 1px solid $uni-border-color;
 }
 
 .skeleton-icon {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 16rpx;
-  background: linear-gradient(90deg, var(--color-border-light, #F1F5F9) 25%, var(--color-border, #E2E8F0) 50%, var(--color-border-light, #F1F5F9) 75%);
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  background: linear-gradient(90deg, #F5F5F5 25%, #EEEEEE 50%, #F5F5F5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   flex-shrink: 0;
@@ -308,31 +294,31 @@ onShow(() => {
   display: flex;
   flex-direction: column;
   gap: 12rpx;
-  margin-left: 20rpx;
+  margin-left: 16rpx;
 }
 
 .skeleton-line {
-  border-radius: 8rpx;
-  background: linear-gradient(90deg, var(--color-border-light, #F1F5F9) 25%, var(--color-border, #E2E8F0) 50%, var(--color-border-light, #F1F5F9) 75%);
+  border-radius: 6rpx;
+  background: linear-gradient(90deg, #F5F5F5 25%, #EEEEEE 50%, #F5F5F5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
 
 .skeleton-line-long {
-  width: 240rpx;
-  height: 28rpx;
+  width: 200rpx;
+  height: 24rpx;
 }
 
 .skeleton-line-short {
-  width: 160rpx;
-  height: 20rpx;
+  width: 120rpx;
+  height: 18rpx;
 }
 
 .skeleton-balance {
-  width: 120rpx;
-  height: 32rpx;
-  border-radius: 8rpx;
-  background: linear-gradient(90deg, var(--color-border-light, #F1F5F9) 25%, var(--color-border, #E2E8F0) 50%, var(--color-border-light, #F1F5F9) 75%);
+  width: 100rpx;
+  height: 28rpx;
+  border-radius: 6rpx;
+  background: linear-gradient(90deg, #F5F5F5 25%, #EEEEEE 50%, #F5F5F5 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
   flex-shrink: 0;
@@ -347,12 +333,12 @@ onShow(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 120rpx 0;
+  padding: 160rpx 48rpx;
 }
 
 .empty-icon-wrap {
-  width: 140rpx;
-  height: 140rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 50%;
   background: var(--color-primary-light, #E6F7F5);
   display: flex;
@@ -361,28 +347,30 @@ onShow(() => {
   margin-bottom: 32rpx;
 }
 
-.empty-icon-emoji {
-  font-size: 64rpx;
+.empty-icon {
+  width: 60rpx;
+  height: 60rpx;
+  color: $uni-color-primary;
 }
 
 .empty-title {
-  font-size: 28rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  color: var(--color-text-secondary, #94A3B8);
+  color: $uni-text-color;
   margin-bottom: 12rpx;
 }
 
 .empty-subtitle {
   font-size: 24rpx;
-  color: var(--color-text-secondary, #94A3B8);
+  color: $uni-text-color-grey;
   margin-bottom: 48rpx;
 }
 
 .empty-btn {
-  width: 320rpx;
-  height: 88rpx;
-  border-radius: 44rpx;
-  background: linear-gradient(135deg, var(--color-primary, #0D9488) 0%, var(--color-primary-dark, #0B7A70) 100%);
+  width: 280rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  background: $uni-color-primary;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -390,93 +378,83 @@ onShow(() => {
 }
 
 .empty-btn:active {
-  transform: scale(0.96);
   opacity: 0.9;
+  transform: scale(0.98);
 }
 
 .empty-btn-text {
-  font-size: 30rpx;
-  font-weight: 600;
-  color: var(--color-text-inverse, #FFFFFF);
+  font-size: 28rpx;
+  font-weight: 500;
+  color: $uni-text-color-inverse;
 }
 
 .group-section {
-  margin-bottom: 36rpx;
+  margin-bottom: 48rpx;
 }
 
 .group-title {
   display: flex;
   align-items: center;
-  height: 64rpx;
-  padding: 0 8rpx;
+  height: 40rpx;
   margin-bottom: 16rpx;
 }
 
-.title-bar {
-  width: 6rpx;
-  height: 28rpx;
-  border-radius: 3rpx;
-  margin-right: 10rpx;
-  flex-shrink: 0;
-}
-
 .title-icon {
-  width: 36rpx;
-  height: 36rpx;
-  margin-right: 10rpx;
-  color: var(--color-text-secondary, #94A3B8);
+  display: none;
 }
 
 .title-text {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--color-text-secondary, #94A3B8);
+  font-size: 24rpx;
+  font-weight: 500;
+  color: #94A3B8;
 }
 
 .title-count {
-  font-size: 24rpx;
-  font-weight: 400;
-  color: var(--color-text-secondary, #94A3B8);
-  margin-left: 8rpx;
+  display: none;
 }
 
 .account-list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 0;
 }
 
 .account-card {
-  height: 120rpx;
+  height: 112rpx;
   display: flex;
   align-items: center;
-  padding: 0 28rpx;
-  background-color: var(--color-bg-card, #FFFFFF);
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
-  transition: all 200ms ease;
-  position: relative;
+  padding: 0 24rpx;
+  background-color: #FFFFFF;
+  border-radius: 16rpx;
+  transition: all 150ms ease;
+}
+
+.account-card + .account-card {
+  margin-top: 2rpx;
+}
+
+.account-card:first-child {
+  border-radius: 16rpx 16rpx 0 0;
+}
+
+.account-card:last-child {
+  border-radius: 0 0 16rpx 16rpx;
+}
+
+.account-card:only-child {
+  border-radius: 16rpx;
 }
 
 .account-card:active {
-  background-color: var(--color-border-light, #F1F5F9);
-  transform: scale(0.985);
-}
-
-.card-bar {
-  width: 6rpx;
-  height: 48rpx;
-  border-radius: 3rpx;
-  margin-right: 20rpx;
-  flex-shrink: 0;
+  background-color: #FAFAFA;
 }
 
 .account-icon {
-  width: 52rpx;
-  height: 52rpx;
+  width: 44rpx;
+  height: 44rpx;
   flex-shrink: 0;
-  margin-right: 20rpx;
-  color: var(--color-text-primary, #333);
+  margin-right: 16rpx;
+  color: $uni-color-primary;
 }
 
 .account-info {
@@ -490,13 +468,12 @@ onShow(() => {
   display: flex;
   align-items: center;
   gap: 12rpx;
-  flex-wrap: wrap;
 }
 
 .account-name {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--color-text-primary, #1E293B);
+  font-size: 30rpx;
+  font-weight: 500;
+  color: $uni-text-color;
   line-height: 1.2;
 }
 
@@ -507,24 +484,30 @@ onShow(() => {
 }
 
 .default-badge {
-  background: linear-gradient(135deg, #00BFFF 0%, #0099CC 100%);
-  padding: 4rpx 14rpx;
-  border-radius: 8rpx;
+  padding: 0;
+}
+
+.default-badge.expense {
+  background: transparent;
 }
 
 .default-badge.income {
-  background: linear-gradient(135deg, var(--color-success, #10B981) 0%, var(--color-primary-dark, #0B7A70) 100%);
+  background: transparent;
 }
 
 .badge-text {
   font-size: 20rpx;
-  color: var(--color-text-inverse, #FFFFFF);
+  color: $uni-color-primary;
   font-weight: 500;
+}
+
+.default-badge.income .badge-text {
+  color: $uni-color-success;
 }
 
 .account-desc {
   font-size: 24rpx;
-  color: var(--color-text-secondary, #94A3B8);
+  color: #CBD5E1;
   margin-top: 4rpx;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -539,15 +522,20 @@ onShow(() => {
 }
 
 .balance {
-  font-size: 32rpx;
-  font-weight: 700;
-  margin-right: 12rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: $uni-text-color;
+  margin-right: 8rpx;
+}
+
+.balance.negative {
+  color: $uni-color-error;
 }
 
 .card-arrow {
-  font-size: 44rpx;
-  color: var(--color-text-tertiary, #CBD5E1);
-  line-height: 1;
+  font-size: 32rpx;
+  color: $uni-text-color-disable;
+  font-weight: 300;
 }
 
 .swipe-actions {
@@ -556,27 +544,35 @@ onShow(() => {
 }
 
 .swipe-btn {
-  width: 70rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 70rpx;
+  transition: all 150ms ease;
 }
 
 .swipe-btn-edit {
-  background-color: var(--color-primary, #0D9488);
+  background: #F5F5F5;
 }
 
 .swipe-btn-delete {
-  background-color: var(--color-danger, #EF4444);
+  background: var(--color-danger-light, #FEF2F2);
 }
 
 .swipe-btn-text {
   font-size: 26rpx;
-  color: var(--color-text-inverse, #FFFFFF);
   font-weight: 500;
 }
 
+.swipe-btn-edit .swipe-btn-text {
+  color: $uni-text-color-grey;
+}
+
+.swipe-btn-delete .swipe-btn-text {
+  color: $uni-color-error;
+}
+
 .safe-bottom {
-  height: calc(env(safe-area-inset-bottom) + 40rpx);
+  height: 48rpx;
 }
 </style>
