@@ -40,7 +40,7 @@ const tabList = [
     text: '记账'
   },
   {
-    pagePath: 'pages/analysis/index',
+    pagePath: 'pages/analysis/analysis',
     iconClass: getSystemIconClass('资产'),
     text: '资产'
   },

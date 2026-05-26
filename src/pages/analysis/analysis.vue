@@ -1,5 +1,5 @@
 <!--
-  pages/analysis/index.vue - 资产页面
+  pages/analysis/analysis.vue - 资产页面
   功能：净资产展示、账户余额列表、折旧资产列表
   技术：Vue3 + TypeScript + uni-app
 -->
