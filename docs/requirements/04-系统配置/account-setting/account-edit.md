@@ -8,6 +8,7 @@
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
 | v2.1 | 2026-05-21 | 代码 UI 全面升级：卡片分区布局、图标预览区（112×112大图+说明）、类型卡片（彩色圆点+emoji）、余额 ¥|分隔线|输入、开关双行说明、页面底色 var(--color-bg-page)、TYPE_CONFIG 色值驱动 | AI |
+| v2.2 | 2026-05-27 | 新增「账户调整记账联动」：新增/编辑账户时自动生成调整类型记账记录，差额驱动；全面修正色彩规范对齐 variables.css 变量体系 | AI |
 | v2.0 | 2026-05-21 | 新增 Pencil 设计稿：`designs/my/account-setting/account-edit.pen`，完整可视化新增/编辑账户页面布局 | AI-UI设计 |
 | v1.0 | 2026-05-09 | 从 account-system.md 拆分，账户编辑页独立需求 | AI |
 | v1.1 | 2026-05-09 | 简化字段：只保留名称、类型、余额、说明、图标 | AI |
@@ -25,7 +26,52 @@
 > 🎨 **Pencil 设计稿**: `designs/my/account-setting/account-edit.pen` — 在编辑器中使用 Pencil 插件打开，可视化查看新增/编辑账户页完整布局。
 
 ## 功能概述
-账户编辑页支持新增账户和编辑两种模式，提供账户信息的基本维护功能。
+账户编辑页支持新增账户和编辑两种模式，提供账户信息的基本维护功能。自 v2.2 起，新增/编辑账户保存后，若余额发生变化，自动生成一笔「调整」类型的记账记录，确保记账流水完整反映资产变动。
+
+---
+
+## 账户调整记账联动（v2.2 新增）
+
+### 业务规则
+
+| 场景 | 调整前余额 | 调整后余额 | 差额(amount) | RecordType | 备注自动生成 |
+|------|-----------|-----------|-------------|------------|------------|
+| 新增账户（余额>0） | 0 | +N | +N | adjustment_increase | "新建账户「账户名称」" |
+| 新增账户（余额=0） | 0 | 0 | 0 | — | 不产生记录 |
+| 新增负债账户 | 0 | -N | -N | adjustment_decrease | "新建负债账户「账户名称」" |
+| 编辑账户（余额增加） | oldBalance | newBalance | +Δ | adjustment_increase | "调整账户「账户名称」" |
+| 编辑账户（余额减少） | oldBalance | newBalance | -Δ | adjustment_decrease | "调整账户「账户名称」" |
+| 编辑账户（余额不变） | oldBalance | oldBalance | 0 | — | 不产生记录 |
+
+### 差额计算公式
+- **新增模式**：`amount = balance`（balance 的符号决定 income/expense）
+- **编辑模式**：`amount = newBalance - oldBalance`（正差→income，负差→expense）
+
+### 调整记录数据结构
+调整记录使用独立的 `RecordType: 'adjustment_increase' | 'adjustment_decrease'`，与常规收支（income/expense）区分：
+- 差额 > 0 → `type: 'adjustment_increase'`
+- 差额 < 0 → `type: 'adjustment_decrease'`
+- 差额 = 0 → 跳过，不产生记录
+
+调整记录关联字段：
+- `accountId`：当前编辑的账户 ID
+- `date`：当前系统时间
+- `remark`：自动生成（"新建账户「名称」" / "调整账户「名称」"）
+- `typeId`：不传（调整记录无需关联支出/收入分类）
+
+> **设计意图**：调整记录使用独立 RecordType，确保后端 `month-summary` 等统计 API 仅对 `income`/`expense` 类型求和，调整金额不会污染月度收支汇总、年度账单、预算追踪、FIRE 储蓄率等核心指标。
+
+### 交互流程
+1. 用户点击保存
+2. 前端调用 `createAccount` / `updateAccount` API
+3. API 返回成功后，前端判断差额 `diff = newBalance - oldBalance`
+4. 若 `diff !== 0`，前端调用 `createRecord` API 生成调整记录
+5. 调整记录创建成功后 toast 提示，1.5s 后 navigateBack
+6. 若调整记录创建失败，toast 提示"账户已保存，但调整记录生成失败"，仍 navigateBack
+
+> **后端事务建议**：推荐后端在账户 API 内部使用数据库事务同时完成"更新账户 + 创建调整记录"的原子操作。前端降级为两步调用模式。
+
+---
 
 ## 用户故事
 作为用户，我希望能灵活添加和修改账户信息，这样我可以准确记录每个账户的财务状况。
@@ -106,11 +152,11 @@
 
 | 类型标识 | 中文名称 | 说明 | 余额颜色 |
 |---------|---------|------|---------|
-| cash | 现金类 | 现金、银行卡、支付宝、微信等 | 绿色 #19BE6B |
-| investment | 投资类 | 股票、基金、债券等 | 绿色 #19BE6B |
-| fixed_asset | 固定资产类 | 房产、车位、商铺等 | 绿色 #19BE6B |
-| depreciable_asset | 折旧资产类 | 手机、电脑、家电等 | 绿色 #19BE6B |
-| liability | 负债类 | 信用卡、贷款、花呗等 | 红色 #FA3534 |
+| cash | 现金类 | 现金、银行卡、支付宝、微信等 | var(--color-success, #10B981) |
+| investment | 投资类 | 股票、基金、债券等 | var(--color-success, #10B981) |
+| fixed_asset | 固定资产类 | 房产、车位、商铺等 | var(--color-success, #10B981) |
+| depreciable_asset | 折旧资产类 | 手机、电脑、家电等 | var(--color-success, #10B981) |
+| liability | 负债类 | 信用卡、贷款、花呗等 | var(--color-danger, #EF4444) |
 
 ### 预设图标列表
 ```
@@ -157,8 +203,8 @@
 | WdNavbar | 顶部导航栏 | `title`, `leftArrow`, `fixed`, `placeholder`, `bordered`, `safeAreaInsetTop` |
 | WdInput | 账户名称输入 | `v-model`, `placeholder`, `maxlength=20`, `showClear` |
 | WdInput | 账户余额输入 | `:model-value` + `@update:model-value`, `type="text"`, `:placeholder` 动态占位符, `showClear`, `prefix` 插槽放¥ |
-| WdSwitch | 默认支出账户开关 | `v-model="isDefaultExpense"`, `activeColor="#00BFFF"` |
-| WdSwitch | 默认收入账户开关 | `v-model="isDefaultIncome"`, `activeColor="#00BFFF"` |
+| WdSwitch | 默认支出账户开关 | `v-model="isDefaultExpense"`, `activeColor="var(--color-primary, #0D9488)"` |
+| WdSwitch | 默认收入账户开关 | `v-model="isDefaultIncome"`, `activeColor="var(--color-primary, #0D9488)"` |
 | WdTextarea | 账户说明输入 | `v-model`, `placeholder`, `maxlength=500`, `showWordCount`, `autoHeight` |
 | WdButton | 保存按钮 | `type="primary"`, `block`, `:disabled`, `:loading` |
 
@@ -176,12 +222,12 @@
 - 标签文字：`26rpx` `var(--color-text-secondary)` `font-weight: 500`，下间距 `12rpx`
 
 ### 图标选择区（卡片分区）
-- **大预览区**：112rpx × 112rpx，圆角 `24rpx`，背景 `rgba(0,191,255,0.08)`
-  - 负债类时背景自动切换为 `rgba(250,53,52,0.08)`
+- **大预览区**：112rpx × 112rpx，圆角 `24rpx`，背景 `var(--color-primary-light, #E6F7F5)`
+  - 负债类时背景自动切换为 `var(--color-danger-light, #FEF2F2)`
 - **预览右侧**：双行说明文字（"选择图标" 30rpx 加粗 + "点击下方图标更换" 24rpx 灰色）
 - **小图标行**：每个 80rpx × 80rpx，圆角 `16rpx`，间距 `12rpx`，`flex-wrap`
   - 默认：`var(--color-bg-card)` 背景
-  - 选中：`rgba(0,191,255,0.1)` 背景
+  - 选中：`var(--color-primary-light, #E6F7F5)` 背景
   - 点击反馈：`scale(0.92)`
 
 ### 类型选择区（卡片分区）
@@ -217,7 +263,7 @@
 
 ### 交互状态
 - 所有卡片内元素点击反馈：`scale(0.92~0.96)` + `transition 150ms ease`
-- WdSwitch `activeColor="var(--color-primary)"`
+- WdSwitch `activeColor="var(--color-primary, #0D9488)"`
 - 表单输入区统一 `var(--color-bg-card)` 底色
 
 ## 数据结构
@@ -358,17 +404,19 @@ const DEFAULT_ACCOUNTS: Omit<Account, 'id' | 'userId' | 'createdAt' | 'updatedAt
 3. 用户填写表单
 4. `canSave` 计算属性校验：名称非空 && 名称≤20字符 && 余额为有效数字
 5. 点击保存 → `saving = true` → 调用 `createAccount` API
-6. 成功 → toast "创建成功" → 1.5s后 `navigateBack`
-7. 失败 → toast 显示错误信息 → `saving = false`
+6. API 成功 → 若 `balance !== 0`，调用 `createRecord` 生成调整记录（差额 = balance）
+7. 成功 → toast "创建成功" → 1.5s后 `navigateBack`
+8. 失败 → toast 显示错误信息 → `saving = false`
 
 ### 编辑模式
 1. 进入页面（带 `id` 参数）
-2. `onLoad` 中调用 `loadAccountDetail(id)` 加载账户详情
+2. `onLoad` 中调用 `loadAccountDetail(id)` 加载账户详情，记录 `oldBalance`
 3. 将返回数据填充到 `formData` 和 `balanceInput`
 4. 用户修改表单
 5. 点击保存 → `saving = true` → 调用 `updateAccount(id, formData)` API
-6. 成功 → toast "修改成功" → 1.5s后 `navigateBack`
-7. 失败 → toast 显示错误信息 → `saving = false`
+6. API 成功 → 计算 `diff = newBalance - oldBalance`，若 `diff !== 0`，调用 `createRecord` 生成调整记录
+7. 成功 → toast "修改成功" → 1.5s后 `navigateBack`
+8. 失败 → toast 显示错误信息 → `saving = false`
 
 ### 保存按钮可用条件
 ```typescript
@@ -454,3 +502,6 @@ const onBalanceInput = (value: string) => {
 7. **名称超长**：WdInput `maxlength=20` 自动限制，canSave 为 false
 8. **编辑模式加载失败**：toast 提示错误信息，用户可手动返回
 9. **重复提交防护**：`saving` 状态为 true 时 `handleSave` 直接 return，防止重复提交
+10. **调整记录创建失败**：账户保存成功但调整记录创建失败时，toast 提示"账户已保存，但调整记录生成失败"，仍正常 navigateBack，避免阻塞用户操作
+11. **差额为0不生成记录**：新增账户余额为0、编辑账户余额未变更时，跳过调整记录创建
+12. **类型切换不触发调整**：只有点击保存时才计算差额并生成调整记录，页面内切换类型导致的余额符号自动转换不产生记录

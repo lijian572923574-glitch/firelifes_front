@@ -295,6 +295,7 @@
 import { ref, computed } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { getAccountDetail, createAccount, updateAccount, getAccountList } from '../../../api/account'
+import { recordApi } from '../../../api/record'
 import { navigateBack } from '../../../utils/navigate'
 import type { Account, AccountRequest, AccountType, RepaymentMethod } from '../../../types/account'
 import { ACCOUNT_ICONS, getAccountIconClass } from '../../../types/account'
@@ -303,6 +304,7 @@ const accountId = ref<string | null>(null)
 const isEdit = computed(() => !!accountId.value)
 const account = ref<Account | null>(null)
 const saving = ref(false)
+const oldBalance = ref(0)
 
 const TYPE_CONFIG: Record<AccountType, { color: string; emoji: string; label: string; activeBg: string }> = {
   cash:         { color: '#00BFFF', emoji: '💰', label: '现金类', activeBg: 'rgba(0,191,255,0.06)' },
@@ -368,6 +370,7 @@ const loadAccountDetail = async (id: string) => {
     const res = await getAccountDetail(id)
     if (res.success) {
       account.value = res.data
+      oldBalance.value = res.data.balance
       let displayBalance = res.data.balance
       if (res.data.type === 'liability' && res.data.balance > 0) {
         displayBalance = -Math.abs(res.data.balance)
@@ -446,6 +449,40 @@ const onBalanceInput = (value: string) => {
   }
 }
 
+const createAdjustmentRecord = async (
+  diff: number,
+  accountIdVal: string,
+  accountName: string,
+  mode: 'create' | 'adjust'
+) => {
+  const recordType = diff > 0 ? 'adjustment_increase' : 'adjustment_decrease'
+
+  const remark = mode === 'create'
+    ? `新建账户「${accountName}」`
+    : `调整账户「${accountName}」`
+
+  const now = new Date()
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
+
+  try {
+    const res = await recordApi.createRecord({
+      type: recordType,
+      amount: Math.abs(diff),
+      accountId: Number(accountIdVal),
+      remark,
+      date: dateStr,
+    })
+    if (res.success) {
+      return true
+    }
+    console.error('创建调整记录失败:', res.message)
+    return false
+  } catch (err) {
+    console.error('创建调整记录异常:', err)
+    return false
+  }
+}
+
 const handleSave = async () => {
   if (!canSave.value || saving.value) return
 
@@ -461,6 +498,13 @@ const handleSave = async () => {
     if (isEdit.value && accountId.value) {
       const res = await updateAccount(accountId.value, formData.value)
       if (res.success) {
+        const diff = formData.value.balance - oldBalance.value
+        if (diff !== 0) {
+          const recordCreated = await createAdjustmentRecord(diff, accountId.value, formData.value.name, 'adjust')
+          if (!recordCreated) {
+            uni.showToast({ title: '余额已保存，但调整记录生成失败', icon: 'none' })
+          }
+        }
         uni.showToast({ title: '修改成功', icon: 'success' })
         setTimeout(() => { navigateBack('/pages/my/account-setting/account-list') }, 1500)
       } else {
@@ -469,6 +513,17 @@ const handleSave = async () => {
     } else {
       const res = await createAccount(formData.value)
       if (res.success) {
+        const newId = res.data.id
+        if (formData.value.balance !== 0) {
+          const recordCreated = await createAdjustmentRecord(
+            formData.value.balance, newId, formData.value.name, 'create'
+          )
+          if (!recordCreated) {
+            uni.showToast({ title: '账户已保存，但调整记录生成失败', icon: 'none' })
+            setTimeout(() => { navigateBack('/pages/my/account-setting/account-list') }, 1500)
+            return
+          }
+        }
         uni.showToast({ title: '创建成功', icon: 'success' })
         setTimeout(() => { navigateBack('/pages/my/account-setting/account-list') }, 1500)
       } else {

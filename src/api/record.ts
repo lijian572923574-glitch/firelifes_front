@@ -28,7 +28,7 @@ export interface RecordData {
   typeId: number
   date: string
   amount: number
-  type: 'income' | 'expense' | 'transfer' | 'repayment'
+  type: RecordType
   accountId?: number
   toAccountId?: number
   remark?: string
@@ -53,7 +53,7 @@ export interface PageResult<T> {
   pageSize: number
 }
 
-export type RecordType = 'income' | 'expense' | 'transfer' | 'repayment'
+export type RecordType = 'income' | 'expense' | 'transfer' | 'repayment' | 'adjustment_increase' | 'adjustment_decrease'
 
 export interface CreateRecordAssetData {
   name: string
@@ -66,7 +66,7 @@ export interface CreateRecordAssetData {
 }
 
 export interface CreateRecordData {
-  typeId: number
+  typeId?: number
   type: RecordType
   amount: number
   accountId?: number

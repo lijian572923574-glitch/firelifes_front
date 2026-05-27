@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive, watch } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
-import { recordApi } from '../../api/record'
+import { recordApi, type RecordType } from '../../api/record'
 
 import { categoryApi, type CategoryGroup } from '../../api/category'
 import CustomTabbar from '../../components/CustomTabbar.vue'
@@ -81,8 +81,8 @@ const deletingId = ref<number | null>(null)
 
 interface RecordItem {
   id: number
-  typeId: number
-  type: 'income' | 'expense' | 'transfer' | 'repayment'
+  typeId: number | null
+  type: RecordType
   amount: number
   remark?: string
   date: string
@@ -159,7 +159,10 @@ const handleRecordTap = (record: BillCardRecord) => {
 
 const CATEGORY_BG_COLOR = 'var(--color-primary-light)'
 
-const getCategoryInfo = (typeId: number): { name: string; icon: string; color: string } => {
+const getCategoryInfo = (typeId: number | null): { name: string; icon: string; color: string } => {
+  if (typeId === null || typeId === undefined) {
+    return { name: '其他', icon: 'icon-qita', color: CATEGORY_BG_COLOR }
+  }
   for (const group of categories.value) {
     for (const cat of group.children) {
       if (cat.id === typeId) {
