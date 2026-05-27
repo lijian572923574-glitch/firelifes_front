@@ -1,6 +1,6 @@
 <!--
   pages/analysis/analysis.vue - 资产页面
-  功能：净资产展示、账户余额列表、折旧资产列表
+  功能：净资产展示、账户余额列表、资产汇总（折旧/固定资产总额）
   技术：Vue3 + TypeScript + uni-app
 -->
 <template>
@@ -11,52 +11,51 @@
       <view v-if="loadingNetWorth" class="nw-loading">计算中...</view>
     </view>
 
-    <view v-if="accounts.length > 0" class="section">
-      <text class="section-title">账户余额</text>
-      <view v-for="account in accounts" :key="account.id" class="account-row" @tap="goToAccountRecords(account)">
-        <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
-        <view class="account-info">
-          <text class="account-name">{{ account.name }}</text>
-          <text class="account-type">{{ typeLabel(account.type) }}</text>
-        </view>
-        <text class="account-balance" :class="{ negative: account.balance < 0 }">
-          {{ formatAmount(account.balance) }}
-        </text>
-        <text class="account-arrow">›</text>
-      </view>
-    </view>
-
-    <view v-if="depreciatingAssets.length > 0" class="section">
-      <text class="section-title">折旧资产</text>
-      <view v-for="asset in depreciatingAssets" :key="asset.id" class="asset-row">
-        <view class="asset-icon-bg">
-          <text class="asset-icon">📱</text>
-        </view>
-        <view class="asset-info">
-          <text class="asset-name">{{ asset.name }}</text>
-          <text class="asset-category">{{ asset.categoryName }}</text>
-        </view>
-        <view class="asset-value-col">
-          <text class="asset-value">¥{{ formatAmount(asset.currentValue) }}</text>
-          <view class="asset-progress-bar">
-            <view class="asset-progress-fill" :style="{ width: asset.progressPercent + '%' }"></view>
+    <scroll-view scroll-y class="content-scroll">
+      <view v-if="displayAccounts.length > 0" class="section">
+        <text class="section-title">账户余额</text>
+        <view v-for="account in displayAccounts" :key="account.id" class="account-row" @tap="goToAccountRecords(account)">
+          <view class="account-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
+          <view class="account-info">
+            <text class="account-name">{{ account.name }}</text>
+            <text class="account-type">{{ typeLabel(account.type) }}</text>
           </view>
+          <text class="account-balance" :class="{ negative: account.balance < 0 }">
+            {{ formatAmount(account.balance) }}
+          </text>
+          <text class="account-arrow">›</text>
         </view>
       </view>
-    </view>
 
-    <view v-if="!loadingNetWorth && accounts.length === 0 && depreciatingAssets.length === 0" class="empty-state">
-      <text class="empty-icon">💼</text>
-      <text class="empty-text">暂无资产数据</text>
-      <text class="empty-hint">记账后资产数据会自动更新</text>
-    </view>
+      <view v-if="assetSummary.length > 0" class="section">
+        <text class="section-title">资产汇总</text>
+        <view v-for="item in assetSummary" :key="item.type" class="account-row" @tap="goToAssetDetail(item)">
+          <view class="account-icon category-icon-svg" :class="item.iconClass"></view>
+          <view class="account-info">
+            <text class="account-name">{{ item.label }}</text>
+            <text class="account-type">{{ item.count }}笔</text>
+          </view>
+          <text class="account-balance">{{ formatAmount(item.total) }}</text>
+          <text class="account-arrow">›</text>
+        </view>
+      </view>
+
+      <view v-if="!loadingNetWorth && displayAccounts.length === 0 && assetSummary.length === 0" class="empty-state">
+        <text class="empty-icon">💼</text>
+        <text class="empty-text">暂无资产数据</text>
+        <text class="empty-hint">记账后资产数据会自动更新</text>
+      </view>
+
+      <view class="bottom-padding"></view>
+    </scroll-view>
 
     <CustomTabbar />
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
 import { getAccountList } from '../../api/account'
 import type { Account } from '../../types/account'
@@ -65,20 +64,42 @@ import CustomTabbar from '../../components/CustomTabbar.vue'
 
 const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   cash: '现金',
-  fixed_asset: '固定资产',
-  depreciable_asset: '折旧资产',
   liability: '负债',
 }
 
-const DEPRECIATING_CATEGORY_LABELS: Record<string, string> = {
-  phone: '手机', computer: '电脑', camera: '相机', appliance: '家电',
-  footwear: '鞋服', furniture: '家具', bag: '包袋', sports: '运动', other: '其他',
+const ASSET_SUMMARY_CONFIG: Record<string, { label: string; iconClass: string }> = {
+  depreciable_asset: { label: '折旧资产', iconClass: 'depreciable-asset' },
+  fixed_asset: { label: '固定资产', iconClass: 'fixed-asset' },
 }
 
 const netWorth = ref(0)
 const loadingNetWorth = ref(true)
 const accounts = ref<Account[]>([])
-const depreciatingAssets = ref<any[]>([])
+
+const displayAccounts = computed(() =>
+  accounts.value.filter((a: Account) => !a.isDeleted && a.isVisible && a.type !== 'fixed_asset' && a.type !== 'depreciable_asset')
+)
+
+const assetSummary = computed(() => {
+  const result: { type: string; label: string; iconClass: string; total: number; count: number }[] = []
+
+  for (const [type, config] of Object.entries(ASSET_SUMMARY_CONFIG)) {
+    const typeAccounts = accounts.value.filter((a: Account) => a.type === type && !a.isDeleted && a.isVisible)
+    if (typeAccounts.length > 0) {
+      const total = typeAccounts.reduce((sum: number, a: Account) => sum + (a.balance || 0), 0)
+      result.push({
+        type,
+        label: config.label,
+        iconClass: config.iconClass,
+        total,
+        count: typeAccounts.length,
+      })
+    }
+  }
+
+  // 资产汇总统一使用 Account.balance，数据源一致可审计
+  return result
+})
 
 const formatAmount = (val: number) => {
   const prefix = val < 0 ? '-¥' : '¥'
@@ -90,13 +111,19 @@ const goToAccountRecords = (account: any) => {
   uni.navigateTo({ url: `/pages/analysis/account-records?accountId=${account.id}` })
 }
 
+const goToAssetDetail = (item: any) => {
+  const depAccounts = accounts.value.filter((a: Account) => a.type === item.type && !a.isDeleted && a.isVisible)
+  if (depAccounts.length === 1) {
+    uni.navigateTo({ url: `/pages/analysis/account-records?accountId=${depAccounts[0].id}` })
+  }
+}
+
 const loadAssets = async () => {
   loadingNetWorth.value = true
   try {
-    const [nwRes, accRes, depRes] = await Promise.all([
+    const [nwRes, accRes] = await Promise.all([
       recordApi.getNetWorth(),
       getAccountList(),
-      recordApi.getDepreciatingAssets(),
     ])
 
     if (nwRes.success && nwRes.data) {
@@ -105,16 +132,6 @@ const loadAssets = async () => {
 
     if (accRes.success && accRes.data) {
       accounts.value = accRes.data.filter((a: Account) => !a.isDeleted && a.isVisible)
-    }
-
-    if (depRes.success && depRes.data) {
-      depreciatingAssets.value = depRes.data.map((a: any) => ({
-        ...a,
-        categoryName: DEPRECIATING_CATEGORY_LABELS[a.category] || a.category,
-        progressPercent: a.expectedLifeMonths > 0
-          ? Math.round((a.usedMonths / a.expectedLifeMonths) * 100)
-          : 0,
-      }))
     }
   } catch {
     // ignore
@@ -125,13 +142,20 @@ const loadAssets = async () => {
 onMounted(() => {
   loadAssets()
 })
+
+onShow(() => {
+  // 每次显示页面时重新加载数据，确保数据是最新的
+  loadAssets()
+})
 </script>
 
 <style scoped>
 .page {
-  min-height: 100vh;
+  height: 100vh;
   background: var(--color-bg-page, #F5F7FA);
-  padding-bottom: 80px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .net-worth-card {
@@ -143,6 +167,13 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 10rpx;
+  flex-shrink: 0;
+}
+
+.content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px;
 }
 
 .nw-label {
@@ -190,8 +221,8 @@ onMounted(() => {
 }
 
 .account-icon {
-  width: 36rpx;
-  height: 36rpx;
+  width: 44rpx;
+  height: 44rpx;
   margin-right: 18rpx;
   color: var(--color-text-primary, #333);
 }
@@ -230,78 +261,6 @@ onMounted(() => {
   margin-left: 8rpx;
 }
 
-.asset-row {
-  display: flex;
-  align-items: center;
-  padding: 18rpx 0;
-  border-bottom: 1rpx solid var(--color-border-light, #F1F5F9);
-}
-
-.asset-row:last-child {
-  border-bottom: none;
-}
-
-.asset-icon-bg {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 16rpx;
-  background: var(--color-primary-light, #E6F7F5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 18rpx;
-}
-
-.asset-icon {
-  font-size: 32rpx;
-}
-
-.asset-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-}
-
-.asset-name {
-  font-size: 28rpx;
-  color: var(--color-text-primary, #1E293B);
-  font-weight: 500;
-}
-
-.asset-category {
-  font-size: 22rpx;
-  color: var(--color-text-secondary, #94A3B8);
-}
-
-.asset-value-col {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8rpx;
-}
-
-.asset-value {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--color-primary, #0D9488);
-}
-
-.asset-progress-bar {
-  width: 120rpx;
-  height: 8rpx;
-  background: var(--color-border-light, #F1F5F9);
-  border-radius: 4rpx;
-  overflow: hidden;
-}
-
-.asset-progress-fill {
-  height: 100%;
-  background: var(--color-primary, #0D9488);
-  border-radius: 4rpx;
-  transition: width 0.5s ease;
-}
-
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -322,5 +281,9 @@ onMounted(() => {
 .empty-hint {
   font-size: 24rpx;
   color: var(--color-text-tertiary, #CBD5E1);
+}
+
+.bottom-padding {
+  height: 80rpx;
 }
 </style>

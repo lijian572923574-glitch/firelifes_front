@@ -8,13 +8,23 @@
       </text>
       <view class="monthly-summary">
         <view class="summary-item">
-          <text class="summary-label">本月支出</text>
-          <text class="summary-value expense">{{ formatAbs(monthlySummary.expense) }}</text>
+          <text class="summary-label">本月收入</text>
+          <text class="summary-value income">{{ formatAbs(monthlySummary.income) }}</text>
         </view>
         <view class="summary-divider"></view>
         <view class="summary-item">
-          <text class="summary-label">本月收入</text>
-          <text class="summary-value income">{{ formatAbs(monthlySummary.income) }}</text>
+          <text class="summary-label">本月支出</text>
+          <text class="summary-value expense">{{ formatAbs(monthlySummary.expense) }}</text>
+        </view>
+        <view v-if="monthlySummary.adjustmentIncrease > 0" class="summary-divider"></view>
+        <view v-if="monthlySummary.adjustmentIncrease > 0" class="summary-item">
+          <text class="summary-label">本月调增</text>
+          <text class="summary-value adjustment">{{ formatAbs(monthlySummary.adjustmentIncrease) }}</text>
+        </view>
+        <view v-if="monthlySummary.adjustmentDecrease > 0" class="summary-divider"></view>
+        <view v-if="monthlySummary.adjustmentDecrease > 0" class="summary-item">
+          <text class="summary-label">本月调减</text>
+          <text class="summary-value adjustment">{{ formatAbs(monthlySummary.adjustmentDecrease) }}</text>
         </view>
       </view>
     </view>
@@ -55,6 +65,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import { recordApi } from '../../api/record'
 import { categoryApi, type CategoryGroup } from '../../api/category'
 import { getAccountIconClass } from '../../types/account'
@@ -80,12 +91,14 @@ const accountInfo = ref({
 const monthlySummary = ref({
   income: 0,
   expense: 0,
+  adjustmentIncrease: 0,
+  adjustmentDecrease: 0,
 })
 
 interface RecordItem {
   id: number
   typeId: number
-  type: 'income' | 'expense' | 'transfer' | 'repayment'
+  type: 'income' | 'expense' | 'transfer' | 'repayment' | 'adjustment_increase' | 'adjustment_decrease'
   amount: number
   remark?: string
   date: string
@@ -155,6 +168,10 @@ const getEnrichedRecords = (date: string): BillCardRecord[] => {
       displayName = record.direction === 'out'
         ? `还款至${record.counterpartAccountName || '未知账户'}`
         : `收到还款`
+    } else if (record.type === 'adjustment_increase') {
+      displayName = record.remark || '余额调增'
+    } else if (record.type === 'adjustment_decrease') {
+      displayName = record.remark || '余额调减'
     } else if (record.remark) {
       displayName = record.remark
     }
@@ -321,16 +338,8 @@ const handleDeleteRecord = (record: BillCardRecord) => {
       try {
         const apiRes = await recordApi.deleteRecord(record.id)
         if (apiRes.success) {
-          for (const [date, data] of pageData) {
-            const idx = data.list.findIndex((r) => r.id === record.id)
-            if (idx !== -1) {
-              data.list.splice(idx, 1)
-              if (data.list.length === 0) {
-                pageData.delete(date)
-              }
-              break
-            }
-          }
+          // 重新加载数据以获取最新的账户余额和月度汇总
+          await loadData()
           uni.showToast({ title: '已删除', icon: 'success', duration: 1500 })
         } else {
           uni.showToast({ title: apiRes.message || '删除失败，请重试', icon: 'none' })
@@ -352,6 +361,13 @@ onMounted(() => {
   if (id) {
     accountId.value = parseInt(id)
     Promise.all([loadCategories(), loadData()])
+  }
+})
+
+onShow(() => {
+  // 每次显示页面时重新加载数据，确保数据是最新的
+  if (accountId.value) {
+    loadData()
   }
 })
 </script>
@@ -428,6 +444,10 @@ onMounted(() => {
 
 .summary-value.income {
   color: #B3FFD9;
+}
+
+.summary-value.adjustment {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .summary-divider {

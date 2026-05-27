@@ -98,7 +98,8 @@
 		{
 			"path": "pages/analysis/analysis",
 			"style": {
-				"navigationBarTitleText": "Analysis"
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		},
 		{

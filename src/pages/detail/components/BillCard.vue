@@ -24,8 +24,8 @@
                 <text class="bill-item-name">{{ item.displayName }}</text>
               </view>
             </view>
-            <text class="bill-item-amount">
-              {{ item.type === 'expense' || item.type === 'transfer' || item.type === 'repayment' ? '-' : '+' }}{{ formatAmount(item.amount) }}
+            <text class="bill-item-amount" :class="{ 'adjustment': isAdjustment(item) }">
+              {{ amountPrefix(item) }}{{ formatAmount(item.amount) }}
             </text>
           </view>
         </template>
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 export interface BillCardRecord {
   id: number
-  type: 'income' | 'expense' | 'transfer' | 'repayment'
+  type: 'income' | 'expense' | 'transfer' | 'repayment' | 'adjustment_increase' | 'adjustment_decrease'
   amount: number
   displayName: string
   categoryIcon: string
@@ -71,6 +71,17 @@ const handleDelete = (item: BillCardRecord) => {
 
 const formatAmount = (amount: number) => {
   return Math.abs(amount).toFixed(2)
+}
+
+const isAdjustment = (item: BillCardRecord) => {
+  return item.type === 'adjustment_increase' || item.type === 'adjustment_decrease'
+}
+
+const amountPrefix = (item: BillCardRecord) => {
+  if (item.type === 'adjustment_increase') return '+'
+  if (item.type === 'adjustment_decrease') return '-'
+  if (item.type === 'expense' || item.type === 'transfer' || item.type === 'repayment') return '-'
+  return '+'
 }
 </script>
 
@@ -151,8 +162,8 @@ const formatAmount = (amount: number) => {
 }
 
 .category-icon .category-icon-svg {
-  width: 28rpx;
-  height: 28rpx;
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .bill-item-info {
@@ -177,6 +188,10 @@ const formatAmount = (amount: number) => {
   flex-shrink: 0;
   margin-left: 20rpx;
   color: var(--color-text-primary, #1E293B);
+}
+
+.bill-item-amount.adjustment {
+  color: var(--color-text-secondary, #94A3B8);
 }
 
 .delete-btn {
