@@ -85,7 +85,7 @@ import type { DepreciatingAssetData } from '../../types/asset'
 import type { RecordType, CreateRecordData } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 import { draft, type RecordDraft } from '../../utils/draft'
-import { saveAccountMemory, findAccountByMemory } from '../../utils/record-memory'
+import { saveAccountMemory, findAccountByMemory, saveLastRecord, getRecentRecord } from '../../utils/record-memory'
 
 const transactionType = ref<'income' | 'expense'>('expense')
 const selectedCategory = ref<{ id: number; name: string; icon: string } | null>(null)
@@ -132,8 +132,23 @@ onShow(() => {
     justCompleted = false
     partialReset()
   } else {
-    // 用户主动进入记账页，全量重置
-    resetForm()
+    // 用户主动进入记账页，检查30小时内是否有最近记录
+    const recent = getRecentRecord()
+    if (recent) {
+      selectedDate.value = recent.date
+      if (recent.transactionType === 'expense' || recent.transactionType === 'income') {
+        transactionType.value = recent.transactionType
+      }
+      selectedCategory.value = null
+      displayAmount.value = ''
+      remark.value = ''
+      selectedAccount.value = null
+      fromAccount.value = null
+      toAccount.value = null
+      assetData.value = null
+    } else {
+      resetForm()
+    }
   }
 })
 
@@ -257,18 +272,38 @@ const selectCategory = async (category: { id: number; name: string; icon: string
           : liabilities[0] || null
       } else if (transactionType.value === 'expense') {
         const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
-        // 先查记忆
-        const memoryAccount = findAccountByMemory('expense', category.id, expenseAccounts)
-        selectedAccount.value = memoryAccount
-          ? (memoryAccount as Account)
-          : expenseAccounts.find(a => a.isDefaultExpense) || expenseAccounts[0] || null
+        // 30小时窗口：优先用最近记录的账户
+        const recent = getRecentRecord()
+        if (recent && recent.transactionType === 'expense' && recent.accountId) {
+          const matched = expenseAccounts.find(a => a.id === recent.accountId) as Account | undefined
+          if (matched) {
+            selectedAccount.value = matched
+          }
+        }
+        if (!selectedAccount.value) {
+          // 回退：分类记忆 → 默认账户
+          const memoryAccount = findAccountByMemory('expense', category.id, expenseAccounts)
+          selectedAccount.value = memoryAccount
+            ? (memoryAccount as Account)
+            : expenseAccounts.find(a => a.isDefaultExpense) || expenseAccounts[0] || null
+        }
       } else {
         const incomeAccounts = accounts.filter(a => a.type !== 'liability')
-        // 先查记忆
-        const memoryAccount = findAccountByMemory('income', category.id, incomeAccounts)
-        selectedAccount.value = memoryAccount
-          ? (memoryAccount as Account)
-          : incomeAccounts.find(a => a.isDefaultIncome) || incomeAccounts[0] || null
+        // 30小时窗口：优先用最近记录的账户
+        const recent = getRecentRecord()
+        if (recent && recent.transactionType === 'income' && recent.accountId) {
+          const matched = incomeAccounts.find(a => a.id === recent.accountId) as Account | undefined
+          if (matched) {
+            selectedAccount.value = matched
+          }
+        }
+        if (!selectedAccount.value) {
+          // 回退：分类记忆 → 默认账户
+          const memoryAccount = findAccountByMemory('income', category.id, incomeAccounts)
+          selectedAccount.value = memoryAccount
+            ? (memoryAccount as Account)
+            : incomeAccounts.find(a => a.isDefaultIncome) || incomeAccounts[0] || null
+        }
       }
     }
   } catch (error) {
@@ -363,6 +398,18 @@ const handleComplete = async () => {
         saveAccountMemory('expense', selectedCategory.value!.id, selectedAccount.value.id)
       } else if (transactionType.value === 'income' && selectedAccount.value) {
         saveAccountMemory('income', selectedCategory.value!.id, selectedAccount.value.id)
+      }
+
+      // 保存最近记录（30小时窗口策略）
+      const lastAccountId = isTransfer.value || isRepayment.value
+        ? fromAccount.value?.id
+        : selectedAccount.value?.id
+      if (lastAccountId) {
+        saveLastRecord({
+          transactionType: recordType.value as 'expense' | 'income' | 'transfer' | 'repayment',
+          accountId: lastAccountId,
+          date: selectedDate.value,
+        })
       }
 
       draft.remove()

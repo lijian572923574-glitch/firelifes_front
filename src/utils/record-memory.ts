@@ -101,3 +101,44 @@ export function findAccountByMemory(
   clearAccountMemory(type, categoryId)
   return null
 }
+
+// ==================== 30小时窗口最近记录 ====================
+
+const LAST_RECORD_KEY = 'record_memory_last'
+export const LAST_RECORD_WINDOW = 30 * 60 * 60 * 1000
+
+export interface LastRecord {
+  transactionType: 'expense' | 'income' | 'transfer' | 'repayment'
+  accountId: string
+  date: string
+  timestamp: number
+}
+
+/**
+ * 记账成功后保存最近一条记录（用于30小时窗口策略）
+ */
+export function saveLastRecord(record: Omit<LastRecord, 'timestamp'>): void {
+  try {
+    uni.setStorageSync(LAST_RECORD_KEY, { ...record, timestamp: Date.now() })
+  } catch (e) {
+    // ignore
+  }
+}
+
+/**
+ * 读取30小时内的最近记录，超时返回null并清除
+ */
+export function getRecentRecord(maxAgeMs?: number): LastRecord | null {
+  const maxAge = maxAgeMs ?? LAST_RECORD_WINDOW
+  try {
+    const data = uni.getStorageSync(LAST_RECORD_KEY) as LastRecord | null
+    if (!data) return null
+    if (Date.now() - data.timestamp > maxAge) {
+      uni.removeStorageSync(LAST_RECORD_KEY)
+      return null
+    }
+    return data
+  } catch {
+    return null
+  }
+}
