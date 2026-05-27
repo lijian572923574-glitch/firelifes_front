@@ -19,7 +19,7 @@
       </view>
       <view class="summary-col summary-expense">
         <text class="summary-label">支出</text>
-        <text class="summary-value">{{ formatAmount(monthExpense) }}</text>
+        <text class="summary-value">-{{ formatAmount(monthExpense) }}</text>
       </view>
     </view>
   </view>

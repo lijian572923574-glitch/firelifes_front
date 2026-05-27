@@ -16,7 +16,7 @@
     </view>
     <view class="savings-detail">
       <text class="savings-detail-text">收入 ¥{{ formatAmount(monthIncome) }}</text>
-      <text class="savings-detail-text">支出 ¥{{ formatAmount(monthExpense) }}</text>
+      <text class="savings-detail-text">支出 -¥{{ formatAmount(monthExpense) }}</text>
     </view>
   </view>
 </template>

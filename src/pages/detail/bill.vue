@@ -48,7 +48,7 @@
         <view class="summary-divider"></view>
         <view class="summary-item">
           <text class="summary-label">月支出</text>
-          <text class="summary-value expense">¥{{ formatAmount(monthExpense) }}</text>
+          <text class="summary-value expense">-¥{{ formatAmount(monthExpense) }}</text>
         </view>
         <view class="summary-divider"></view>
         <view class="summary-item">
@@ -69,7 +69,7 @@
         <view v-for="bill in monthlyBills" :key="bill.month" class="bill-row">
           <text class="bill-cell month-cell">{{ bill.label }}</text>
           <text class="bill-cell amount-cell income">¥{{ formatAmount(bill.income) }}</text>
-          <text class="bill-cell amount-cell expense">¥{{ formatAmount(bill.expense) }}</text>
+          <text class="bill-cell amount-cell expense">-¥{{ formatAmount(bill.expense) }}</text>
           <text class="bill-cell amount-cell" :class="bill.balance >= 0 ? 'income' : 'expense'">
             ¥{{ formatAmount(bill.balance) }}
           </text>
@@ -97,7 +97,7 @@
           </view>
           <view class="summary-half">
             <text class="summary-label">总支出</text>
-            <text class="summary-value expense">¥{{ formatAmount(yearlySummary.totalExpense) }}</text>
+            <text class="summary-value expense">-¥{{ formatAmount(yearlySummary.totalExpense) }}</text>
           </view>
         </view>
       </view>
@@ -112,7 +112,7 @@
         <view v-for="bill in yearlyBills" :key="bill.year" class="bill-row">
           <text class="bill-cell month-cell">{{ bill.year }}</text>
           <text class="bill-cell amount-cell income">¥{{ formatAmount(bill.income) }}</text>
-          <text class="bill-cell amount-cell expense">¥{{ formatAmount(bill.expense) }}</text>
+          <text class="bill-cell amount-cell expense">-¥{{ formatAmount(bill.expense) }}</text>
           <text class="bill-cell amount-cell" :class="bill.balance >= 0 ? 'income' : 'expense'">
             ¥{{ formatAmount(bill.balance) }}
           </text>

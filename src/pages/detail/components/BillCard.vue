@@ -4,7 +4,7 @@
       <text class="date-text">{{ formattedDate }}</text>
       <view class="day-totals">
         <text class="day-income">收入 {{ dayIncome }}</text>
-        <text class="day-expense">支出 {{ dayExpense }}</text>
+        <text class="day-expense">支出 -{{ dayExpense }}</text>
       </view>
     </view>
     <view

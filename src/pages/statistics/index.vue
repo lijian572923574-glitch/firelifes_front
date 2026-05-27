@@ -14,7 +14,7 @@
     <view class="summary-row">
       <view class="summary-item">
         <text class="summary-label">支出</text>
-        <text class="summary-value expense">¥{{ formatAmount(monthExpense) }}</text>
+        <text class="summary-value expense">-¥{{ formatAmount(monthExpense) }}</text>
       </view>
       <view class="summary-divider"></view>
       <view class="summary-item">
@@ -40,7 +40,7 @@
             <view class="category-bar-wrap">
               <view class="category-bar" :style="{ width: item.percent + '%' }"></view>
             </view>
-            <text class="category-amount">¥{{ formatAmount(item.amount) }}</text>
+            <text class="category-amount">-¥{{ formatAmount(item.amount) }}</text>
             <text class="category-percent">{{ item.percent.toFixed(0) }}%</text>
           </view>
         </view>

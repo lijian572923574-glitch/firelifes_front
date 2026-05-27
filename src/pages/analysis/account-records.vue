@@ -14,7 +14,7 @@
         <view class="summary-divider"></view>
         <view class="summary-item">
           <text class="summary-label">本月支出</text>
-          <text class="summary-value expense">{{ formatAbs(monthlySummary.expense) }}</text>
+          <text class="summary-value expense">-{{ formatAbs(monthlySummary.expense) }}</text>
         </view>
         <view v-if="monthlySummary.adjustmentIncrease > 0" class="summary-divider"></view>
         <view v-if="monthlySummary.adjustmentIncrease > 0" class="summary-item">
@@ -24,7 +24,7 @@
         <view v-if="monthlySummary.adjustmentDecrease > 0" class="summary-divider"></view>
         <view v-if="monthlySummary.adjustmentDecrease > 0" class="summary-item">
           <text class="summary-label">本月调减</text>
-          <text class="summary-value adjustment">{{ formatAbs(monthlySummary.adjustmentDecrease) }}</text>
+          <text class="summary-value adjustment">-{{ formatAbs(monthlySummary.adjustmentDecrease) }}</text>
         </view>
       </view>
     </view>
