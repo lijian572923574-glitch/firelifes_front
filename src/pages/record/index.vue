@@ -106,7 +106,19 @@ const assetData = ref<DepreciatingAssetData | null>(null)
 const showDraftBanner = ref(false)
 let draftData: RecordDraft | null = null
 /** 标记是否刚完成记账（用于区分 onShow 是记账成功回跳还是用户主动进入） */
-let justCompleted = false
+const justCompletedKey = 'record_just_completed'
+const setJustCompleted = (value: boolean) => {
+  try {
+    uni.setStorageSync(justCompletedKey, value)
+  } catch {}
+}
+const getJustCompleted = (): boolean => {
+  try {
+    return uni.getStorageSync(justCompletedKey) || false
+  } catch {
+    return false
+  }
+}
 
 const isTransfer = computed(() => selectedCategory.value?.name === '转账')
 const isRepayment = computed(() => selectedCategory.value?.name === '还债')
@@ -142,7 +154,7 @@ const fetchLatestRecord = async () => {
 }
 
 /** 应用30小时内最新记录：恢复日期和交易类型，无记录返回false */
-const applyRecentRecord = (): boolean => {
+const applyRecentRecord = async (): Promise<boolean> => {
   const record = latestRecord.value
   if (!record || !record.createdAt) return false
   if (Date.now() - new Date(record.createdAt).getTime() > LAST_RECORD_WINDOW) return false
@@ -151,7 +163,28 @@ const applyRecentRecord = (): boolean => {
   if (record.type === 'expense' || record.type === 'income') {
     transactionType.value = record.type
   }
-  // 后续新增字段在此追加
+  // 如果有账户信息，尝试恢复账户（需要先加载账户列表）
+  if (record.accountId) {
+    try {
+      const res = await getAccountList()
+      if (res.success && res.data && res.data.length > 0) {
+        const accounts = res.data.filter(a => !a.isDeleted && a.isVisible)
+        if (record.type === 'expense') {
+          const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
+          const matched = expenseAccounts.find(a => a.id === String(record.accountId)) as Account | undefined
+          if (matched) {
+            selectedAccount.value = matched
+          }
+        } else if (record.type === 'income') {
+          const incomeAccounts = accounts.filter(a => a.type !== 'liability')
+          const matched = incomeAccounts.find(a => a.id === String(record.accountId)) as Account | undefined
+          if (matched) {
+            selectedAccount.value = matched
+          }
+        }
+      }
+    } catch {}
+  }
   return true
 }
 
@@ -159,18 +192,19 @@ onShow(async () => {
   if (draft.hasValidDraft()) {
     draftData = draft.load()
     showDraftBanner.value = true
-  } else if (justCompleted) {
-    justCompleted = false
+  } else if (getJustCompleted()) {
+    setJustCompleted(false)
     await fetchLatestRecord()
-    applyRecentRecord()
+    await applyRecentRecord()
     partialReset()
   } else {
     await fetchLatestRecord()
-    if (applyRecentRecord()) {
+    const hasRecent = await applyRecentRecord()
+    if (hasRecent) {
       selectedCategory.value = null
       displayAmount.value = ''
       remark.value = ''
-      selectedAccount.value = null
+      // selectedAccount 可能已被 applyRecentRecord 设置，不要重置
       fromAccount.value = null
       toAccount.value = null
       assetData.value = null
@@ -300,12 +334,23 @@ const selectCategory = async (category: { id: number; name: string; icon: string
           : liabilities[0] || null
       } else if (transactionType.value === 'expense') {
         const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
-        // 30小时窗口：优先用最新记录的账户
-        const recent = latestRecord.value
-        if (recent && recent.type === 'expense' && recent.accountId) {
-          const matched = expenseAccounts.find(a => a.id === String(recent.accountId)) as Account | undefined
-          if (matched) {
-            selectedAccount.value = matched
+        // 优先：如果已有 selectedAccount 且在可用列表中，保留它
+        let useExisting = false
+        if (selectedAccount.value) {
+          const existingInList = expenseAccounts.find(a => a.id === selectedAccount.value!.id)
+          if (existingInList) {
+            selectedAccount.value = existingInList
+            useExisting = true
+          }
+        }
+        if (!useExisting) {
+          // 30小时窗口：优先用最新记录的账户
+          const recent = latestRecord.value
+          if (recent && recent.type === 'expense' && recent.accountId) {
+            const matched = expenseAccounts.find(a => a.id === String(recent.accountId)) as Account | undefined
+            if (matched) {
+              selectedAccount.value = matched
+            }
           }
         }
         if (!selectedAccount.value) {
@@ -317,12 +362,23 @@ const selectCategory = async (category: { id: number; name: string; icon: string
         }
       } else {
         const incomeAccounts = accounts.filter(a => a.type !== 'liability')
-        // 30小时窗口：优先用最新记录的账户
-        const recent = latestRecord.value
-        if (recent && recent.type === 'income' && recent.accountId) {
-          const matched = incomeAccounts.find(a => a.id === String(recent.accountId)) as Account | undefined
-          if (matched) {
-            selectedAccount.value = matched
+        // 优先：如果已有 selectedAccount 且在可用列表中，保留它
+        let useExisting = false
+        if (selectedAccount.value) {
+          const existingInList = incomeAccounts.find(a => a.id === selectedAccount.value!.id)
+          if (existingInList) {
+            selectedAccount.value = existingInList
+            useExisting = true
+          }
+        }
+        if (!useExisting) {
+          // 30小时窗口：优先用最新记录的账户
+          const recent = latestRecord.value
+          if (recent && recent.type === 'income' && recent.accountId) {
+            const matched = incomeAccounts.find(a => a.id === String(recent.accountId)) as Account | undefined
+            if (matched) {
+              selectedAccount.value = matched
+            }
           }
         }
         if (!selectedAccount.value) {
@@ -432,7 +488,7 @@ const handleComplete = async () => {
       submitStatus.value = 'idle'
       isSubmitting.value = false
       showTransactionForm.value = false
-      justCompleted = true
+      setJustCompleted(true)
       uni.showToast({ title: '记账成功', icon: 'success' })
       setTimeout(() => {
         uni.reLaunch({ url: '/pages/detail/index' })
