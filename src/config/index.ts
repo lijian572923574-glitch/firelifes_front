@@ -15,7 +15,7 @@
 
 const config = {
   // API 基础地址，通过环境变量配置
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:7001',
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:7001',
   // 当前应用环境
   appEnv: import.meta.env.VITE_APP_ENV || 'development',
   // 本地存储 Token 的 Key
