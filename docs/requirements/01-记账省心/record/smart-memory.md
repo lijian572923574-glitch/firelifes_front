@@ -1,12 +1,13 @@
 # 记账智能记忆
 > 文件：`smart-memory.md` | 中文名称：记账智能记忆（账户+日期） | 所属模块：记账省心
-> 版本：v1.1 | 状态：✅已实现 | 最后更新：2026-05-28
+> 版本：v1.2 | 状态：✅已实现 | 最后更新：2026-05-28
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
 | v1.0 | 2026-05-25 | 初始版本 | AI |
 | v1.1 | 2026-05-28 | 新增30小时窗口策略：30小时内有记录则沿用上一条的账户+日期，超过30小时回退分类记忆或默认值 | AI |
+| v1.2 | 2026-05-28 | 30小时窗口数据来源改为后端 `/record/latest`：取用户记录表中最新一条（按 `createdAt` 倒序），不再依赖本地存储 `saveLastRecord` | AI |
 
 ---
 
@@ -14,7 +15,7 @@
 
 记账时自动记忆用户上次的选择，减少连续记账时的重复操作。核心策略分为三层：
 
-1. **30小时窗口策略（主策略）**：30小时内有记账记录 → 沿用上一条的日期和账户；超过30小时 → 进入下一层
+1. **30小时窗口策略（主策略）**：从后端获取用户最新一条记录。如果该记录的 `createdAt` 在30小时内 → 沿用其日期和账户；超过30小时 → 进入下一层
 2. **账户按分类记忆（兜底策略）**：30小时内无记录时，每个分类记住上次使用的账户，选分类时自动带出
 3. **日期持续记忆**：记账成功后不重置日期，下一笔默认沿用上一笔的日期
 
@@ -22,7 +23,7 @@
 
 用户一周记一次账、批量补录这段时间的支出时，希望每次记账的账户和日期保持不变，只需改分类和金额。核心场景：
 
-- **一周批量记账**：用户用微信集中消费了一周，周末打开App批量补录。进入记账页 → 自动恢复上一条的日期和微信账户 → 只需选分类+输金额即可完成每笔记账
+- **一周批量记账**：用户用微信集中消费了一周，周末打开App批量补录。进入记账页 → 调后端获取最新记录 → 自动恢复日期和微信账户 → 只需选分类+输金额即可完成每笔记账
 - **跨天补录**：昨天用微信记了餐饮，今天再次打开记账 → 超过30小时 → 回退分类记忆：餐饮自动带微信
 
 ### 行业参考
@@ -38,7 +39,7 @@
 ## 用户故事
 
 ### 30小时窗口策略
-作为一周记一次账的用户，我打开记账页时，希望日期和账户自动沿用上次记账的状态（因为大概率还是用同一个账户、记同一段时间的账），只需要改分类和金额就能快速完成批量记账。
+作为一周记一次账的用户，我打开记账页时，希望日期和账户自动沿用后端最新一条记录的状态（因为大概率还是用同一个账户、记同一段时间的账），只需要改分类和金额就能快速完成批量记账。
 
 ### 账户按分类记忆
 作为用户，如果我最近30小时内没有记账，当我选择了「餐饮」分类并使用「微信」账户记了一笔支出后，下次再选「餐饮」时，希望账户自动选为「微信」，而不是每次都回到默认账户。
@@ -55,51 +56,58 @@
 #### 核心逻辑
 
 ```
-打开记账页
+打开记账页（onShow）
   ├─ 草稿有效 → 显示草稿banner（最高优先级，不变）
-  ├─ 刚完成记账（justCompleted）→ partialReset()：清金额/备注，保留日期/账户/分类
+  ├─ 刚完成记账（justCompleted）→ await fetchLatestRecord() → partialReset()
   └─ 用户主动进入
-       ├─ 30小时内有最近记录 → 恢复日期 + 交易类型（支出/收入），金额/备注/分类清空
-       └─ 超过30小时或首次使用 → 进入分类记忆（见第二节）
+       ├─ await fetchLatestRecord() → applyRecentRecord()
+       │    ├─ 30小时内有记录 → 恢复日期 + 交易类型，清空分类/金额/备注
+       │    └─ 超过30小时或首次使用 → 进入分类记忆（见第二节）
+       └─ resetForm()
 
-选择分类时
-  ├─ 30小时内记录匹配当前交易类型 → 用最近记录的账户（不考虑分类）
+选择分类时（selectCategory）
+  ├─ latestRecord.value 匹配当前交易类型 → 用最新记录的账户
   └─ 无匹配 → 分类记忆 → 默认账户
 ```
 
-#### 30小时窗口的设定依据
+#### 数据来源：后端 `/record/latest`
 
-- 30小时 = 今天 + 昨天（含跨夜），覆盖绝大多数连续记账时间窗口
-- 用户一周记一次账：从打开App到记完，通常不超过几小时 → 30小时窗口远大于一次记账会话的长度
-- 超过30小时意味着大概率进入新的记账场景，自动重置为新的默认值是合理的
+不再使用本地 `uni.setStorageSync` 保存最后记录，改为每次 `onShow` 时调 API 获取用户记录表中 `createdAt` 最新的一条。优势：
+
+- **准确性**：取数据库真实数据，不受本地存储清空、多设备不同步等影响
+- **迁移友好**：用户换设备登录时，自动读取云端最新记录
+- **日期来源可靠**：`date` 字段来自记录表，而非用户当时在 UI 上临时选择的日期
 
 #### 数据模型
 
+复用 `src/api/record.ts` 中的 `RecordData` 接口：
+
 ```typescript
-interface LastRecord {
-  transactionType: 'expense' | 'income' | 'transfer' | 'repayment'
-  accountId: string      // 支出/收入记录当前账户，转账/还债记录转出账户
-  date: string           // 记账日期
-  timestamp: number      // 记账成功的 Unix 时间戳
+interface RecordData {
+  id: number
+  typeId: number
+  date: string        // 记账日期，如 "2026-05-26"
+  amount: number
+  type: RecordType    // 'expense' | 'income' | 'transfer' | 'repayment' | ...
+  accountId?: number  // 支出/收入账户
+  toAccountId?: number
+  remark?: string
+  createdAt?: string  // 服务端记录创建时间，用于30小时判断
 }
 ```
 
-#### 数据存储
+#### 30小时判断
 
-Key: `record_memory_last`，value 为 `LastRecord` 对象的 JSON 序列化。
+使用 `record.createdAt`（服务端时间）与 `Date.now()`（客户端时间）比较。30小时 = 30 × 60 × 60 × 1000ms。
+
+#### API 调用
+
+新增 `src/api/record.ts` → `recordApi.getLatestRecord()`：
 
 ```
-uni.setStorageSync('record_memory_last', {
-  transactionType: 'expense',
-  accountId: '3',
-  date: '2026-05-15',
-  timestamp: 1715678900000
-})
+GET /record/latest → 返回当前用户最新一条记录（按 createdAt 倒序第一条）
+若用户无记录 → 返回 null
 ```
-
-写入时机：记账成功后
-读取时机：打开记账页时（onShow）、选择分类时
-过期策略：超过30小时自动清除并返回 null
 
 ---
 
@@ -127,8 +135,8 @@ uni.setStorageSync('record_memory_last', {
 
 #### 记忆时机
 
-**写入**：记账成功后，将当前选择的账户写入对应Key
-**读取**：选择分类时，30小时窗口未命中且无分类记忆时回退到此
+**写入**：记账成功后，将当前选择的账户写入对应Key（本地存储）
+**读取**：选择分类时，30小时窗口未命中时回退到此
 
 #### 兼容性
 
@@ -144,14 +152,14 @@ uni.setStorageSync('record_memory_last', {
 | 场景 | 日期默认值 |
 |------|-----------|
 | 首次进入记账页（无30小时内记录） | 今天 |
-| 30小时内有最近记录 → 打开记账页 | 沿用最近记录的日期 |
+| 30小时内有最新记录 → 打开记账页 | 沿用最新记录的 `date` |
 | 记账成功后（连续记账） | 沿用上一笔的日期 |
 | 恢复草稿 | 草稿中保存的日期 |
 
 #### 关键区分
 
 - **连续记账**（justCompleted）：记完一笔不离开页面 → `partialReset()`，日期不变
-- **30小时内重新进入**：关闭后30小时内再打开 → `getRecentRecord()` 恢复上次日期
+- **30小时内重新进入**：关闭后30小时内再打开 → `fetchLatestRecord()` → 恢复最新记录的日期
 - **超过30小时重新进入**：关闭超过30小时再打开 → `resetForm()`，日期=今天
 
 ---
@@ -161,18 +169,17 @@ uni.setStorageSync('record_memory_last', {
 ### 批量记账流程（核心场景）
 
 ```
-周日记账用户上次记账在5月23日，今天5月28日（超过30小时）：
-  打开记账页 → 无30小时内记录 → resetForm() → 日期=今天（5月28日）
-  → 改日期为5月23日 → 选分类「餐饮」→ 无30小时内记录 → 查分类记忆 → 带出「微信」
-  → 输入金额35 → 提交 → 记账成功 → 保存 LastRecord
+上周日记完最后一笔在5月23日，今天5月28日打开（超过30小时）：
+  打开记账页 → fetchLatestRecord() → createdAt超过30小时 → resetForm() → 日期=今天
+  → 改日期为5月23日 → 选分类「餐饮」→ latestRecord已过期 → 查分类记忆 → 带出「微信」
+  → 输入金额35 → 提交 → 记账成功
 
-  记账成功后 → partialReset() → 日期保持5月23日
-  → 选分类「交通」→ 30小时内有记录 → 自动带出「微信」
-  → 输入金额5 → 提交 → 记账成功
-
-  关闭App，30小时后（5月29日）再打开：
-  → 超过30小时 → resetForm() → 日期=今天（5月29日）
-  → 选分类「餐饮」→ 分类记忆带出「微信」
+  记账成功后 → justCompleted=true → reLaunch
+  → onShow → justCompleted → await fetchLatestRecord()
+  → 后端返回刚存的那条（createdAt在30小时内）
+  → applyRecentRecord() → selectedDate=5月23日 → partialReset()
+  → 选分类「交通」→ latestRecord.value 匹配 expense 类型 → 自动带出「微信」
+  → 输入金额5 → 提交 → 记账成功 → ... 循环
 ```
 
 ### 补录历史账目流程
@@ -195,27 +202,26 @@ uni.setStorageSync('record_memory_last', {
 
 ```
 选择分类 → 获取账户列表后：
-  1. 转账/还债：查30小时 → 查分类记忆 → 查默认账户
-  2. 支出：查30小时（需匹配expense类型）→ 查分类记忆(expense_{categoryId}) → 查默认支出账户
-  3. 收入：查30小时（需匹配income类型）→ 查分类记忆(income_{categoryId}) → 查默认收入账户
+  1. 转账/还债：查分类记忆 → 查默认账户
+  2. 支出：查 latestRecord（需匹配 expense 类型）→ 查分类记忆(expense_{categoryId}) → 查默认支出账户
+  3. 收入：查 latestRecord（需匹配 income 类型）→ 查分类记忆(income_{categoryId}) → 查默认收入账户
 ```
 
 ---
 
 ## 需要修改的文件
 
-### 前端新增
-| 文件 | 路径 | 说明 |
-|------|------|------|
-| `record-memory.ts` | `src/utils/record-memory.ts` | 记账记忆工具类：分类记忆读写 + 30小时窗口 saveLastRecord / getRecentRecord |
-
 ### 前端修改
 | 文件 | 路径 | 说明 |
 |------|------|------|
-| `index.vue` | `src/pages/record/index.vue` | 1. onShow: 30小时内恢复日期+交易类型<br>2. selectCategory: 30小时记录优先于分类记忆<br>3. handleComplete: 记账成功后保存 saveLastRecord<br>4. partialReset: 保留日期/账户/分类，仅清空金额/备注 |
+| `record.ts` | `src/api/record.ts` | 新增 `getLatestRecord()`：`GET /record/latest` 获取用户最新一条记录 |
+| `record-memory.ts` | `src/utils/record-memory.ts` | 分类记忆读写。30小时窗口代码已移除（数据来源改为后端） |
+| `index.vue` | `src/pages/record/index.vue` | 1. onShow: async 调 `fetchLatestRecord` + `applyRecentRecord`<br>2. selectCategory: 用 `latestRecord.value` 匹配账户<br>3. handleComplete: 只写分类记忆，不再写 `saveLastRecord`<br>4. partialReset: 保留日期/账户/分类，仅清空金额/备注 |
 
-### 后端修改
-无
+### 后端新增
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/record/latest` | GET | 返回当前用户最近一条记账记录（按 `createdAt` 倒序第一条），无记录返回 null |
 
 ---
 
@@ -224,70 +230,81 @@ uni.setStorageSync('record_memory_last', {
 ```typescript
 // ========== 分类记忆（兜底） ==========
 
-// 写入：记账成功后调用
-function saveAccountMemory(type, categoryId, accountId): void
-
-// 读取：选分类时调用
-function getAccountMemory(type, categoryId): string | null
-
-// 清除某条记忆
-function clearAccountMemory(type, categoryId): void
-
-// 查找可用账户
-function findAccountByMemory(type, categoryId, availableAccounts): { id: string } | null
-
-// ========== 30小时窗口（主策略） ==========
-
-// 记账成功后保存
-function saveLastRecord(record: { transactionType, accountId, date }): void
-
-// 读取30小时内的最近记录，超时返回null
-function getRecentRecord(maxAgeMs?: number): LastRecord | null
-
-// 常量
-const LAST_RECORD_WINDOW = 30 * 60 * 60 * 1000  // 30小时
+function saveAccountMemory(type, categoryId, accountId): void  // 写入
+function getAccountMemory(type, categoryId): string | null     // 读取
+function clearAccountMemory(type, categoryId): void            // 清除
+function findAccountByMemory(type, categoryId, accounts): { id: string } | null  // 查找
 ```
 
 ---
 
 ## `record/index.vue` 改动点
 
-### 1. `onShow()` — 区分进入来源 + 30小时策略
+### 1. `fetchLatestRecord()` — 从后端获取最新记录
+
+```typescript
+const latestRecord = ref<RecordData | null>(null)
+const LAST_RECORD_WINDOW = 30 * 60 * 60 * 1000
+
+const fetchLatestRecord = async () => {
+  const res = await recordApi.getLatestRecord()
+  latestRecord.value = (res.success && res.data) ? res.data : null
+}
+```
+
+### 2. `applyRecentRecord()` — 应用30小时窗口
+
+```typescript
+const applyRecentRecord = (): boolean => {
+  const record = latestRecord.value
+  if (!record || !record.createdAt) return false
+  if (Date.now() - new Date(record.createdAt).getTime() > LAST_RECORD_WINDOW) return false
+  selectedDate.value = record.date
+  if (record.type === 'expense' || record.type === 'income') {
+    transactionType.value = record.type
+  }
+  // 后续新增字段在此追加
+  return true
+}
+```
+
+### 3. `onShow()` — async 获取最新记录
 
 ```
-onShow 触发时：
-  ├─ 草稿有效 → 显示草稿banner
-  ├─ justCompleted → partialReset()（记账成功回跳）
-  └─ 用户主动进入
-       ├─ getRecentRecord() 30小时内有记录 → 恢复日期+交易类型，清空分类/金额
-       └─ 无记录 → resetForm()（日期=今天，分类清空）
+onShow(async () => {
+  ├─ 草稿有效 → 显示草稿banner（不变）
+  ├─ justCompleted → await fetchLatestRecord() → applyRecentRecord() → partialReset()
+  └─ 用户主动进入 → await fetchLatestRecord()
+       ├─ applyRecentRecord() true → 清空分类/金额/备注/账户
+       └─ applyRecentRecord() false → resetForm()
+})
 ```
 
-### 2. `selectCategory()` — 30小时优先于分类记忆
+### 4. `selectCategory()` — 用 latestRecord 匹配账户
 
 ```
 支出/收入选择分类时：
-  ├─ getRecentRecord() 匹配当前类型 → 用最近记录的账户
+  ├─ latestRecord.value 匹配当前类型 → 用最新记录的账户
   └─ 无 → findAccountByMemory(分类记忆) → 默认账户
 ```
 
-### 3. `handleComplete()` — 记账成功后保存
+注意：`RecordData.accountId` 是 `number`，`Account.id` 是 `string`，比较时需 `String(recent.accountId)`。
+
+### 5. `handleComplete()` — 只写分类记忆
 
 ```
-记账成功 → saveAccountMemory(...) → saveLastRecord(...) → draft.remove() → partialReset()
+记账成功 → saveAccountMemory(...) → draft.remove() → partialReset()
+（不再调用 saveLastRecord）
 ```
 
-### 4. `partialReset()` — 部分重置
+### 6. `partialReset()` — 不变
 
 ```typescript
 const partialReset = () => {
   displayAmount.value = ''
   remark.value = ''
   assetData.value = null
-  // 以下字段保持不变：
-  // selectedDate — 沿用上一笔日期
-  // selectedCategory — 保持当前分类
-  // selectedAccount / fromAccount / toAccount — 保持当前账户
+  // 保留：selectedDate / selectedCategory / selectedAccount / fromAccount / toAccount
 }
 ```
 
@@ -295,16 +312,16 @@ const partialReset = () => {
 
 ## 边界情况
 
-1. **记忆的账户已删除/隐藏** — 30小时记录中的账户不可用 → 回退分类记忆；分类记忆的账户不可用 → 清除该条记忆，回退默认逻辑
-2. **记忆的账户不在当前过滤范围内**（如收入时记忆了负债账户）— 清除记忆，回退默认逻辑
-3. **用户切换支出/收入tab** — 清空分类和账户选择（与现有行为一致），下次选分类时按新tab类型匹配30小时记录或分类记忆
-4. **转账/还债的双账户** — 30小时记录保存 fromAccount，各自独立记忆转出/转入、还款/债权
-5. **本地存储被清除** — 无记忆数据，行为与未升级前完全一致
-6. **跨日期补录** — 用户改了日期记一笔后，30小时记录更新为新日期，后续持续沿用
-7. **草稿恢复** — 草稿优先级最高，草稿banner展示时用户显式选择，恢复后再进入记忆逻辑
-8. **新用户** — 无记忆数据，行为与现在完全一致
-9. **30小时临界值** — 30h01m 无记忆 → resetForm()；29h59m 有记忆 → 恢复
-10. **设备时间被篡改** — 使用设备本地时间（Date.now()），与草稿过期逻辑一致
+1. **后端 `/record/latest` 返回 null**（新用户无记录）→ `latestRecord.value` 为 null → `applyRecentRecord()` 返回 false → `resetForm()`
+2. **后端接口超时/异常** → `fetchLatestRecord()` catch → `latestRecord.value` = null → 回退默认逻辑
+3. **最新记录的账户已被删除/隐藏** → `selectCategory` 中匹配失败 → 回退分类记忆 → 回退默认账户
+4. **用户切换支出/收入tab** — 清空分类和账户选择，下次选分类时按新tab类型匹配 latestRecord
+5. **跨日期补录** — 用户改日期记一笔后，后端最新记录的 `date` 更新，下次 `onShow` 时会恢复新日期
+6. **草稿恢复** — 草稿优先级最高，不触发 fetchLatestRecord
+7. **新用户** — 无记录，行为与未升级前完全一致
+8. **30小时临界值** — 30h01m 无记忆 → `resetForm()`；29h59m 有记忆 → `applyRecentRecord()`
+9. **客户端与服务端时间不同步** — 30小时窗口足够宽，几秒偏差不影响判断结果
+10. **多设备记账** — 设备A记一笔后，设备B打开记账页 → 调后端获取最新记录 → 同样能恢复上一条的日期和账户
 
 ---
 

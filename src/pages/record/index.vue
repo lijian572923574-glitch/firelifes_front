@@ -85,7 +85,8 @@ import type { DepreciatingAssetData } from '../../types/asset'
 import type { RecordType, CreateRecordData } from '../../api/record'
 import CustomTabbar from '../../components/CustomTabbar.vue'
 import { draft, type RecordDraft } from '../../utils/draft'
-import { saveAccountMemory, findAccountByMemory, saveLastRecord, getRecentRecord } from '../../utils/record-memory'
+import { saveAccountMemory, findAccountByMemory } from '../../utils/record-memory'
+import type { RecordData } from '../../api/record'
 
 const transactionType = ref<'income' | 'expense'>('expense')
 const selectedCategory = ref<{ id: number; name: string; icon: string } | null>(null)
@@ -123,27 +124,48 @@ onUnmounted(() => {
   saveDraft()
 })
 
-/** 应用30小时内最近记录：恢复日期和交易类型，无记录返回false */
+/** 30小时窗口：从后端获取的最新记录 */
+const latestRecord = ref<RecordData | null>(null)
+const LAST_RECORD_WINDOW = 30 * 60 * 60 * 1000
+
+const fetchLatestRecord = async () => {
+  try {
+    const res = await recordApi.getLatestRecord()
+    if (res.success && res.data) {
+      latestRecord.value = res.data
+    } else {
+      latestRecord.value = null
+    }
+  } catch {
+    latestRecord.value = null
+  }
+}
+
+/** 应用30小时内最新记录：恢复日期和交易类型，无记录返回false */
 const applyRecentRecord = (): boolean => {
-  const recent = getRecentRecord()
-  if (!recent) return false
-  selectedDate.value = recent.date
-  if (recent.transactionType === 'expense' || recent.transactionType === 'income') {
-    transactionType.value = recent.transactionType
+  const record = latestRecord.value
+  if (!record || !record.createdAt) return false
+  if (Date.now() - new Date(record.createdAt).getTime() > LAST_RECORD_WINDOW) return false
+
+  selectedDate.value = record.date
+  if (record.type === 'expense' || record.type === 'income') {
+    transactionType.value = record.type
   }
   // 后续新增字段在此追加
   return true
 }
 
-onShow(() => {
+onShow(async () => {
   if (draft.hasValidDraft()) {
     draftData = draft.load()
     showDraftBanner.value = true
   } else if (justCompleted) {
     justCompleted = false
+    await fetchLatestRecord()
     applyRecentRecord()
     partialReset()
   } else {
+    await fetchLatestRecord()
     if (applyRecentRecord()) {
       selectedCategory.value = null
       displayAmount.value = ''
@@ -278,10 +300,10 @@ const selectCategory = async (category: { id: number; name: string; icon: string
           : liabilities[0] || null
       } else if (transactionType.value === 'expense') {
         const expenseAccounts = accounts.filter(a => a.type === 'cash' || a.type === 'liability')
-        // 30小时窗口：优先用最近记录的账户
-        const recent = getRecentRecord()
-        if (recent && recent.transactionType === 'expense' && recent.accountId) {
-          const matched = expenseAccounts.find(a => a.id === recent.accountId) as Account | undefined
+        // 30小时窗口：优先用最新记录的账户
+        const recent = latestRecord.value
+        if (recent && recent.type === 'expense' && recent.accountId) {
+          const matched = expenseAccounts.find(a => a.id === String(recent.accountId)) as Account | undefined
           if (matched) {
             selectedAccount.value = matched
           }
@@ -295,10 +317,10 @@ const selectCategory = async (category: { id: number; name: string; icon: string
         }
       } else {
         const incomeAccounts = accounts.filter(a => a.type !== 'liability')
-        // 30小时窗口：优先用最近记录的账户
-        const recent = getRecentRecord()
-        if (recent && recent.transactionType === 'income' && recent.accountId) {
-          const matched = incomeAccounts.find(a => a.id === recent.accountId) as Account | undefined
+        // 30小时窗口：优先用最新记录的账户
+        const recent = latestRecord.value
+        if (recent && recent.type === 'income' && recent.accountId) {
+          const matched = incomeAccounts.find(a => a.id === String(recent.accountId)) as Account | undefined
           if (matched) {
             selectedAccount.value = matched
           }
@@ -404,18 +426,6 @@ const handleComplete = async () => {
         saveAccountMemory('expense', selectedCategory.value!.id, selectedAccount.value.id)
       } else if (transactionType.value === 'income' && selectedAccount.value) {
         saveAccountMemory('income', selectedCategory.value!.id, selectedAccount.value.id)
-      }
-
-      // 保存最近记录（30小时窗口策略）
-      const lastAccountId = isTransfer.value || isRepayment.value
-        ? fromAccount.value?.id
-        : selectedAccount.value?.id
-      if (lastAccountId) {
-        saveLastRecord({
-          transactionType: recordType.value as 'expense' | 'income' | 'transfer' | 'repayment',
-          accountId: lastAccountId,
-          date: selectedDate.value,
-        })
       }
 
       draft.remove()

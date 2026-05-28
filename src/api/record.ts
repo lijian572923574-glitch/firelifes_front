@@ -264,4 +264,14 @@ export const recordApi = {
       method: 'DELETE',
     })
   },
+
+  /**
+   * 获取当前用户最近一条记账记录（按 createdAt 倒序）
+   */
+  getLatestRecord: () => {
+    return request<RecordData | null>({
+      url: '/record/latest',
+      method: 'GET',
+    })
+  },
 }
