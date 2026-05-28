@@ -9,7 +9,7 @@ export interface Ad {
 
 export const getSplashAd = () => {
   return request({
-    url: '/ads/splash',
+    url: '/api/ads/splash',
     method: 'GET',
     needAuth: false
   })

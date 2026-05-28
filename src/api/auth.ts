@@ -46,7 +46,7 @@ export interface AuthResponse {
  */
 export const sendSmsCode = (phone: string, type: 'register' | 'login' | 'reset-password' = 'login') => {
   return request({
-    url: '/auth/send-sms',
+    url: '/api/auth/send-sms',
     method: 'POST',
     data: { phone, type },
     needAuth: false
@@ -64,7 +64,7 @@ export const register = (data: {
   nickname?: string
 }) => {
   return request({
-    url: '/auth/register',
+    url: '/api/auth/register',
     method: 'POST',
     data,
     needAuth: false
@@ -83,7 +83,7 @@ export const login = (data: {
   wechatInfo?: any
 }) => {
   return request({
-    url: '/auth/login',
+    url: '/api/auth/login',
     method: 'POST',
     data,
     needAuth: false
@@ -99,7 +99,7 @@ export const wechatRegister = (data: {
   phone?: string
 }) => {
   return request({
-    url: '/auth/wechat-register',
+    url: '/api/auth/wechat-register',
     method: 'POST',
     data,
     needAuth: false
@@ -111,7 +111,7 @@ export const wechatRegister = (data: {
  */
 export const getUserInfo = () => {
   return request({
-    url: '/auth/me',
+    url: '/api/auth/me',
     method: 'GET'
   })
 }
@@ -126,7 +126,7 @@ export const resetPassword = (data: {
   password: string
 }) => {
   return request({
-    url: '/auth/reset-password',
+    url: '/api/auth/reset-password',
     method: 'POST',
     data,
     needAuth: false
@@ -138,7 +138,7 @@ export const resetPassword = (data: {
  */
 export const logout = () => {
   return request({
-    url: '/auth/logout',
+    url: '/api/auth/logout',
     method: 'POST'
   })
 }

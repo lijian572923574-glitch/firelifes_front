@@ -8,14 +8,14 @@ export interface ThemeConfig {
 
 export const getUserConfig = () => {
   return request({
-    url: '/user/config',
+    url: '/api/user/config',
     method: 'GET'
   })
 }
 
 export const updateUserConfig = (configs: Record<string, any>) => {
   return request({
-    url: '/user/config',
+    url: '/api/user/config',
     method: 'PUT',
     data: { configs }
   })

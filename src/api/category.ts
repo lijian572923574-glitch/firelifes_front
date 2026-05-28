@@ -151,7 +151,7 @@ export const categoryApi = {
    */
   getUserIcons: () => {
     return request<UserIcon[]>({
-      url: '/user/icons',
+      url: '/api/user/icons',
       method: 'GET',
     })
   },

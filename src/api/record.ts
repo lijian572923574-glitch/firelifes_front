@@ -83,7 +83,7 @@ export const recordApi = {
    */
   createRecord: (data: CreateRecordData) => {
     return request({
-      url: '/record',
+      url: '/api/record',
       method: 'POST',
       data,
     })
@@ -107,7 +107,7 @@ export const recordApi = {
     }
   ) => {
     return request({
-      url: `/record/${id}`,
+      url: `/api/record/${id}`,
       method: 'PUT',
       data,
     })
@@ -119,7 +119,7 @@ export const recordApi = {
    */
   getRecord: (id: number) => {
     return request<RecordData>({
-      url: `/record/${id}`,
+      url: `/api/record/${id}`,
       method: 'GET',
     })
   },
@@ -129,7 +129,7 @@ export const recordApi = {
    */
   getAllRecords: () => {
     return request<RecordData[]>({
-      url: '/record',
+      url: '/api/record',
       method: 'GET',
     })
   },
@@ -142,7 +142,7 @@ export const recordApi = {
    */
   getRecordsByMonth: (yearMonth: string, page: number = 1, pageSize: number = 50) => {
     return request<PageResult<RecordData>>({
-      url: '/record/page',
+      url: '/api/record/page',
       method: 'GET',
       data: { yearMonth, page, pageSize },
     })
@@ -154,7 +154,7 @@ export const recordApi = {
    */
   getMonthSummary: (yearMonth: string) => {
     return request<MonthSummary>({
-      url: '/record/month-summary',
+      url: '/api/record/month-summary',
       method: 'GET',
       data: { yearMonth },
     })
@@ -162,7 +162,7 @@ export const recordApi = {
 
   getRecordsByAccount: (accountId: number, page: number = 1, pageSize: number = 50) => {
     return request({
-      url: `/record/by-account/${accountId}`,
+      url: `/api/record/by-account/${accountId}`,
       method: 'GET',
       data: { page, pageSize },
     })
@@ -177,7 +177,7 @@ export const recordApi = {
       cashBalance: number
       depreciatingAssetValue: number
     }>({
-      url: '/record/net-worth',
+      url: '/api/record/net-worth',
       method: 'GET',
     })
   },
@@ -196,7 +196,7 @@ export const recordApi = {
       usedMonths: number
       status: string
     }>>({
-      url: '/record/depreciating-assets',
+      url: '/api/record/depreciating-assets',
       method: 'GET',
     })
   },
@@ -220,7 +220,7 @@ export const recordApi = {
       usedMonths: number
       status: string
     } | null>({
-      url: `/record/depreciating-asset/${recordId}`,
+      url: `/api/record/depreciating-asset/${recordId}`,
       method: 'GET',
     })
   },
@@ -234,7 +234,7 @@ export const recordApi = {
       totalExpense: number
       totalBalance: number
     }>({
-      url: '/record/yearly-summary',
+      url: '/api/record/yearly-summary',
       method: 'GET',
     })
   },
@@ -249,7 +249,7 @@ export const recordApi = {
       expense: number
       balance: number
     }>>({
-      url: '/record/yearly-bills',
+      url: '/api/record/yearly-bills',
       method: 'GET',
     })
   },
@@ -260,7 +260,7 @@ export const recordApi = {
    */
   deleteRecord: (id: number) => {
     return request({
-      url: `/record/${id}`,
+      url: `/api/record/${id}`,
       method: 'DELETE',
     })
   },
@@ -270,7 +270,7 @@ export const recordApi = {
    */
   getLatestRecord: () => {
     return request<RecordData | null>({
-      url: '/record/latest',
+      url: '/api/record/latest',
       method: 'GET',
     })
   },

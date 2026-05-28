@@ -8,4 +8,12 @@ export default defineConfig({
   plugins: [Components({
     resolvers: [WotResolver()]
   }), uni()],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:7001',
+        changeOrigin: true,
+      },
+    },
+  },
 });
