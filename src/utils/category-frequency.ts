@@ -2,6 +2,7 @@ import { recordApi, type RecordData } from '../api/record'
 
 const DAYS = 30
 const TOP_N = 4
+const MONTH_PAGE_SIZE = 100
 
 export interface CategoryFrequency {
   typeId: number
@@ -9,10 +10,29 @@ export interface CategoryFrequency {
   lastUsedAt: string
 }
 
+function formatMonth(year: number, month: number): string {
+  return `${year}-${String(month).padStart(2, '0')}`
+}
+
+async function fetchMonthRecords(yearMonth: string): Promise<RecordData[]> {
+  const res = await recordApi.getRecordsByMonth(yearMonth, 1, MONTH_PAGE_SIZE)
+  if (!res.success || !res.data) return []
+  return res.data.list || res.data || []
+}
+
 export async function getFrequentCategoryIds(type: 'income' | 'expense'): Promise<CategoryFrequency[]> {
   try {
-    const res = await recordApi.getAllRecords()
-    if (!res.success || !res.data) return []
+    const now = new Date()
+    const currentMonth = formatMonth(now.getFullYear(), now.getMonth() + 1)
+    const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const prevMonth = formatMonth(prevDate.getFullYear(), prevDate.getMonth() + 1)
+
+    const [currentRecords, prevRecords] = await Promise.all([
+      fetchMonthRecords(currentMonth),
+      fetchMonthRecords(prevMonth),
+    ])
+
+    const allRecords = [...currentRecords, ...prevRecords]
 
     const cutoff = new Date()
     cutoff.setDate(cutoff.getDate() - DAYS)
@@ -20,7 +40,7 @@ export async function getFrequentCategoryIds(type: 'income' | 'expense'): Promis
 
     const freqMap = new Map<number, { count: number; lastUsedAt: string }>()
 
-    for (const record of res.data) {
+    for (const record of allRecords) {
       if (record.date < cutoffStr) continue
       if (record.type !== type) continue
 

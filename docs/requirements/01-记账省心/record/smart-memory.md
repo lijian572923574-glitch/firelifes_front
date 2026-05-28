@@ -1,6 +1,6 @@
 # 记账智能记忆
 > 文件：`smart-memory.md` | 中文名称：记账智能记忆（账户+日期） | 所属模块：记账省心
-> 版本：v1.2 | 状态：✅已实现 | 最后更新：2026-05-28
+> 版本：v1.3 | 状态：✅已实现 | 最后更新：2026-05-28
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -8,6 +8,7 @@
 | v1.0 | 2026-05-25 | 初始版本 | AI |
 | v1.1 | 2026-05-28 | 新增30小时窗口策略：30小时内有记录则沿用上一条的账户+日期，超过30小时回退分类记忆或默认值 | AI |
 | v1.2 | 2026-05-28 | 30小时窗口数据来源改为后端 `/record/latest`：取用户记录表中最新一条（按 `createdAt` 倒序），不再依赖本地存储 `saveLastRecord` | AI |
+| v1.3 | 2026-05-28 | 去除所有 localStorage 缓存方案，改用页面加载守卫（PageLoadingGuard）：页面初始化期间阻止用户交互，等 API 数据就绪后才允许操作，彻底根除异步竞态问题 | AI |
 
 ---
 
@@ -57,26 +58,83 @@
 
 ```
 打开记账页（onShow）
-  ├─ 草稿有效 → 显示草稿banner（最高优先级，不变）
-  ├─ 刚完成记账（justCompleted）→ await fetchLatestRecord() → partialReset()
+  ├─ pageLoading = true（页面加载守卫开启，阻止所有交互）
+  │
+  ├─ 草稿有效 → draft.load() → 显示草稿banner → pageLoading = false
+  │
+  ├─ 刚完成记账（justCompleted）
+  │    └─ await fetchLatestRecord() → await applyRecentRecord() → partialReset()
+  │    └─ pageLoading = false
+  │
   └─ 用户主动进入
-       ├─ await fetchLatestRecord() → applyRecentRecord()
-       │    ├─ 30小时内有记录 → 恢复日期 + 交易类型，清空分类/金额/备注
-       │    └─ 超过30小时或首次使用 → 进入分类记忆（见第二节）
-       └─ resetForm()
+       └─ await fetchLatestRecord() → await applyRecentRecord()
+            ├─ 30小时内有记录 → 恢复日期+交易类型，清空分类/金额/备注
+            └─ 超过30小时或首次使用 → resetForm()
+       └─ pageLoading = false
 
 选择分类时（selectCategory）
+  ├─ pageLoading = true → 提示"页面初始化中"并return（防止异步竞态）
   ├─ latestRecord.value 匹配当前交易类型 → 用最新记录的账户
   └─ 无匹配 → 分类记忆 → 默认账户
 ```
 
+#### 页面加载守卫机制
+
+**问题**：页面通过 `uni.reLaunch` 重新创建时，`onShow` 中 `fetchLatestRecord()` 是异步API调用，而 `CategorySelector` 组件立即渲染并可交互。用户快速点击分类时，`latestRecord.value` 尚未就绪，导致30小时窗口判断失败。
+
+**解决方案**：引入 `pageLoading` 状态，在 `onShow` 异步初始化期间阻止用户交互。
+
+```typescript
+// 伪代码逻辑
+onShow(async () => {
+  pageLoading.value = true
+  try {
+    // 草稿不需要API数据，直接放行
+    if (draft.hasValidDraft()) { ...; return }
+    
+    await fetchLatestRecord()  // 确保API数据就绪
+    
+    if (getJustCompleted()) {
+      await applyRecentRecord()
+      partialReset()
+    } else {
+      // 正常进入逻辑
+    }
+  } finally {
+    pageLoading.value = false  // 无论何种路径，最终解锁交互
+  }
+})
+```
+
+**`selectCategory` 中的守卫**：
+
+```typescript
+const selectCategory = async (category) => {
+  if (pageLoading.value) {
+    uni.showToast({ title: '页面初始化中，请稍候...', icon: 'none' })
+    return
+  }
+  // ... 正常逻辑
+}
+```
+
 #### 数据来源：后端 `/record/latest`
 
-不再使用本地 `uni.setStorageSync` 保存最后记录，改为每次 `onShow` 时调 API 获取用户记录表中 `createdAt` 最新的一条。优势：
+仅使用后端 API 获取用户记录表中 `createdAt` 最新的一条，**不再使用任何 localStorage 缓存**。
 
+优势：
 - **准确性**：取数据库真实数据，不受本地存储清空、多设备不同步等影响
 - **迁移友好**：用户换设备登录时，自动读取云端最新记录
-- **日期来源可靠**：`date` 字段来自记录表，而非用户当时在 UI 上临时选择的日期
+- **无竞态**：通过页面加载守卫确保API数据就绪后才允许交互，无需额外缓存方案
+- **低维护**：无本地缓存代码，减少维护成本和潜在的缓存一致性问题
+
+移除的缓存代码：
+- `LAST_COMPLETED_KEY` 常量
+- `CachedRecordData` 接口
+- `saveLastCompletedRecord` / `getLastCompletedRecord` 函数
+- `isTimestampWithinWindow` 函数
+- `saveLastCompletedRecord()` 调用（`handleComplete`中）
+- `getBestRecentRecord` 函数中的缓存兜底逻辑（简化为只检查 `latestRecord`）
 
 #### 数据模型
 

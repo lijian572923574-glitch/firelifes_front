@@ -1,4 +1,5 @@
 <template>
+  <!-- V20260528-1 -->
   <view class="transaction-form">
     <view class="amount-display">
       <text class="currency">¥</text>
@@ -145,8 +146,6 @@ const emit = defineEmits<{
 
 const displayAmount = ref('')
 const remark = ref('')
-const currentDate = ref(new Date())
-const hasSelectedDate = ref(false)
 const firstOperand = ref<string>('')
 const operator = ref<string>('')
 const waitingForSecondOperand = ref(false)
@@ -180,36 +179,37 @@ const handleToAccountSelect = (account: Account) => {
   emit('update:toAccount', account)
 }
 
+const parseDate = (dateStr?: string): Date => {
+  if (!dateStr) return new Date()
+  return new Date(dateStr)
+}
+
 const formattedDate = computed(() => {
-  if (!hasSelectedDate.value) {
+  const d = parseDate(props.date)
+  const today = new Date()
+  const dateStr = d.toDateString()
+  const todayStr = today.toDateString()
+  console.log('[TransactionForm] formattedDate computed, props.date=', props.date, 'parsed=', dateStr, 'today=', todayStr, 'isToday=', dateStr === todayStr)
+  if (dateStr === todayStr) {
     return '今天'
   }
-  const year = currentDate.value.getFullYear()
-  const month = String(currentDate.value.getMonth() + 1).padStart(2, '0')
-  const day = String(currentDate.value.getDate()).padStart(2, '0')
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
   return `${year}/${month}/${day}`
 })
 
 const formattedDateFull = computed(() => {
-  const year = currentDate.value.getFullYear()
-  const month = String(currentDate.value.getMonth() + 1).padStart(2, '0')
-  const day = String(currentDate.value.getDate()).padStart(2, '0')
+  const d = parseDate(props.date)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
   return `${year}/${month}/${day}`
 })
 
 const handleAssetDataChange = (data: DepreciatingAssetData | null) => {
   emit('update:assetData', data)
 }
-
-watch(() => props.date, (newDate) => {
-  if (newDate) {
-    const date = new Date(newDate)
-    currentDate.value = date
-    const today = new Date()
-    const isToday = date.toDateString() === today.toDateString()
-    hasSelectedDate.value = !isToday
-  }
-}, { immediate: true })
 
 watch(() => props.transactionType, () => {
   displayAmount.value = ''
