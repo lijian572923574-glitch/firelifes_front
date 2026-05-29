@@ -1,8 +1,10 @@
 <template>
   <view class="page">
     <view class="account-header">
-      <view class="account-icon category-icon-svg" :class="getAccountIconClass(accountInfo.icon, accountInfo.type)"></view>
-      <text class="account-name">{{ accountInfo.name }}</text>
+      <view class="account-info-row">
+        <view class="account-icon category-icon-svg" :class="getAccountIconClass(accountInfo.icon, accountInfo.type)"></view>
+        <text class="account-name">{{ accountInfo.name }}</text>
+      </view>
       <text class="account-balance" :class="{ negative: accountInfo.balance < 0 }">
         {{ formatAmount(accountInfo.balance) }}
       </text>
@@ -383,29 +385,36 @@ onShow(() => {
   flex-direction: column;
   background: var(--color-bg-page, #F5F7FA);
   overflow: hidden;
+  z-index: 1;
 }
 
 .account-header {
   background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
-  padding: 48rpx 32rpx 32rpx;
+  padding: 32rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
 }
 
+.account-info-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
 .account-icon {
-  width: 64rpx;
-  height: 64rpx;
-  margin-bottom: 12rpx;
+  width: 48rpx;
+  height: 48rpx;
   color: #FFFFFF;
+  flex-shrink: 0;
 }
 
 .account-name {
   font-size: 32rpx;
   color: #FFFFFF;
   font-weight: 500;
-  margin-bottom: 8rpx;
 }
 
 .account-balance {
