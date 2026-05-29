@@ -3,7 +3,6 @@
     <view class="edit-header">
       <view class="back-btn" @tap="goBack">
         <view class="back-icon category-icon-svg category-icon-chevron-left"></view>
-        <text>返回</text>
       </view>
       <text class="edit-title">
         {{ recordType === 'income' ? '编辑收入' : recordType === 'transfer' ? '编辑转账' : recordType === 'repayment' ? '编辑还债' : '编辑支出' }}

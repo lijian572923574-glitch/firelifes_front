@@ -4,7 +4,6 @@
       <view class="nav-bar">
         <view class="back-btn" @click="goBack">
           <view class="back-icon category-icon-svg category-icon-chevron-left"></view>
-          <text>返回</text>
         </view>
         <text class="nav-title">账户交易明细</text>
       </view>
