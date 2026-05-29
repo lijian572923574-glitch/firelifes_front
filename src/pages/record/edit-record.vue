@@ -1,7 +1,10 @@
 <template>
   <view class="edit-page">
     <view class="edit-header">
-      <text class="back-btn" @tap="goBack">← 返回</text>
+      <view class="back-btn" @tap="goBack">
+        <view class="back-icon category-icon-svg category-icon-chevron-left"></view>
+        <text>返回</text>
+      </view>
       <text class="edit-title">
         {{ recordType === 'income' ? '编辑收入' : recordType === 'transfer' ? '编辑转账' : recordType === 'repayment' ? '编辑还债' : '编辑支出' }}
       </text>
@@ -274,8 +277,16 @@ onMounted(() => {
 }
 
 .back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
   font-size: 28rpx;
   color: var(--color-text-inverse, #FFFFFF);
+}
+
+.back-icon {
+  width: 36rpx;
+  height: 36rpx;
 }
 
 .edit-title {

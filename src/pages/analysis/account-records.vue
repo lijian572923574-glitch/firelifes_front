@@ -2,7 +2,10 @@
   <view class="page">
     <view class="account-header">
       <view class="nav-bar">
-        <text class="back-btn" @click="goBack">← 返回</text>
+        <view class="back-btn" @click="goBack">
+          <view class="back-icon category-icon-svg category-icon-chevron-left"></view>
+          <text>返回</text>
+        </view>
         <text class="nav-title">账户交易明细</text>
       </view>
       <view class="account-row">
@@ -423,9 +426,17 @@ onShow(() => {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
   font-size: 28rpx;
   color: #FFFFFF;
   padding: 8rpx 0;
+}
+
+.back-icon {
+  width: 36rpx;
+  height: 36rpx;
 }
 
 .nav-title {

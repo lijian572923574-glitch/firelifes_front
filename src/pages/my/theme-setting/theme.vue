@@ -2,7 +2,7 @@
   <view class="theme-container">
     <view class="theme-header">
       <view class="back-btn" @click="goBack">
-        <text>←</text>
+        <view class="back-icon category-icon-svg category-icon-chevron-left"></view>
       </view>
       <text class="title">主题设置</text>
     </view>
@@ -219,9 +219,17 @@ onMounted(() => {
 .back-btn {
   position: absolute;
   left: 30rpx;
-  font-size: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
   color: var(--color-text-primary, #1E293B);
-  padding: 8rpx;
+}
+
+.back-icon {
+  width: 44rpx;
+  height: 44rpx;
 }
 
 .title {

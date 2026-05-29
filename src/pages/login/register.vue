@@ -2,7 +2,7 @@
   <view class="register-container">
     <view class="header">
       <view class="back-btn" @click="goBack">
-        <text>←</text>
+        <view class="back-icon category-icon-svg category-icon-chevron-left"></view>
       </view>
       <text class="title">注册账号</text>
     </view>
@@ -418,9 +418,17 @@ const goToLogin = () => {
 }
 
 .back-btn {
-  font-size: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
   color: var(--color-text-primary, #333);
-  padding: 8rpx;
+}
+
+.back-icon {
+  width: 48rpx;
+  height: 48rpx;
 }
 
 .title {
