@@ -11,26 +11,33 @@
     />
 
     <scroll-view class="content" scroll-y>
-      <!-- 图标选择卡片 -->
+      <!-- 表单卡片：账户名称 + 账户余额 -->
       <view class="card">
-        <view class="icon-preview-row">
-          <view class="icon-preview" :class="{ 'preview-liability': formData.type === 'liability' }">
-            <view class="icon-preview-svg category-icon-svg" :class="formData.icon"></view>
-          </view>
-          <view class="icon-preview-info">
-            <text class="icon-preview-title">选择图标</text>
-            <text class="icon-preview-desc">点击下方图标更换</text>
-          </view>
+        <view class="form-row">
+          <text class="form-label">账户名称</text>
+          <WdInput
+            v-model="formData.name"
+            placeholder="请输入账户名称"
+            :maxlength="20"
+            showClear
+            customStyle="background: var(--color-border-light, #F1F5F9); border-radius: 10rpx;"
+          />
         </view>
-        <view class="icon-row">
-          <view
-            v-for="icon in ACCOUNT_ICONS"
-            :key="icon"
-            class="icon-item"
-            :class="{ active: formData.icon === icon }"
-            @click="formData.icon = icon"
-          >
-            <view class="icon-item-svg category-icon-svg" :class="icon"></view>
+
+        <view class="form-row">
+          <text class="form-label">账户余额</text>
+          <view class="balance-input-wrap">
+            <text class="balance-prefix">¥</text>
+            <view class="balance-divider"></view>
+            <view class="balance-input-area">
+              <WdInput
+                :model-value="balanceInput"
+                @update:model-value="onBalanceInput"
+                type="text"
+                :placeholder="formData.type === 'liability' ? '-0.00' : '0.00'"
+                customStyle="background: transparent; border: none; padding: 0;"
+              />
+            </view>
           </view>
         </view>
       </view>
@@ -49,7 +56,7 @@
               @click="onTypeChange(item.value)"
             >
               <view class="type-card-dot" :style="{ background: item.color }"></view>
-              <view class="type-card-svg category-icon-svg" :class="item.className"></view>
+              <view class="type-card-icon category-icon-svg" :class="item.svgIcon" :style="formData.type === item.value ? { color: item.color } : {}"></view>
               <text class="type-card-label" :style="formData.type === item.value ? { color: item.color, fontWeight: '600' } : {}">{{ item.label }}</text>
             </view>
           </view>
@@ -63,46 +70,24 @@
               @click="onTypeChange(item.value)"
             >
               <view class="type-card-dot" :style="{ background: item.color }"></view>
-              <view class="type-card-svg category-icon-svg" :class="item.className"></view>
+              <view class="type-card-icon category-icon-svg" :class="item.svgIcon" :style="formData.type === item.value ? { color: item.color } : {}"></view>
               <text class="type-card-label" :style="formData.type === item.value ? { color: item.color, fontWeight: '600' } : {}">{{ item.label }}</text>
             </view>
           </view>
         </view>
       </view>
 
-      <!-- 表单卡片 -->
+      <!-- 图标选择卡片：折叠态 -->
+      <view class="card" @click="showIconPicker = true">
+        <view class="icon-trigger-row">
+          <view class="icon-trigger-preview category-icon-svg" :class="getAccountIconClass(formData.icon, formData.type)"></view>
+          <text class="icon-trigger-text">点击选择图标</text>
+          <text class="icon-trigger-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 账户说明卡片 -->
       <view class="card">
-        <!-- 账户名称 -->
-        <view class="form-row">
-          <text class="form-label">账户名称</text>
-          <WdInput
-            v-model="formData.name"
-            placeholder="请输入账户名称"
-            :maxlength="20"
-            showClear
-            customStyle="background: var(--color-border-light, #F1F5F9); border-radius: 10rpx;"
-          />
-        </view>
-
-        <!-- 账户余额 -->
-        <view class="form-row">
-          <text class="form-label">账户余额</text>
-          <view class="balance-input-wrap">
-            <text class="balance-prefix">¥</text>
-            <view class="balance-divider"></view>
-            <view class="balance-input-area">
-              <WdInput
-                :model-value="balanceInput"
-                @update:model-value="onBalanceInput"
-                type="text"
-                :placeholder="formData.type === 'liability' ? '-0.00' : '0.00'"
-                customStyle="background: transparent; border: none; padding: 0;"
-              />
-            </view>
-          </view>
-        </view>
-
-        <!-- 账户说明 -->
         <view class="form-row">
           <text class="form-label">账户说明（选填）</text>
           <WdTextarea
@@ -260,6 +245,27 @@
     </view>
   </view>
 
+  <!-- 图标选择底部弹出面板 -->
+  <wd-popup v-model="showIconPicker" position="bottom" customStyle="border-radius: 24rpx 24rpx 0 0;">
+    <view class="icon-picker-popup">
+      <view class="picker-header">
+        <text class="picker-title">选择图标</text>
+        <text class="picker-cancel" @click="showIconPicker = false">取消</text>
+      </view>
+      <view class="icon-picker-grid">
+        <view
+          v-for="icon in ACCOUNT_ICONS"
+          :key="icon"
+          class="icon-picker-item"
+          :class="{ active: getAccountIconClass(formData.icon, formData.type) === getAccountIconClass(icon, formData.type) }"
+          @click="selectIcon(icon)"
+        >
+          <view class="icon-picker-svg category-icon-svg" :class="icon"></view>
+        </view>
+      </view>
+    </view>
+  </wd-popup>
+
   <!-- 账户选择弹窗 -->
   <wd-popup v-model="showAccountPicker" position="bottom">
     <view class="account-picker-popup">
@@ -305,13 +311,14 @@ const isEdit = computed(() => !!accountId.value)
 const account = ref<Account | null>(null)
 const saving = ref(false)
 const oldBalance = ref(0)
+const showIconPicker = ref(false)
 
-const TYPE_CONFIG: Record<AccountType, { color: string; className: string; label: string; activeBg: string }> = {
-  cash:         { color: '#00BFFF', className: 'category-icon-jinqian', label: '现金类', activeBg: 'rgba(0,191,255,0.06)' },
-  investment:   { color: '#FF9800', className: 'category-icon-touzi', label: '投资类', activeBg: 'rgba(255,152,0,0.06)' },
-  fixed_asset:  { color: '#9C27B0', className: 'category-icon-zhuzhai', label: '固定资产类', activeBg: 'rgba(156,39,176,0.06)' },
-  depreciable_asset: { color: '#00BCD4', className: 'category-icon-shuma', label: '折旧资产类', activeBg: 'rgba(0,188,212,0.06)' },
-  liability:    { color: '#FA3534', className: 'account-icon-credit-card', label: '负债类', activeBg: 'rgba(250,53,52,0.06)' },
+const TYPE_CONFIG: Record<AccountType, { color: string; svgIcon: string; label: string; activeBg: string }> = {
+  cash:         { color: '#00BFFF', svgIcon: 'account-icon-wallet', label: '现金类', activeBg: 'rgba(0,191,255,0.06)' },
+  investment:   { color: '#FF9800', svgIcon: 'account-icon-trending', label: '投资类', activeBg: 'rgba(255,152,0,0.06)' },
+  fixed_asset:  { color: '#9C27B0', svgIcon: 'account-icon-house', label: '固定资产类', activeBg: 'rgba(156,39,176,0.06)' },
+  depreciable_asset: { color: '#00BCD4', svgIcon: 'account-icon-mobile', label: '折旧资产类', activeBg: 'rgba(0,188,212,0.06)' },
+  liability:    { color: '#FA3534', svgIcon: 'account-icon-credit-card', label: '负债类', activeBg: 'rgba(250,53,52,0.06)' },
 }
 
 const typeRow1 = computed(() =>
@@ -364,6 +371,11 @@ const canSave = computed(() => {
          formData.value.name.length <= 20 &&
          !isNaN(formData.value.balance)
 })
+
+const selectIcon = (icon: string) => {
+  formData.value.icon = icon
+  showIconPicker.value = false
+}
 
 const loadAccountDetail = async (id: string) => {
   try {
@@ -602,60 +614,45 @@ onLoad((options: any) => {
   margin-bottom: 20rpx;
 }
 
-/* 图标预览区 */
-.icon-preview-row {
+/* 图标折叠态 */
+.icon-trigger-row {
   display: flex;
   align-items: center;
-  gap: 24rpx;
-  margin-bottom: 24rpx;
+  gap: 16rpx;
 }
 
-.icon-preview {
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 24rpx;
-  background: var(--color-primary-light, #E6F7F5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.icon-trigger-preview {
+  width: 44rpx;
+  height: 44rpx;
+  color: var(--color-primary, #00BFFF);
   flex-shrink: 0;
 }
 
-.icon-preview.preview-liability {
-  background: var(--color-danger-light, #FEF2F2);
-}
-
-.icon-preview-svg {
-  width: 60rpx;
-  height: 60rpx;
-  color: #FFFFFF;
-}
-
-.icon-preview-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8rpx;
-}
-
-.icon-preview-title {
-  font-size: var(--text-body);
-  font-weight: 600;
+.icon-trigger-text {
+  flex: 1;
+  font-size: 28rpx;
   color: var(--color-text-primary, #1E293B);
 }
 
-.icon-preview-desc {
-  font-size: var(--text-small);
-  color: var(--color-text-secondary, #94A3B8);
+.icon-trigger-arrow {
+  font-size: 32rpx;
+  color: var(--color-text-tertiary, #CBD5E1);
 }
 
-/* 图标选择行 */
-.icon-row {
+/* 图标底部弹出面板 */
+.icon-picker-popup {
+  padding: 32rpx 28rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
+}
+
+.icon-picker-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
+  gap: 16rpx;
+  justify-content: flex-start;
 }
 
-.icon-item {
+.icon-picker-item {
   width: 80rpx;
   height: 80rpx;
   border-radius: 16rpx;
@@ -666,22 +663,41 @@ onLoad((options: any) => {
   transition: all 150ms ease;
 }
 
-.icon-item:active {
+.icon-picker-item:active {
   transform: scale(0.92);
 }
 
-.icon-item.active {
+.icon-picker-item.active {
   background: var(--color-primary-light, #E6F7F5);
 }
 
-.icon-item-svg {
-  width: 40rpx;
-  height: 40rpx;
+.icon-picker-svg {
+  width: 44rpx;
+  height: 44rpx;
   color: var(--color-text-primary, #333);
 }
 
-.icon-item.active .icon-item-svg {
+.icon-picker-item.active .icon-picker-svg {
   color: var(--color-primary, #00BFFF);
+}
+
+/* 弹出面板通用 header */
+.icon-picker-popup .picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.icon-picker-popup .picker-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text-primary, #1E293B);
+}
+
+.icon-picker-popup .picker-cancel {
+  font-size: 28rpx;
+  color: var(--color-text-secondary, #94A3B8);
 }
 
 /* 类型选择 */
@@ -719,14 +735,20 @@ onLoad((options: any) => {
   border-radius: 4rpx;
 }
 
-.type-card-svg {
-  width: 32rpx;
-  height: 32rpx;
+.type-card-icon {
+  width: 44rpx;
+  height: 44rpx;
+  color: var(--color-text-secondary, #94A3B8);
+}
+
+.type-card.active .type-card-icon {
+  color: inherit;
 }
 
 .type-card-label {
   font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
+  margin-top: 2rpx;
 }
 
 /* 表单行 */
