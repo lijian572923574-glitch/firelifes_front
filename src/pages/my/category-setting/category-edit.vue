@@ -20,6 +20,7 @@
           <view class="readonly-item">
             <text class="readonly-label">收支类型</text>
             <view class="readonly-tag">
+              <view class="category-icon-svg readonly-tag-icon" :class="groupType.value === 'income' ? 'category-icon-jinqian' : 'category-icon-zhichu'"></view>
               <text class="readonly-tag-text">{{ groupTypeLabel }}</text>
             </view>
           </view>
@@ -95,7 +96,7 @@ const icons = ref<UserIcon[]>([])
 const saving = ref(false)
 
 const groupTypeLabel = computed(() => {
-  return groupType.value === 'income' ? '💰 收入' : '💸 支出'
+  return groupType.value === 'income' ? '收入' : '支出'
 })
 
 const canSave = computed(() => {
@@ -283,6 +284,15 @@ defineExpose({ openAdd, openEdit, close })
   background-color: var(--color-border-light, #F1F5F9);
   border-radius: 6rpx;
   padding: 4rpx 20rpx;
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.readonly-tag-icon {
+  width: 24rpx;
+  height: 24rpx;
+  color: var(--color-text-secondary, #94A3B8);
 }
 
 .readonly-tag-text {

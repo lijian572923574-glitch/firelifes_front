@@ -85,7 +85,7 @@
                     {
                       "type": "text",
                       "id": "s30Ur8",
-                      "content": "💵",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 30,
                       "fontWeight": "normal"
@@ -142,7 +142,7 @@
                     {
                       "type": "text",
                       "id": "u0W4xl",
-                      "content": "💵",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -162,7 +162,7 @@
                     {
                       "type": "text",
                       "id": "I5Rwi",
-                      "content": "🏦",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -182,7 +182,7 @@
                     {
                       "type": "text",
                       "id": "DxWPU",
-                      "content": "💚",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -202,7 +202,7 @@
                     {
                       "type": "text",
                       "id": "g4FSB",
-                      "content": "📈",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -222,7 +222,7 @@
                     {
                       "type": "text",
                       "id": "wCZcv",
-                      "content": "🏠",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -242,7 +242,7 @@
                     {
                       "type": "text",
                       "id": "kxEIF",
-                      "content": "🚗",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -262,7 +262,7 @@
                     {
                       "type": "text",
                       "id": "rqCSG",
-                      "content": "💳",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -282,7 +282,7 @@
                     {
                       "type": "text",
                       "id": "ZVfWb",
-                      "content": "📱",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -302,7 +302,7 @@
                     {
                       "type": "text",
                       "id": "JgWlT",
-                      "content": "💻",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -322,7 +322,7 @@
                     {
                       "type": "text",
                       "id": "CIkOS",
-                      "content": "🎮",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -342,7 +342,7 @@
                     {
                       "type": "text",
                       "id": "Q4PQMs",
-                      "content": "📷",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -362,7 +362,7 @@
                     {
                       "type": "text",
                       "id": "EPLiE",
-                      "content": "🎵",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -382,7 +382,7 @@
                     {
                       "type": "text",
                       "id": "hExnv",
-                      "content": "📚",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -402,7 +402,7 @@
                     {
                       "type": "text",
                       "id": "w3o7I",
-                      "content": "🎁",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -473,7 +473,7 @@
                                 {
                                   "type": "text",
                                   "id": "bgPq6",
-                                  "content": "💰",
+                                  "content": "",
                                   "fontFamily": "Inter",
                                   "fontSize": 16,
                                   "fontWeight": "normal"
@@ -521,7 +521,7 @@
                                 {
                                   "type": "text",
                                   "id": "Qz4vQ",
-                                  "content": "📈",
+                                  "content": "",
                                   "fontFamily": "Inter",
                                   "fontSize": 16,
                                   "fontWeight": "normal"
@@ -569,7 +569,7 @@
                                 {
                                   "type": "text",
                                   "id": "mMh2v",
-                                  "content": "🏠",
+                                  "content": "",
                                   "fontFamily": "Inter",
                                   "fontSize": 16,
                                   "fontWeight": "normal"
@@ -625,7 +625,7 @@
                                 {
                                   "type": "text",
                                   "id": "dH7Q0",
-                                  "content": "📱",
+                                  "content": "",
                                   "fontFamily": "Inter",
                                   "fontSize": 16,
                                   "fontWeight": "normal"
@@ -673,7 +673,7 @@
                                 {
                                   "type": "text",
                                   "id": "pN2Zr",
-                                  "content": "💳",
+                                  "content": "",
                                   "fontFamily": "Inter",
                                   "fontSize": 16,
                                   "fontWeight": "normal"

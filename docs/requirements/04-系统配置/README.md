@@ -9,16 +9,16 @@
 
 | 功能 | 文件 | 版本 | 状态 | 优先级 |
 |------|------|------|------|--------|
-| 登录注册 | user-auth.md | v1.0 | 🟡设计中 | P0 |
-| 设置页 | settings.md | v1.0 | 🟡设计中 | P1 |
-| 分类大类管理 | category-group.md | v1.0 | 🟡设计中 | P1 |
-| 分类大类列表（左滑交互） | category-setting/category-group-list.md | v2.1 | ✅已完成 | P1 |
-| 子分类列表（左滑交互） | category-setting/category-list.md | v1.2 | 🟡需求整理 | P1 |
-| 账户列表（左滑交互） | account-setting/account-list.md | v2.1 | ✅已完成 | P1 |
-| 负债类账户规则 | account-setting/liability-rules.md | v1.0 | 📝待实现 | P1 |
-| 预算设置（双预算体系） | budget-setting/budget-setting.md | v1.1 | 📋规划中 | P0 |
-| 预算进度（执行追踪+预警） | budget-setting/budget-progress.md | v1.1 | 📋规划中 | P0 |
-| 预算双体系设计 | budget-setting/budget-dual-system.md | v1.1 | 📋规划中 | P0 |
+| 登录注册 | user-auth.md | v1.0 | 设计中 | P0 |
+| 设置页 | settings.md | v1.0 | 设计中 | P1 |
+| 分类大类管理 | category-group.md | v1.0 | 设计中 | P1 |
+| 分类大类列表（左滑交互） | category-setting/category-group-list.md | v2.1 | 已完成 | P1 |
+| 子分类列表（左滑交互） | category-setting/category-list.md | v1.2 | 需求整理 | P1 |
+| 账户列表（左滑交互） | account-setting/account-list.md | v2.1 | 已完成 | P1 |
+| 负债类账户规则 | account-setting/liability-rules.md | v1.0 | 待实现 | P1 |
+| 预算设置（双预算体系） | budget-setting/budget-setting.md | v1.1 | 规划中 | P0 |
+| 预算进度（执行追踪+预警） | budget-setting/budget-progress.md | v1.1 | 规划中 | P0 |
+| 预算双体系设计 | budget-setting/budget-dual-system.md | v1.1 | 规划中 | P0 |
 
 ## 模块数据流
 

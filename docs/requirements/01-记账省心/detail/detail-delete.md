@@ -2,7 +2,7 @@
 > 文件：`detail-delete.md` | 中文名称：明细页删除记账记录 | 所属模块：记账省心（明细页子功能）
 > 页面路径：`src/pages/detail/index.vue`（左滑操作）；`src/pages/record/edit-record.vue`（详情页删除）
 
-> 版本：v1.1 | 状态：✅已完成 | 最后更新：2026-05-21
+> 版本：v1.1 | 状态：已完成 | 最后更新：2026-05-21
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -40,12 +40,12 @@
 ├──────────────────────────────────────┤
 │  ┌────────────────────────────────┐  │
 │  │        ← 向左滑动              │  │
-│  │ [🍔] 餐饮            -35.00  ┃  │  │
+│  │ [] 餐饮            -35.00  ┃  │  │
 │  │                    ┌──────┐┃  │  │
 │  │                    │ 删除 │┃  │  │ ← 左滑露出红色删除按钮
 │  │                    └──────┘┃  │  │
 │  └────────────────────────────────┘  │
-│  [💰] 工资           +128.50        │
+│  [] 工资           +128.50        │
 │                                      │
 └──────────────────────────────────────┘
 ```
@@ -105,11 +105,11 @@
 
 ## 后端 API 设计
 
-### 现有 API（已实现 ✅）
+### 现有 API（已实现 ）
 
 | 接口 | 方法 | 路径 | 说明 |
 |------|------|------|------|
-| `deleteRecord` | `DELETE` | `/record/:id` | ✅ 带事务的余额回退：支出删→账户加回、收入删→账户扣回、转账/还债删→双账户回退 |
+| `deleteRecord` | `DELETE` | `/record/:id` |  带事务的余额回退：支出删→账户加回、收入删→账户扣回、转账/还债删→双账户回退 |
 
 ### 实现细节
 
@@ -180,7 +180,7 @@ recordApi.deleteRecord(id: number): Promise<ApiResponse<boolean>>
 | `confirmText` | `"删除"` |
 | `confirmColor` | `var(--color-danger)` |
 
-### 编辑页删除按钮（⚠️ 已有）
+### 编辑页删除按钮（ 已有）
 
 编辑页 `edit-record.vue` header 右侧已有「删除」文字按钮，调用 `showDeleteConfirm()` → `recordApi.deleteRecord()` → toast "已删除" → navigateBack。
 
@@ -207,7 +207,7 @@ recordApi.deleteRecord(id: number): Promise<ApiResponse<boolean>>
 | `src/pages/record/edit-record.vue` | 编辑页（需新增「删除记录」红色按钮） |
 | `src/api/record.ts` | 记录 API（`deleteRecord` 已存在，需调用） |
 | `firelifes_back/src/controller/record/record.controller.ts` | 删除接口（已存在，但需改造） |
-| `firelifes_back/src/service/record.service.ts` | ⚠️ **核心改造**：`deleteRecord` 需增加余额回退逻辑 |
+| `firelifes_back/src/service/record.service.ts` |  **核心改造**：`deleteRecord` 需增加余额回退逻辑 |
 
 ---
 

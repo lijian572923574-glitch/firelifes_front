@@ -96,7 +96,7 @@
                       "type": "text",
                       "id": "HqZgk",
                       "name": "现金图标",
-                      "content": "💵",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 22,
                       "fontWeight": "normal"
@@ -175,7 +175,7 @@
                       "type": "text",
                       "id": "KgA46",
                       "name": "储蓄卡图标",
-                      "content": "🏦",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 22,
                       "fontWeight": "normal"
@@ -254,7 +254,7 @@
                       "type": "text",
                       "id": "P0JTEA",
                       "name": "招商信用卡图标",
-                      "content": "💳",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 22,
                       "fontWeight": "normal"
@@ -375,7 +375,7 @@
                           "type": "text",
                           "id": "et4ij",
                           "name": "折旧资产图标",
-                          "content": "📱",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 16,
                           "fontWeight": "normal"
@@ -468,7 +468,7 @@
                           "type": "text",
                           "id": "HUipF",
                           "name": "固定资产图标",
-                          "content": "🏠",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 16,
                           "fontWeight": "normal"
@@ -572,7 +572,7 @@
                   "type": "text",
                   "id": "wA18F",
                   "name": "记账图标",
-                  "content": "💰",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 26,
                   "fontWeight": "normal"
@@ -605,7 +605,7 @@
                   "type": "text",
                   "id": "FXN8Y",
                   "name": "明细图标",
-                  "content": "📊",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 26,
                   "fontWeight": "normal"
@@ -638,7 +638,7 @@
                   "type": "text",
                   "id": "ax81U",
                   "name": "资产图标",
-                  "content": "💼",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 26,
                   "fontWeight": "normal"
@@ -671,7 +671,7 @@
                   "type": "text",
                   "id": "M5Ybm",
                   "name": "我的图标",
-                  "content": "👤",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 26,
                   "fontWeight": "normal"

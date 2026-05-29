@@ -51,7 +51,7 @@
                         {
                           "type": "text",
                           "id": "MS679",
-                          "content": "👤",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 32,
                           "fontWeight": "normal"

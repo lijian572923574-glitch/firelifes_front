@@ -73,7 +73,8 @@
           </view>
 
           <view class="goal-tip">
-            <text class="tip-text">💡 按4%规则：FIRE目标 = 年支出 × 25</text>
+            <view class="category-icon-svg tip-icon category-icon-dengpao"></view>
+            <text class="tip-text">按4%规则：FIRE目标 = 年支出 × 25</text>
           </view>
 
           <view class="quick-calc">
@@ -401,13 +402,24 @@ onMounted(() => {
 }
 
 .goal-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
   margin-top: 20rpx;
   padding: 12rpx 16rpx;
   background: var(--color-primary-light, #E6F7F5);
   border-radius: 8rpx;
 }
 
+.tip-icon {
+  width: 28rpx;
+  height: 28rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
+}
+
 .tip-text {
+  flex: 1;
   font-size: 22rpx;
   color: var(--color-text-secondary, #94A3B8);
 }

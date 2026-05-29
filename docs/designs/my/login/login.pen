@@ -51,7 +51,7 @@
                   "type": "text",
                   "id": "c3C3T",
                   "fill": "#FFFFFF",
-                  "content": "💰",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 36,
                   "fontWeight": "normal"
@@ -193,7 +193,7 @@
                   "type": "text",
                   "id": "q7LFZM",
                   "fill": "#94A3B8",
-                  "content": "📱",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 18,
                   "fontWeight": "normal"
@@ -240,7 +240,7 @@
                       "type": "text",
                       "id": "J46DH1",
                       "fill": "#94A3B8",
-                      "content": "🔒",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 18,
                       "fontWeight": "normal"
@@ -268,7 +268,7 @@
                       "type": "text",
                       "id": "OLvoO",
                       "fill": "#CBD5E1",
-                      "content": "👁",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -510,7 +510,7 @@
                   "type": "text",
                   "id": "dKkol",
                   "fill": "#FFFFFF",
-                  "content": "💰",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 36,
                   "fontWeight": "normal"
@@ -647,7 +647,7 @@
                   "type": "text",
                   "id": "J7DJCj",
                   "fill": "#94A3B8",
-                  "content": "📱",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 18,
                   "fontWeight": "normal"
@@ -693,7 +693,7 @@
                       "type": "text",
                       "id": "hrjfX",
                       "fill": "#94A3B8",
-                      "content": "✉️",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 18,
                       "fontWeight": "normal"
@@ -1010,7 +1010,7 @@
                   "type": "text",
                   "id": "TEPR5",
                   "fill": "#94A3B8",
-                  "content": "📱",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 18,
                   "fontWeight": "normal"
@@ -1056,7 +1056,7 @@
                       "type": "text",
                       "id": "b2oBqp",
                       "fill": "#94A3B8",
-                      "content": "✉️",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 18,
                       "fontWeight": "normal"
@@ -1128,7 +1128,7 @@
                       "type": "text",
                       "id": "XPhaB",
                       "fill": "#94A3B8",
-                      "content": "🔒",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 18,
                       "fontWeight": "normal"
@@ -1156,7 +1156,7 @@
                       "type": "text",
                       "id": "C4DrOH",
                       "fill": "#CBD5E1",
-                      "content": "👁",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -1188,7 +1188,7 @@
                   "type": "text",
                   "id": "rkWyX",
                   "fill": "#94A3B8",
-                  "content": "🔒",
+                  "content": "",
                   "fontFamily": "Inter",
                   "fontSize": 18,
                   "fontWeight": "normal"

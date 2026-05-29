@@ -23,7 +23,7 @@
       <template v-else>
         <!-- ===== 新手引导卡片（无预算时显示） ===== -->
         <view v-if="isNewUser" class="guide-card">
-          <view class="guide-icon">💡</view>
+          <view class="guide-icon category-icon-svg category-icon-dengpao"></view>
           <text class="guide-title">设置预算，轻松掌控每月支出</text>
           <text class="guide-desc">输入月收入，系统自动帮你规划合理的年度预算</text>
           <view class="guide-input-row">
@@ -52,7 +52,7 @@
         <template v-if="!isNewUser">
           <!-- 年度预算 -->
           <view class="section-label">
-            <text class="section-icon">📊</text>
+            <view class="section-icon category-icon-svg category-icon-tongji"></view>
             <text>年度预算（{{ currentYear }}年）</text>
           </view>
 
@@ -115,7 +115,7 @@
             </view>
 
             <view v-if="categoryBudgets.length === 0" class="empty-state">
-              <text class="empty-icon">📋</text>
+              <view class="empty-icon category-icon-svg category-icon-zhangdan"></view>
               <text class="empty-text">还没有分类预算</text>
               <text class="empty-hint">点击"添加分类"选择支出分类开始管理</text>
             </view>
@@ -169,7 +169,8 @@
 
           <view v-if="monthlyCategoryItems.length > 0" class="card">
             <view class="card-tip">
-              <text>💡 微调仅影响当月，不影响其他月份。恢复默认将沿用年度预算拆分的月均金额。</text>
+              <view class="category-icon-svg card-tip-icon category-icon-dengpao"></view>
+              <text>微调仅影响当月，不影响其他月份。恢复默认将沿用年度预算拆分的月均金额。</text>
             </view>
             <view v-for="item in monthlyCategoryItems" :key="'m-' + item.typeId" class="tune-row">
               <view class="tune-left">
@@ -215,7 +216,7 @@
             <text class="picker-item-arrow">+</text>
           </view>
           <view v-if="availableCategories.length === 0" class="picker-empty">
-            <text class="picker-empty-icon">✅</text>
+            <view class="picker-empty-icon category-icon-svg category-icon-duigou"></view>
             <text>所有支出分类均已添加预算</text>
           </view>
         </scroll-view>
@@ -548,7 +549,8 @@ onMounted(async () => {
   align-items: center;
 }
 .guide-icon {
-  font-size: 56rpx;
+  width: 56rpx;
+  height: 56rpx;
   margin-bottom: 16rpx;
 }
 .guide-title {
@@ -655,8 +657,9 @@ onMounted(async () => {
   padding: 36rpx 0 16rpx 8rpx;
 }
 .section-icon {
+  width: 28rpx;
+  height: 28rpx;
   margin-right: 10rpx;
-  font-size: 28rpx;
 }
 
 /* ===== 卡片 ===== */
@@ -679,6 +682,9 @@ onMounted(async () => {
   color: var(--color-text-primary, #1E293B);
 }
 .card-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
   background: var(--color-border-light, #F1F5F9);
   border-radius: 10rpx;
   padding: 16rpx 20rpx;
@@ -686,6 +692,13 @@ onMounted(async () => {
   font-size: 22rpx;
   color: var(--color-text-secondary, #94A3B8);
   line-height: 1.6;
+}
+
+.card-tip-icon {
+  width: 28rpx;
+  height: 28rpx;
+  flex-shrink: 0;
+  margin-top: 2rpx;
 }
 .badge-soft {
   font-size: 20rpx;
@@ -815,7 +828,8 @@ onMounted(async () => {
   padding: 48rpx 0;
 }
 .empty-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-bottom: 12rpx;
 }
 .empty-text {
@@ -1058,7 +1072,8 @@ onMounted(async () => {
   font-size: 26rpx;
 }
 .picker-empty-icon {
-  font-size: 48rpx;
+  width: 48rpx;
+  height: 48rpx;
   margin-bottom: 12rpx;
 }
 </style>

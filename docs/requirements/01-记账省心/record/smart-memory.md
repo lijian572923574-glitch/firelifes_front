@@ -1,6 +1,6 @@
 # 记账智能记忆
 > 文件：`smart-memory.md` | 中文名称：记账智能记忆（账户+日期） | 所属模块：记账省心
-> 版本：v1.4 | 状态：✅已实现 | 最后更新：2026-05-28
+> 版本：v1.4 | 状态：已实现 | 最后更新：2026-05-28
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -159,7 +159,7 @@ interface RecordData {
   → 选分类「购物」→ 30h窗口命中 expense + accountId=4
     → selectedAccount={微信} + selectedDate="2026-05-26"（原子同步）
   → showTransactionForm=true
-  → TransactionForm props.date="2026-05-26" → formattedDate显示 "2026/05/26" ✅
+  → TransactionForm props.date="2026-05-26" → formattedDate显示 "2026/05/26" 
 
   → 输入金额 → 完成记账
   → justCompleted=true → reLaunch

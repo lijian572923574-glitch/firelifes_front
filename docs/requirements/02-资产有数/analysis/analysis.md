@@ -1,6 +1,6 @@
 # 资产分析页
 > 文件：`analysis.md` | 中文名称：净资产与资产负债一览分析页 | 所属模块：资产有数
-> 版本：v1.2 | 状态：🔵开发中 | 最后更新：2026-05-27
+> 版本：v1.2 | 状态：开发中 | 最后更新：2026-05-27
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -142,22 +142,22 @@ monthlySummary = {
 │                                      │
 │  ┌─ 账户余额 ────────────────────┐   │
 │  │                              │   │
-│  │ 💵 现金           ¥3,210.00 >│   │  ← 点击进入账户交易明细
+│  │  现金           ¥3,210.00 >│   │  ← 点击进入账户交易明细
 │  │    现金类                    │   │     仅展示现金类+负债类
 │  │ ─────────────────────────── │   │
-│  │ 🏦 储蓄卡         ¥12,345.67>│   │
+│  │  储蓄卡         ¥12,345.67>│   │
 │  │    现金类                    │   │
 │  │ ─────────────────────────── │   │
-│  │ 💳 招商信用卡     -¥2,345.00>│   │  ← 负余额红色标识
+│  │  招商信用卡     -¥2,345.00>│   │  ← 负余额红色标识
 │  │    负债类                    │   │
 │  │                              │   │
 │  └──────────────────────────────┘   │
 │                                      │
 │  ┌─ 资产汇总 ────────────────────┐   │
 │  │                              │   │
-│  │ 📱 折旧资产  5笔  ¥12,981.25>│   │  ← 点击进入折旧资产账户
+│  │  折旧资产  5笔  ¥12,981.25>│   │  ← 点击进入折旧资产账户
 │  │ ─────────────────────────── │   │
-│  │ 🏠 固定资产  2笔  ¥58,000.00>│   │  ← 点击进入固定资产账户
+│  │  固定资产  2笔  ¥58,000.00>│   │  ← 点击进入固定资产账户
 │  │                              │   │
 │  └──────────────────────────────┘   │
 │                                      │
@@ -213,7 +213,7 @@ monthlySummary = {
 |------|------|
 | 折旧资产数据源 | 优先使用 `getDepreciatingAssets()` API 的明细汇总；兜底使用 `getAccountList()` 中 `type=depreciable_asset` 的账户余额求和 |
 | 固定资产数据源 | `getAccountList()` 中 `type=fixed_asset` 的账户余额求和 |
-| 每行结构 | 图标（📱/🏠）+ 类型名称 + 笔数 + 总额 + 箭头 `›` |
+| 每行结构 | 图标（/）+ 类型名称 + 笔数 + 总额 + 箭头 `›` |
 | 总额格式 | `¥12,981.25`，青绿色（`var(--color-primary)`） |
 | 笔数 | 展示该类型下的账户/资产数量，格式为"X笔" |
 | 点击行为 | 若该类型仅有一个账户，跳转 `/pages/analysis/account-records?accountId=${id}` |
@@ -267,7 +267,7 @@ monthlySummary = {
 | **Loading** | 页面加载中，API 未返回 | 净资产卡片显示"计算中..."；列表区域不展示 |
 | **正常** | API 均成功返回 | 展示完整三模块：净资产（固定） + 账户余额列表 + 资产汇总 |
 | **部分为空** | 某模块无数据（如无折旧资产） | 仅隐藏空数据模块，其他模块正常展示 |
-| **全部为空** | 无现金/负债账户 + 无资产汇总 | 显示空态引导：💼 "暂无资产数据" + "记账后资产数据会自动更新" |
+| **全部为空** | 无现金/负债账户 + 无资产汇总 | 显示空态引导： "暂无资产数据" + "记账后资产数据会自动更新" |
 | **净资产为负** | 负债大于资产 | 净资产金额显示 `-¥xxx.xx`（formatAmount 自动处理负号前缀） |
 | **请求失败** | 网络异常 / 服务端错误 | `catch` 静默处理，不弹 toast，已加载的部分正常展示 |
 | **页面返回刷新** | 从其他页面返回时 | `onShow` 钩子重新加载数据，确保数据与最新记账结果一致 |
@@ -396,34 +396,34 @@ displayAccounts = accounts.filter(a =>
 
 | 文件 | 操作 | 说明 |
 |------|------|------|
-| `src/pages/analysis/analysis.vue` | ✅ 已实现 | 资产分析页主文件（净资产固定+账户余额+资产汇总，v1.2 去除 depreciatingAssets 混合数据源） |
-| `src/pages/analysis/account-records.vue` | ✅ 已实现 | 账户交易明细页（v1.2 月度汇总含调增/调减，调增调减记录灰色展示） |
-| `src/pages/detail/components/BillCard.vue` | ✅ 已实现 | 账单卡片组件（v1.2 扩展 adjustment 类型支持，灰色金额样式） |
-| `src/pages.json` | ✅ 已配置 | `navigationStyle: "custom"` + `disableScroll: true` |
-| `src/api/record.ts` | ✅ 已实现 | `getNetWorth()`、`getDepreciatingAssets()`、`getRecordsByAccount()` |
-| `src/api/account.ts` | ✅ 已实现 | `getAccountList()`、`getAccountDetail()`、`updateAccount()` |
-| `src/types/account.ts` | ✅ 已实现 | `Account` 类型、`getAccountIconClass()` 图标映射 |
-| `src/components/CustomTabbar.vue` | ✅ 已实现 | 底部自定义 TabBar |
-| `docs/designs/analysis/analysis.pen` | ✅ 已完成 | 资产分析页 UI 设计文档 |
+| `src/pages/analysis/analysis.vue` |  已实现 | 资产分析页主文件（净资产固定+账户余额+资产汇总，v1.2 去除 depreciatingAssets 混合数据源） |
+| `src/pages/analysis/account-records.vue` |  已实现 | 账户交易明细页（v1.2 月度汇总含调增/调减，调增调减记录灰色展示） |
+| `src/pages/detail/components/BillCard.vue` |  已实现 | 账单卡片组件（v1.2 扩展 adjustment 类型支持，灰色金额样式） |
+| `src/pages.json` |  已配置 | `navigationStyle: "custom"` + `disableScroll: true` |
+| `src/api/record.ts` |  已实现 | `getNetWorth()`、`getDepreciatingAssets()`、`getRecordsByAccount()` |
+| `src/api/account.ts` |  已实现 | `getAccountList()`、`getAccountDetail()`、`updateAccount()` |
+| `src/types/account.ts` |  已实现 | `Account` 类型、`getAccountIconClass()` 图标映射 |
+| `src/components/CustomTabbar.vue` |  已实现 | 底部自定义 TabBar |
+| `docs/designs/analysis/analysis.pen` |  已完成 | 资产分析页 UI 设计文档 |
 
 ### 后端文件
 
 | 文件 | 操作 | 说明 |
 |------|------|------|
-| `back/src/entity/record.entity.ts` | ✅ 已修改 | type 枚举新增 adjustment_increase / adjustment_decrease |
-| `back/src/interface.ts` | ✅ 已修改 | IRecord / ICreateRecordOptions / IUpdateRecordOptions 类型扩展 |
-| `back/src/service/record.service.ts` | ✅ 已修改 | calculateAccountBalance / revertAccountBalance + monthlySummary 全量口径 |
-| `back/src/service/account.service.ts` | ✅ 已修改 | updateAccount 余额变动时自动创建调增/调减记录 |
-| `back/src/controller/record/record.controller.ts` | ✅ 无需改 | 透传 service 结果 |
+| `back/src/entity/record.entity.ts` |  已修改 | type 枚举新增 adjustment_increase / adjustment_decrease |
+| `back/src/interface.ts` |  已修改 | IRecord / ICreateRecordOptions / IUpdateRecordOptions 类型扩展 |
+| `back/src/service/record.service.ts` |  已修改 | calculateAccountBalance / revertAccountBalance + monthlySummary 全量口径 |
+| `back/src/service/account.service.ts` |  已修改 | updateAccount 余额变动时自动创建调增/调减记录 |
+| `back/src/controller/record/record.controller.ts` |  无需改 | 透传 service 结果 |
 
 ### 后端接口
 
 | 接口 | 状态 | 说明 |
 |------|------|------|
-| `GET /record/net-worth` | ✅ 已实现 | 净资产计算 |
-| `GET /account/list` | ✅ 已实现 | 账户列表查询 |
-| `GET /record/depreciating-assets` | ✅ 已实现 | 折旧资产列表查询 |
-| `GET /record/by-account/:accountId` | ✅ 已实现 | 按账户查询交易明细（account-records 页使用） |
+| `GET /record/net-worth` |  已实现 | 净资产计算 |
+| `GET /account/list` |  已实现 | 账户列表查询 |
+| `GET /record/depreciating-assets` |  已实现 | 折旧资产列表查询 |
+| `GET /record/by-account/:accountId` |  已实现 | 按账户查询交易明细（account-records 页使用） |
 
 ---
 

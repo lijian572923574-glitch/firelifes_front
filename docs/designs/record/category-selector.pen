@@ -78,7 +78,7 @@
                               "type": "text",
                               "id": "freqEmoji1",
                               "fill": "#0D9488",
-                              "content": "🍔",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -118,7 +118,7 @@
                               "type": "text",
                               "id": "freqEmoji2",
                               "fill": "#0D9488",
-                              "content": "🚇",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -158,7 +158,7 @@
                               "type": "text",
                               "id": "freqEmoji3",
                               "fill": "#0D9488",
-                              "content": "🛒",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -198,7 +198,7 @@
                               "type": "text",
                               "id": "freqEmoji4",
                               "fill": "#0D9488",
-                              "content": "☕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -281,7 +281,7 @@
                               "type": "text",
                               "id": "g1Emoji1",
                               "fill": "#0D9488",
-                              "content": "🍔",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -321,7 +321,7 @@
                               "type": "text",
                               "id": "g1Emoji2",
                               "fill": "#0D9488",
-                              "content": "🍕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -361,7 +361,7 @@
                               "type": "text",
                               "id": "g1Emoji3",
                               "fill": "#0D9488",
-                              "content": "🍺",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -401,7 +401,7 @@
                               "type": "text",
                               "id": "g1Emoji4",
                               "fill": "#0D9488",
-                              "content": "🍿",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -484,7 +484,7 @@
                               "type": "text",
                               "id": "g2Emoji1",
                               "fill": "#0D9488",
-                              "content": "🚇",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -524,7 +524,7 @@
                               "type": "text",
                               "id": "g2Emoji2",
                               "fill": "#0D9488",
-                              "content": "🚌",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -564,7 +564,7 @@
                               "type": "text",
                               "id": "g2Emoji3",
                               "fill": "#0D9488",
-                              "content": "🚕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }
@@ -604,7 +604,7 @@
                               "type": "text",
                               "id": "g2Emoji4",
                               "fill": "#0D9488",
-                              "content": "🚗",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 20
                             }

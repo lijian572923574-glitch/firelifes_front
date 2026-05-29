@@ -11,14 +11,14 @@
 
 | 功能 | 文件 | 版本 | 状态 | 优先级 |
 |------|------|------|------|--------|
-| 账户体系重构 | account-system.md | v1.0 | 🟡设计中 | P0 |
-| 资产总览 | asset-overview.md | v1.0 | 🟡设计中 | P0 |
-| 账户详情 | account-detail.md | v1.0 | 🟡设计中 | P1 |
-| 记账账户联动 | record-account-linkage.md | v1.1 | 🔵开发中 | P0 |
-| 折旧资产 | depreciating-asset.md | v2.1 | 🔵开发中 | P1 |
-| 净资产计算引擎 | net-worth.md | v1.0 | 🟡设计中 | P0 |
-| 固定资产 | fixed-asset.md | v1.0 | 🟡设计中 | P2 |
-| 投资追踪 | investment-tracking.md | v1.0 | 🟡设计中 | P2 |
+| 账户体系重构 | account-system.md | v1.0 | 设计中 | P0 |
+| 资产总览 | asset-overview.md | v1.0 | 设计中 | P0 |
+| 账户详情 | account-detail.md | v1.0 | 设计中 | P1 |
+| 记账账户联动 | record-account-linkage.md | v1.1 | 开发中 | P0 |
+| 折旧资产 | depreciating-asset.md | v2.1 | 开发中 | P1 |
+| 净资产计算引擎 | net-worth.md | v1.0 | 设计中 | P0 |
+| 固定资产 | fixed-asset.md | v1.0 | 设计中 | P2 |
+| 投资追踪 | investment-tracking.md | v1.0 | 设计中 | P2 |
 
 ## 模块数据流
 

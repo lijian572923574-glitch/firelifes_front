@@ -19,7 +19,7 @@
       <template v-else>
         <view v-if="showDraftBanner" class="draft-banner">
           <view class="draft-banner-inner">
-            <text class="draft-icon">📋</text>
+            <view class="draft-icon category-icon-svg category-icon-zhangdan"></view>
             <text class="draft-text">有未完成的记账草稿</text>
             <view class="draft-actions">
               <view class="draft-btn dismiss-btn" @tap="dismissDraft">
@@ -810,7 +810,8 @@ const handleComplete = async () => {
 }
 
 .draft-icon {
-  font-size: 28rpx;
+  width: 28rpx;
+  height: 28rpx;
   margin-right: 12rpx;
 }
 

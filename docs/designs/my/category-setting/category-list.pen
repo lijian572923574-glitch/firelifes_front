@@ -161,7 +161,7 @@
                       "type": "text",
                       "id": "iWBO4",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -201,7 +201,7 @@
                       "type": "text",
                       "id": "qq30u",
                       "fill": "#000000",
-                      "content": "🍔",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -305,7 +305,7 @@
                       "type": "text",
                       "id": "x5kvt",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -345,7 +345,7 @@
                       "type": "text",
                       "id": "A7rbQ",
                       "fill": "#000000",
-                      "content": "🍕",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -406,7 +406,7 @@
                       "type": "text",
                       "id": "Am9zB",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -446,7 +446,7 @@
                       "type": "text",
                       "id": "iQP4y",
                       "fill": "#000000",
-                      "content": "🍰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -517,7 +517,7 @@
                       "type": "text",
                       "id": "bOgS2",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -557,7 +557,7 @@
                       "type": "text",
                       "id": "ZdPxb",
                       "fill": "#000000",
-                      "content": "☕",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 24,
                       "fontWeight": "normal"
@@ -713,7 +713,7 @@
                           "type": "text",
                           "id": "h0m0j",
                           "fill": "#000000",
-                          "content": "🍺",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 24,
                           "fontWeight": "normal"
@@ -842,7 +842,7 @@
                           "type": "text",
                           "id": "Y0OPxE",
                           "fill": "#000000",
-                          "content": "🍜",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 24,
                           "fontWeight": "normal"
@@ -1091,7 +1091,7 @@
               "id": "QMmaY",
               "opacity": 0.4,
               "fill": "#999999",
-              "content": "📂",
+              "content": "",
               "fontFamily": "Inter",
               "fontSize": 60,
               "fontWeight": "normal"
@@ -1220,7 +1220,7 @@
               "id": "X7xdUD",
               "opacity": 0.4,
               "fill": "#999999",
-              "content": "⏳",
+              "content": "",
               "fontFamily": "Inter",
               "fontSize": 60,
               "fontWeight": "normal"

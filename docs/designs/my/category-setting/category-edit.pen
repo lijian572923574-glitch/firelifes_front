@@ -132,7 +132,7 @@
                       "type": "text",
                       "id": "PayhD",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -171,7 +171,7 @@
                       "type": "text",
                       "id": "AEu9p",
                       "fill": "#000000",
-                      "content": "🍔",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 20,
                       "fontWeight": "normal"
@@ -268,7 +268,7 @@
                       "type": "text",
                       "id": "A883x",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -307,7 +307,7 @@
                       "type": "text",
                       "id": "ATv6D",
                       "fill": "#000000",
-                      "content": "🍕",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 20,
                       "fontWeight": "normal"
@@ -488,7 +488,7 @@
                               "type": "text",
                               "id": "Bk4vN",
                               "fill": "#666666",
-                              "content": "💸 支出",
+                              "content": " 支出",
                               "fontFamily": "Inter",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -564,7 +564,7 @@
                               "type": "text",
                               "id": "mALHi",
                               "fill": "#000000",
-                              "content": "🍔",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -585,7 +585,7 @@
                               "type": "text",
                               "id": "PEtEU",
                               "fill": "#000000",
-                              "content": "🍕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -606,7 +606,7 @@
                               "type": "text",
                               "id": "fiVl6",
                               "fill": "#000000",
-                              "content": "☕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -627,7 +627,7 @@
                               "type": "text",
                               "id": "FMDTV",
                               "fill": "#000000",
-                              "content": "🍰",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -648,7 +648,7 @@
                               "type": "text",
                               "id": "tH1HZ",
                               "fill": "#000000",
-                              "content": "🍺",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -669,7 +669,7 @@
                               "type": "text",
                               "id": "bAHbv",
                               "fill": "#000000",
-                              "content": "🍱",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -690,7 +690,7 @@
                               "type": "text",
                               "id": "xO2eL",
                               "fill": "#000000",
-                              "content": "🍗",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -711,7 +711,7 @@
                               "type": "text",
                               "id": "J54Vo",
                               "fill": "#000000",
-                              "content": "🥗",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -981,7 +981,7 @@
                       "type": "text",
                       "id": "xYzlC",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -1020,7 +1020,7 @@
                       "type": "text",
                       "id": "sFDmh",
                       "fill": "#000000",
-                      "content": "🍔",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 20,
                       "fontWeight": "normal"
@@ -1201,7 +1201,7 @@
                               "type": "text",
                               "id": "WQmeA",
                               "fill": "#666666",
-                              "content": "💸 支出",
+                              "content": " 支出",
                               "fontFamily": "Inter",
                               "fontSize": 14,
                               "fontWeight": "normal"
@@ -1255,7 +1255,7 @@
                               "type": "text",
                               "id": "dMeYZ",
                               "fill": "#000000",
-                              "content": "🍔",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1298,7 +1298,7 @@
                               "type": "text",
                               "id": "ha3No",
                               "fill": "#000000",
-                              "content": "🍕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1319,7 +1319,7 @@
                               "type": "text",
                               "id": "olL5i",
                               "fill": "#000000",
-                              "content": "☕",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1340,7 +1340,7 @@
                               "type": "text",
                               "id": "pQ4ig",
                               "fill": "#000000",
-                              "content": "🍰",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1361,7 +1361,7 @@
                               "type": "text",
                               "id": "A60GDu",
                               "fill": "#000000",
-                              "content": "🍺",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1382,7 +1382,7 @@
                               "type": "text",
                               "id": "z7ZZ3c",
                               "fill": "#000000",
-                              "content": "🍱",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1403,7 +1403,7 @@
                               "type": "text",
                               "id": "RrofG",
                               "fill": "#000000",
-                              "content": "🍗",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"
@@ -1424,7 +1424,7 @@
                               "type": "text",
                               "id": "OX4IO",
                               "fill": "#000000",
-                              "content": "🥗",
+                              "content": "",
                               "fontFamily": "Inter",
                               "fontSize": 22,
                               "fontWeight": "normal"

@@ -2,7 +2,7 @@
 > 文件：`account-list.md` | 中文名称：账户管理列表页 | 所属模块：系统配置（我的页面子模块）
 > 页面路径：`src/pages/my/account-setting/account-list.vue`
 
-> 版本：v2.8 | 状态：✅已完成 | 最后更新：2026-05-21
+> 版本：v2.8 | 状态：已完成 | 最后更新：2026-05-21
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
@@ -31,7 +31,7 @@
 
 ---
 
-> 🎨 **Pencil 设计稿**: `designs/my/account-setting/account-list.pen` — 在编辑器中使用 Pencil 插件打开，可查看完整极简风格设计。
+>  **Pencil 设计稿**: `designs/my/account-setting/account-list.pen` — 在编辑器中使用 Pencil 插件打开，可查看完整极简风格设计。
 
 ## 页面视觉布局
 
@@ -159,7 +159,7 @@
 ### 4.2 分组标题栏（简化版）
 
 ```
-💰 现金类 (2)
+ 现金类 (2)
 ────────────
 ```
 
@@ -308,13 +308,13 @@
 
 | 项目 | 描述 | 状态 |
 |------|------|------|
-| 移除彩色条 | 移除卡片左侧6rpx类型色条 | ✅ |
-| 简化分组标题 | 移除分组标题左侧彩色条 | ✅ |
-| SVG图标统一 | 所有图标使用category-icon-svg系统 | ✅ |
-| 边框替代阴影 | 使用 `1px solid $uni-border-color` | ✅ |
-| 中性配色 | 使用项目SCSS变量，低饱和度配色 | ✅ |
-| Badge浅色化 | 背景使用浅色变体，文字使用对应功能色 | ✅ |
-| 间距优化 | 卡片高度96rpx，间距12rpx | ✅ |
+| 移除彩色条 | 移除卡片左侧6rpx类型色条 |  |
+| 简化分组标题 | 移除分组标题左侧彩色条 |  |
+| SVG图标统一 | 所有图标使用category-icon-svg系统 |  |
+| 边框替代阴影 | 使用 `1px solid $uni-border-color` |  |
+| 中性配色 | 使用项目SCSS变量，低饱和度配色 |  |
+| Badge浅色化 | 背景使用浅色变体，文字使用对应功能色 |  |
+| 间距优化 | 卡片高度96rpx，间距12rpx |  |
 
 ---
 
@@ -345,9 +345,9 @@ interface Account {
 ### 默认账户配置
 | 账户名称 | 图标 | 类型 | 余额 | 说明 | 默认支出 | 默认收入 |
 |---------|------|------|------|------|---------|---------|
-| 现金 | wallet | cash | 0 | 日常现金备用 | ✅ | ✅ |
-| 折旧资产 | mobile | depreciable_asset | 0 | 手机、电脑等折旧物品 | ❌ | ❌ |
-| 固定资产 | house | fixed_asset | 0 | 房产、车位等高价值物品 | ❌ | ❌ |
+| 现金 | wallet | cash | 0 | 日常现金备用 |  |  |
+| 折旧资产 | mobile | depreciable_asset | 0 | 手机、电脑等折旧物品 |  |  |
+| 固定资产 | house | fixed_asset | 0 | 房产、车位等高价值物品 |  |  |
 
 ---
 
@@ -369,4 +369,4 @@ interface Account {
 | `src/types/account.ts` | 账户类型定义 |
 | `src/api/account.ts` | 账户 API 接口 |
 | `src/styles/category-icons.css` | SVG图标定义 |
-| `designs/my/account-setting/account-list.pen` | 🎨 Pencil 设计稿 |
+| `designs/my/account-setting/account-list.pen` |  Pencil 设计稿 |

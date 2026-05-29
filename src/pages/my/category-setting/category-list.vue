@@ -19,7 +19,7 @@
       </view>
 
       <view v-else-if="!hasCategories" class="empty-state">
-        <text class="empty-icon">📂</text>
+        <view class="empty-icon category-icon-svg category-icon-fenleishezhi"></view>
         <text class="empty-text">添加你的第一个子分类</text>
       </view>
 
@@ -302,7 +302,8 @@ onShow(() => {
 
 .loading-icon,
 .empty-icon {
-  font-size: 120rpx;
+  width: 120rpx;
+  height: 120rpx;
   margin-bottom: 24rpx;
   opacity: 0.4;
 }

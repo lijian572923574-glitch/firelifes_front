@@ -134,7 +134,7 @@
                       "type": "text",
                       "id": "lM6oP",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -283,7 +283,7 @@
                       "type": "text",
                       "id": "RDpXj",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -399,7 +399,7 @@
                       "type": "text",
                       "id": "DcDPT",
                       "fill": "#CCCCCC",
-                      "content": "☰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 16,
                       "fontWeight": "normal"
@@ -552,7 +552,7 @@
                       "type": "text",
                       "id": "bmDXi",
                       "fill": "#999999",
-                      "content": "☰ 长按拖拽排序",
+                      "content": " 长按拖拽排序",
                       "fontFamily": "Inter",
                       "fontSize": 11,
                       "fontWeight": "normal"
@@ -593,7 +593,7 @@
                           "type": "text",
                           "id": "NrWaF",
                           "fill": "#00BFFF",
-                          "content": "☰",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 16,
                           "fontWeight": "normal"

@@ -126,7 +126,7 @@
                       "type": "text",
                       "id": "k3iulF",
                       "fill": "#333333",
-                      "content": "🍔",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -189,7 +189,7 @@
                       "type": "text",
                       "id": "UlGPi",
                       "fill": "#333333",
-                      "content": "💰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -252,7 +252,7 @@
                       "type": "text",
                       "id": "D8AzIz",
                       "fill": "#333333",
-                      "content": "🚇",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -441,7 +441,7 @@
                           "type": "text",
                           "id": "qSLBD",
                           "fill": "#333333",
-                          "content": "🍔",
+                          "content": "",
                           "fontFamily": "Inter",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -517,7 +517,7 @@
                       "type": "text",
                       "id": "T37Si",
                       "fill": "#333333",
-                      "content": "💰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -580,7 +580,7 @@
                       "type": "text",
                       "id": "IJ7eH",
                       "fill": "#333333",
-                      "content": "🚇",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -637,7 +637,7 @@
                   "type": "text",
                   "id": "OLAVe",
                   "fill": "#FFFFFF",
-                  "content": "👆 点击「删除」按钮",
+                  "content": " 点击「删除」按钮",
                   "fontFamily": "Inter",
                   "fontSize": 11,
                   "fontWeight": "600"
@@ -773,7 +773,7 @@
                       "type": "text",
                       "id": "CpOXY",
                       "fill": "#333333",
-                      "content": "🍔",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -836,7 +836,7 @@
                       "type": "text",
                       "id": "AbCjA",
                       "fill": "#333333",
-                      "content": "💰",
+                      "content": "",
                       "fontFamily": "Inter",
                       "fontSize": 14,
                       "fontWeight": "normal"

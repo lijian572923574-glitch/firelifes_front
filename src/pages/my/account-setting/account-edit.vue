@@ -49,7 +49,7 @@
               @click="onTypeChange(item.value)"
             >
               <view class="type-card-dot" :style="{ background: item.color }"></view>
-              <text class="type-card-emoji">{{ item.emoji }}</text>
+              <view class="type-card-svg category-icon-svg" :class="item.className"></view>
               <text class="type-card-label" :style="formData.type === item.value ? { color: item.color, fontWeight: '600' } : {}">{{ item.label }}</text>
             </view>
           </view>
@@ -63,7 +63,7 @@
               @click="onTypeChange(item.value)"
             >
               <view class="type-card-dot" :style="{ background: item.color }"></view>
-              <text class="type-card-emoji">{{ item.emoji }}</text>
+              <view class="type-card-svg category-icon-svg" :class="item.className"></view>
               <text class="type-card-label" :style="formData.type === item.value ? { color: item.color, fontWeight: '600' } : {}">{{ item.label }}</text>
             </view>
           </view>
@@ -306,12 +306,12 @@ const account = ref<Account | null>(null)
 const saving = ref(false)
 const oldBalance = ref(0)
 
-const TYPE_CONFIG: Record<AccountType, { color: string; emoji: string; label: string; activeBg: string }> = {
-  cash:         { color: '#00BFFF', emoji: '💰', label: '现金类', activeBg: 'rgba(0,191,255,0.06)' },
-  investment:   { color: '#FF9800', emoji: '📈', label: '投资类', activeBg: 'rgba(255,152,0,0.06)' },
-  fixed_asset:  { color: '#9C27B0', emoji: '🏠', label: '固定资产类', activeBg: 'rgba(156,39,176,0.06)' },
-  depreciable_asset: { color: '#00BCD4', emoji: '📱', label: '折旧资产类', activeBg: 'rgba(0,188,212,0.06)' },
-  liability:    { color: '#FA3534', emoji: '💳', label: '负债类', activeBg: 'rgba(250,53,52,0.06)' },
+const TYPE_CONFIG: Record<AccountType, { color: string; className: string; label: string; activeBg: string }> = {
+  cash:         { color: '#00BFFF', className: 'category-icon-jinqian', label: '现金类', activeBg: 'rgba(0,191,255,0.06)' },
+  investment:   { color: '#FF9800', className: 'category-icon-touzi', label: '投资类', activeBg: 'rgba(255,152,0,0.06)' },
+  fixed_asset:  { color: '#9C27B0', className: 'category-icon-zhuzhai', label: '固定资产类', activeBg: 'rgba(156,39,176,0.06)' },
+  depreciable_asset: { color: '#00BCD4', className: 'category-icon-shuma', label: '折旧资产类', activeBg: 'rgba(0,188,212,0.06)' },
+  liability:    { color: '#FA3534', className: 'account-icon-credit-card', label: '负债类', activeBg: 'rgba(250,53,52,0.06)' },
 }
 
 const typeRow1 = computed(() =>
@@ -719,8 +719,9 @@ onLoad((options: any) => {
   border-radius: 4rpx;
 }
 
-.type-card-emoji {
-  font-size: 32rpx;
+.type-card-svg {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .type-card-label {

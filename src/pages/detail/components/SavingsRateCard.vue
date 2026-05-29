@@ -1,7 +1,7 @@
 <template>
   <view class="savings-card" v-if="monthIncome > 0 || monthExpense > 0">
     <view class="savings-left">
-      <text class="savings-icon">💰</text>
+      <view class="savings-icon category-icon-svg category-icon-jinqian"></view>
       <view class="savings-info">
         <text class="savings-label">本月存下</text>
         <text class="savings-amount">¥{{ formatAmount(savings) }}</text>
@@ -61,7 +61,8 @@ const formatAmount = (val: number) => Math.abs(val).toFixed(2)
 }
 
 .savings-icon {
-  font-size: 36rpx;
+  width: 36rpx;
+  height: 36rpx;
 }
 
 .savings-info {
