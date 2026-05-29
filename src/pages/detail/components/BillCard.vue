@@ -17,7 +17,7 @@
         <template #default>
           <view class="bill-item" @tap="handleItemTap(item)">
             <view class="bill-item-left">
-              <view class="category-icon" :style="{ backgroundColor: item.categoryColor }">
+              <view class="category-icon" :style="{ backgroundColor: item.categoryColor }" @tap.stop="handleCategoryTap(item)">
                 <view class="category-icon-svg" :class="item.categoryIcon"></view>
               </view>
               <view class="bill-item-info">
@@ -42,6 +42,7 @@
 <script setup lang="ts">
 export interface BillCardRecord {
   id: number
+  typeId: number
   type: 'income' | 'expense' | 'transfer' | 'repayment' | 'adjustment_increase' | 'adjustment_decrease'
   amount: number
   displayName: string
@@ -58,11 +59,16 @@ defineProps<{
 
 const emit = defineEmits<{
   'record-tap': [record: BillCardRecord]
+  'category-tap': [record: BillCardRecord]
   'record-delete': [record: BillCardRecord]
 }>()
 
 const handleItemTap = (item: BillCardRecord) => {
   emit('record-tap', item)
+}
+
+const handleCategoryTap = (item: BillCardRecord) => {
+  emit('category-tap', item)
 }
 
 const handleDelete = (item: BillCardRecord) => {

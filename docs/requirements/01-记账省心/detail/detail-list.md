@@ -2,11 +2,12 @@
 > 文件：`detail-month-switch.md` | 中文名称：明细页（账单明细首页） | 所属模块：记账省心
 > 页面路径：`src/pages/detail/index.vue`
 
-> 版本：v1.3 | 状态：已完成 | 最后更新：2026-05-21
+> 版本：v1.4 | 状态：已完成 | 最后更新：2026-05-29
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.4 | 2026-05-29 | 记录行点击分离：图标点击弹出分类选择器快速修改分类，其余区域跳转编辑页；新增 CategorySelectPopup 组件 | AI-全栈 |
 | v1.3 | 2026-05-21 | 新增 Pencil 设计稿：`designs/detail-index.pen`，可视化页面布局与组件层级 | AI-UI设计 |
 | v1.2 | 2026-05-21 | 修复 CATEGORY_ICON_MAP：补全 26 个数据库已有分类的 iconfont 映射，修复 statistics 页 20 个错误图标类名 | AI |
 | v1.1 | 2026-05-21 | 补充完整页面结构：DetailHeader、FunctionBar、BillCard、CustomTabbar、分类图标映射、空状态、加载态、切换动画 | AI |
@@ -153,11 +154,22 @@
 | `transfer` | `-` | `-¥500.00` |
 | `repayment` | `-` | `-¥2000.00` |
 
+**记录行点击行为（v1.4 新增）：**
+
+记录行分为两个点击区域：
+
+| 区域 | 交互 | 行为 |
+|------|------|------|
+| 🎯 **分类图标**（圆形区域） | `@tap.stop` | 弹出 CategorySelectPopup → 选择新分类 → 立即调用 `PUT /api/record/:id` 仅更新 `typeId` → 刷新列表 → Toast「分类已修改」 |
+| 📝 **其他区域**（图标外整行） | `@tap` | 跳转编辑页 `/pages/record/edit-record?id={id}`（原有行为不变） |
+
+> 注意：图标点击使用 `@tap.stop` 阻止事件冒泡，确保不会触发整行点击事件。
+
 **分类图标方案**：
-- 使用 iconfont 字体图标（`src/static/iconfont/iconfont.css`）
-- `CATEGORY_ICON_MAP` 映射分类名称 → iconfont 类名
+- 使用 SVG 分类图标系统（`src/styles/category-icons.css`）
+- `CATEGORY_ICON_MAP` 映射分类名称 → SVG class 类名
 - 圆形背景色：`rgba(0, 191, 255, 0.08)`（卡布里蓝浅色）
-- 图标尺寸：`36rpx`，圆形图标容器：`72rpx × 72rpx`
+- 图标尺寸：`44rpx`，圆形图标容器：`72rpx × 72rpx`
 
 ### 2.4 CustomTabbar（底部导航栏）
 
@@ -167,6 +179,45 @@
 | 布局 | 固定在页面底部，5 个 tab：明细 / 统计 / 记账 / 资产 / 我的 |
 | 高度 | 48px |
 | 背景 | `#FFFFFF`，顶部 `<hr>` 分割线 |
+
+### 2.5 CategorySelectPopup（分类选择弹出组件 v1.4 新增）
+
+| 属性 | 值 |
+|------|-----|
+| 文件 | `src/pages/detail/components/CategorySelectPopup.vue` |
+| 容器 | `WdPopup`（底部弹出，圆角 32rpx，背景白色） |
+| 内容 | 按分组展示分类网格，每行 4 个，圆形图标 + 分类名 |
+
+**Props:**
+```typescript
+{
+  categories: CategoryGroup[]    // 分组数据（含 children → id + name + icon）
+  selectedTypeId: number         // 当前选中分类 ID
+  transactionType: 'income' | 'expense'  // 当前记录类型
+}
+```
+
+**Emits:**
+```typescript
+{
+  'select': (typeId: number) => void   // 选择新分类后触发
+}
+```
+
+**Expose:**
+```typescript
+{
+  open: () => void   // 打开弹窗
+}
+```
+
+**交互流程：**
+1. 用户点击 BillCard 记录行图标 → `@tap.stop` 阻止冒泡 → emit `category-tap`
+2. DetailHeader 接收事件 → 记录当前 `recordId` + `recordType` → 调用 `categorySelectPopupRef.open()`
+3. 用户点击分类网格中的某个分类 → emit `select` → 关闭弹窗
+4. 立即调用 `PUT /api/record/:id { typeId: newTypeId }`
+5. 成功 → 刷新列表 + Toast「分类已修改」
+6. 失败 → Toast「修改失败，请重试」
 
 ---
 
@@ -218,10 +269,11 @@ interface DatePageData {
 // BillCard 所需的记录格式
 interface BillCardRecord {
   id: number
+  typeId: number           // 分类ID (v1.4 新增，用于图标点击修改分类)
   type: 'income' | 'expense' | 'transfer' | 'repayment'
   amount: number
   displayName: string      // 备注 > 分类名称
-  categoryIcon: string     // iconfont 类名
+  categoryIcon: string     // SVG 图标 class
   categoryColor: string    // 图标背景色
 }
 ```
@@ -319,6 +371,7 @@ interface BillCardRecord {
 | getMonthSummary | GET | `/api/record/month-summary` | `yearMonth` | 获取月度汇总 |
 | getUserCategories | GET | `/api/category/user` | `type`（expense/income） | 获取用户分类 |
 | getUserIcons | GET | `/api/category/user-icons` | - | 获取用户自定义图标 |
+| updateRecord | PUT | `/api/record/:id` | `{ typeId }` (仅修改分类时) | 仅更新记录的 typeId（v1.4 新增用途） |
 
 **响应格式：**
 ```typescript
@@ -335,7 +388,8 @@ interface BillCardRecord {
 
 | 交互 | 触发 | 行为 |
 |------|------|------|
-| 点击记录行 | BillCard 记录行 tap | 跳转编辑页 `/pages/record/edit-record?id={id}` |
+| 点击记录行 | BillCard 记录行 tap（非图标区域） | 跳转编辑页 `/pages/record/edit-record?id={id}` |
+| **点击分类图标** | **BillCard 记录行图标 tap** | **弹出 CategorySelectPopup → 选择新分类 → 即时调用 `PUT /api/record/:id` 仅更新 typeId → 刷新列表 → Toast「分类已修改」（v1.4 新增）** |
 | 点击功能入口 | FunctionBar item tap | 根据 key 跳转对应页面 |
 | 点击「更多」 | FunctionBar more tap | 跳转功能列表页 `/pages/detail/function-list` |
 | 点击年月 | DetailHeader 年月列 tap | 弹出 YearMonthPicker |
@@ -362,6 +416,7 @@ interface BillCardRecord {
 | `src/pages/detail/components/DetailHeader.vue` | 头部年月+收支汇总 |
 | `src/pages/detail/components/FunctionBar.vue` | 功能快捷入口栏 |
 | `src/pages/detail/components/BillCard.vue` | 日期分组记录卡片 |
+| `src/pages/detail/components/CategorySelectPopup.vue` | 分类选择弹出组件（v1.4 新增） |
 | `src/pages/detail/function-list.vue` | 功能列表页（拖拽排序） |
 | `src/pages/detail/bill.vue` | 账单明细页 |
 | `src/pages/detail/fire-progress.vue` | FIRE进度页 |

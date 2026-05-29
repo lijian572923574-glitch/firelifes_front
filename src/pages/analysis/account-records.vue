@@ -185,6 +185,7 @@ const getEnrichedRecords = (date: string): BillCardRecord[] => {
     }
     return {
       id: record.id,
+      typeId: record.typeId,
       type: record.type,
       amount: record.amount,
       displayName,

@@ -47,6 +47,7 @@
               :dayExpense="getDayExpense(date)"
               :records="getEnrichedRecords(date)"
               @record-tap="handleRecordTap"
+              @category-tap="handleCategoryTap"
               @record-delete="handleDeleteRecord"
             />
           </view>
@@ -59,6 +60,12 @@
     </view>
 
     <YearMonthPicker ref="yearMonthPickerRef" v-model="selectedYearMonth" />
+    <CategorySelectPopup
+      ref="categorySelectPopupRef"
+      :categories="categorySelectCategories"
+      :selectedTypeId="categorySelectTypeId"
+      @select="handleCategorySelect"
+    />
     <CustomTabbar />
   </view>
 </template>
@@ -75,6 +82,7 @@ import DetailHeader from './components/DetailHeader.vue'
 import FunctionBar, { type FunctionItem } from './components/FunctionBar.vue'
 import { useFunctionItemsStore } from '../../stores/functionItems'
 import BillCard, { type BillCardRecord } from './components/BillCard.vue'
+import CategorySelectPopup from './components/CategorySelectPopup.vue'
 import { getCategoryIconClass } from '../../utils/category-icon-map'
 
 const deletingId = ref<number | null>(null)
@@ -157,6 +165,41 @@ const handleRecordTap = (record: BillCardRecord) => {
   })
 }
 
+const categorySelectPopupRef = ref<InstanceType<typeof CategorySelectPopup> | null>(null)
+const targetRecordId = ref(0)
+const targetRecordType = ref<'income' | 'expense'>('expense')
+const categorySelectTypeId = ref(0)
+
+const categorySelectCategories = computed(() => {
+  return categories.value.filter(g => {
+    if (g.children.length === 0) return false
+    return g.children[0].type === targetRecordType.value
+  })
+})
+
+const handleCategoryTap = (record: BillCardRecord) => {
+  targetRecordId.value = record.id
+  targetRecordType.value = record.type === 'income' ? 'income' : 'expense'
+  categorySelectTypeId.value = record.typeId
+  categorySelectPopupRef.value?.open()
+}
+
+const handleCategorySelect = async (typeId: number) => {
+  if (!targetRecordId.value) return
+  try {
+    const res = await recordApi.updateRecord(targetRecordId.value, { typeId })
+    if (res.success) {
+      loadFirstPageDates()
+      uni.showToast({ title: '分类已修改', icon: 'success', duration: 1500 })
+    } else {
+      uni.showToast({ title: res.message || '修改失败，请重试', icon: 'none' })
+    }
+  } catch {
+    uni.showToast({ title: '网络错误', icon: 'none' })
+  }
+  targetRecordId.value = 0
+}
+
 const CATEGORY_BG_COLOR = 'var(--color-primary-light)'
 
 const getCategoryInfo = (typeId: number | null): { name: string; icon: string; color: string } => {
@@ -187,6 +230,7 @@ const getEnrichedRecords = (date: string): BillCardRecord[] => {
     const info = getCategoryInfo(record.typeId)
     return {
       id: record.id,
+      typeId: record.typeId ?? 0,
       type: record.type,
       amount: record.amount,
       displayName: record.remark || info.name,
