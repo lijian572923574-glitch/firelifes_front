@@ -212,6 +212,7 @@ const handleLogout = () => {
   height: 72rpx;
   border-radius: 20rpx;
   background-color: var(--color-primary-light, rgba(0, 191, 255, 0.1));
+  background-size: 40rpx;
   display: flex;
   align-items: center;
   justify-content: center;
