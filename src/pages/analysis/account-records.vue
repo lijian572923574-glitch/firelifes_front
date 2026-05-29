@@ -1,6 +1,12 @@
 <template>
   <view class="page">
     <view class="account-header">
+      <view class="nav-bar">
+        <view class="back-btn" @click="goBack">
+          <text class="back-arrow">←</text>
+        </view>
+        <text class="nav-title">账户交易明细</text>
+      </view>
       <view class="account-info-row">
         <view class="account-icon category-icon-svg" :class="getAccountIconClass(accountInfo.icon, accountInfo.type)"></view>
         <text class="account-name">{{ accountInfo.name }}</text>
@@ -356,6 +362,15 @@ const handleDeleteRecord = (record: BillCardRecord) => {
   })
 }
 
+const goBack = () => {
+  const pages = getCurrentPages()
+  if (pages.length > 1) {
+    uni.navigateBack()
+  } else {
+    uni.redirectTo({ url: '/pages/analysis/analysis' })
+  }
+}
+
 onMounted(() => {
   const pages = getCurrentPages()
   const currentPage = pages[pages.length - 1] as any
@@ -390,11 +405,43 @@ onShow(() => {
 
 .account-header {
   background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
-  padding: 32rpx;
+  padding: 16rpx 32rpx 32rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 20rpx;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-arrow {
+  font-size: 40rpx;
+  color: #FFFFFF;
+}
+
+.nav-title {
+  font-size: 34rpx;
+  color: #FFFFFF;
+  font-weight: 600;
 }
 
 .account-info-row {

@@ -11,7 +11,8 @@ const PAGE_BACKUP_MAP: Record<string, string> = {
   '/pages/my/category-setting/category-group-list': '/pages/my/index',
   '/pages/my/account-setting/account-edit': '/pages/my/account-setting/account-list',
   '/pages/my/account-setting/account-list': '/pages/my/index',
-  '/pages/my/index': '/pages/detail/index'
+  '/pages/my/index': '/pages/detail/index',
+  '/pages/analysis/account-records': '/pages/analysis/analysis'
 };
 
 /**
