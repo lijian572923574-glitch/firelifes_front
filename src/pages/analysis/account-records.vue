@@ -428,7 +428,7 @@ onShow(() => {
   display: flex;
   align-items: center;
   gap: 4rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: #FFFFFF;
   padding: 8rpx 0;
 }
@@ -439,7 +439,7 @@ onShow(() => {
 }
 
 .nav-title {
-  font-size: 34rpx;
+  font-size: var(--text-nav);
   color: #FFFFFF;
   font-weight: 600;
 }
@@ -461,13 +461,13 @@ onShow(() => {
 }
 
 .account-name {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   color: #FFFFFF;
   font-weight: 500;
 }
 
 .account-balance {
-  font-size: 38rpx;
+  font-size: var(--text-number);
   color: #FFFFFF;
   font-weight: 700;
   flex-shrink: 0;
@@ -492,12 +492,12 @@ onShow(() => {
 }
 
 .summary-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: #ffffffb3;
 }
 
 .summary-value {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 600;
 }
 
@@ -527,7 +527,7 @@ onShow(() => {
 }
 
 .loading-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -554,7 +554,7 @@ onShow(() => {
 }
 
 .load-more-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -567,7 +567,7 @@ onShow(() => {
 }
 
 .empty-text {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-secondary, #94A3B8);
 }
 </style>

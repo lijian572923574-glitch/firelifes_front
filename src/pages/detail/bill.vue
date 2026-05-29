@@ -287,7 +287,7 @@ onMounted(() => {
 }
 
 .tab-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   font-weight: 500;
 }
@@ -322,13 +322,13 @@ onMounted(() => {
 }
 
 .month-arrow {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   padding: 10rpx 20rpx;
 }
 
 .month-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   min-width: 180rpx;
@@ -358,12 +358,12 @@ onMounted(() => {
 }
 
 .summary-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: rgba(255, 255, 255, 0.7);
 }
 
 .summary-value {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--color-text-inverse, #FFFFFF);
 }
@@ -377,7 +377,7 @@ onMounted(() => {
 }
 
 .summary-value.total-balance {
-  font-size: 44rpx;
+  font-size: var(--text-number);
 }
 
 .summary-divider {
@@ -413,7 +413,7 @@ onMounted(() => {
 }
 
 .header-cell {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   font-weight: 500;
 }
@@ -438,7 +438,7 @@ onMounted(() => {
 }
 
 .bill-cell {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -458,7 +458,7 @@ onMounted(() => {
 }
 
 .empty-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 </style>

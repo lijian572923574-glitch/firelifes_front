@@ -79,13 +79,13 @@ defineExpose({ open, close })
 }
 
 .popup-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .popup-close {
-  font-size: 40rpx;
+  font-size: var(--text-number);
   color: var(--color-text-secondary, #94A3B8);
   padding: 4rpx 12rpx;
 }

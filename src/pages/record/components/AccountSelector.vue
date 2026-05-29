@@ -235,12 +235,12 @@ defineExpose({
   background: var(--color-border-light, #F1F5F9);
   border-radius: 16rpx;
   padding: 0 24rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
 .section-title {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   padding: 20rpx 24rpx 12rpx;
 }
@@ -278,13 +278,13 @@ defineExpose({
 }
 
 .account-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 
 .account-balance {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 600;
   margin-right: 12rpx;
 }
@@ -298,7 +298,7 @@ defineExpose({
 }
 
 .check-mark {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   font-weight: 700;
 }
@@ -309,7 +309,7 @@ defineExpose({
 }
 
 .empty-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 </style>

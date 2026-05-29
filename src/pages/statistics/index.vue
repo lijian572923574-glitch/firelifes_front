@@ -239,13 +239,13 @@ onMounted(() => {
 }
 
 .month-arrow {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   padding: 12rpx 20rpx;
 }
 
 .month-text {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   min-width: 180rpx;
@@ -270,12 +270,12 @@ onMounted(() => {
 }
 
 .summary-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: rgba(255, 255, 255, 0.7);
 }
 
 .summary-value {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--color-text-inverse, #FFFFFF);
 }
@@ -292,7 +292,7 @@ onMounted(() => {
 }
 
 .loading-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -308,7 +308,7 @@ onMounted(() => {
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   margin-bottom: 24rpx;
@@ -327,7 +327,7 @@ onMounted(() => {
 }
 
 .rank-num {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   min-width: 32rpx;
   text-align: center;
@@ -349,7 +349,7 @@ onMounted(() => {
 }
 
 .category-name {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
   min-width: 100rpx;
 }
@@ -370,7 +370,7 @@ onMounted(() => {
 }
 
 .category-amount {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   font-weight: 500;
   min-width: 120rpx;
@@ -378,7 +378,7 @@ onMounted(() => {
 }
 
 .category-percent {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   min-width: 60rpx;
   text-align: right;
@@ -422,7 +422,7 @@ onMounted(() => {
 }
 
 .trend-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -454,7 +454,7 @@ onMounted(() => {
 }
 
 .legend-text {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -464,7 +464,7 @@ onMounted(() => {
 }
 
 .empty-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 </style>

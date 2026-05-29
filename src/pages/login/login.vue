@@ -347,14 +347,14 @@ const goToForgotPassword = () => {
 }
 
 .app-name {
-  font-size: 40rpx;
+  font-size: var(--text-number);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
   margin-bottom: 8rpx;
 }
 
 .app-subtitle {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -373,7 +373,7 @@ const goToForgotPassword = () => {
 }
 
 .tab-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   margin-bottom: 8rpx;
 }
@@ -415,7 +415,7 @@ const goToForgotPassword = () => {
 
 .input {
   flex: 1;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -448,7 +448,7 @@ const goToForgotPassword = () => {
 }
 
 .send-code-btn {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   background: var(--color-primary-light, #E6F7F5);
   padding: 12rpx 24rpx;
@@ -472,12 +472,12 @@ const goToForgotPassword = () => {
 }
 
 .agreement-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .agreement-link {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
 }
 
@@ -489,7 +489,7 @@ const goToForgotPassword = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-inverse, #FFFFFF);
   margin-bottom: 32rpx;
@@ -513,7 +513,7 @@ const goToForgotPassword = () => {
 }
 
 .divider-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-tertiary, #CBD5E1);
   margin: 0 20rpx;
 }
@@ -526,7 +526,7 @@ const goToForgotPassword = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-inverse, #FFFFFF);
   margin-bottom: 36rpx;
@@ -540,12 +540,12 @@ const goToForgotPassword = () => {
 }
 
 .link {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
 }
 
 .link-divider {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-border, #E2E8F0);
 }
 
@@ -580,7 +580,7 @@ const goToForgotPassword = () => {
 }
 
 .popup-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: bold;
   color: var(--color-text-primary, #1E293B);
 }
@@ -597,7 +597,7 @@ const goToForgotPassword = () => {
 }
 
 .popup-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #475569);
   line-height: 1.8;
   white-space: pre-wrap;
@@ -613,7 +613,7 @@ const goToForgotPassword = () => {
 }
 
 .close-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   width: 100%;
   text-align: center;

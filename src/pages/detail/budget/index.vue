@@ -94,6 +94,6 @@ onMounted(() => {
 }
 
 .setting-icon {
-  font-size: 40rpx;
+  font-size: var(--text-number);
 }
 </style>

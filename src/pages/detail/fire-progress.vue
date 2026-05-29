@@ -274,7 +274,7 @@ onMounted(() => {
 }
 
 .ring-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 8rpx;
 }
@@ -293,13 +293,13 @@ onMounted(() => {
 }
 
 .stat-value {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .stat-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 6rpx;
 }
@@ -321,12 +321,12 @@ onMounted(() => {
 }
 
 .gap-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .gap-amount {
-  font-size: 40rpx;
+  font-size: var(--text-number);
   font-weight: 700;
   color: var(--color-danger, #EF4444);
   margin: 8rpx 0 16rpx;
@@ -356,7 +356,7 @@ onMounted(() => {
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -375,7 +375,7 @@ onMounted(() => {
 }
 
 .goal-input-label {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
@@ -389,14 +389,14 @@ onMounted(() => {
 }
 
 .goal-input-prefix {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 8rpx;
 }
 
 .goal-input {
   width: 240rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   text-align: right;
 }
@@ -420,7 +420,7 @@ onMounted(() => {
 
 .tip-text {
   flex: 1;
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -431,7 +431,7 @@ onMounted(() => {
 }
 
 .quick-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-bottom: 16rpx;
   display: block;
@@ -444,7 +444,7 @@ onMounted(() => {
 }
 
 .quick-input-label {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -457,14 +457,14 @@ onMounted(() => {
 }
 
 .quick-input-prefix {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 8rpx;
 }
 
 .quick-input {
   width: 200rpx;
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
   text-align: right;
 }
@@ -480,7 +480,7 @@ onMounted(() => {
 }
 
 .quick-result-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   font-weight: 500;
 }
@@ -492,7 +492,7 @@ onMounted(() => {
 }
 
 .quick-apply-text {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-inverse, #FFFFFF);
 }
 
@@ -517,14 +517,14 @@ onMounted(() => {
 }
 
 .info-dot {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   margin-right: 12rpx;
   flex-shrink: 0;
 }
 
 .info-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   line-height: 1.6;
 }

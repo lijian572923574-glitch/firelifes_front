@@ -195,19 +195,19 @@ const toggleExpand = (id: number) => {
 }
 
 .loading-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .empty-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-primary, #1E293B);
   font-weight: 600;
   margin-bottom: 12rpx;
 }
 
 .empty-hint {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   text-align: center;
   line-height: 1.6;
@@ -230,7 +230,7 @@ const toggleExpand = (id: number) => {
 }
 
 .overview-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -247,14 +247,14 @@ const toggleExpand = (id: number) => {
 }
 
 .ov-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   display: block;
   margin-bottom: 4rpx;
 }
 
 .ov-value {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
 }
@@ -270,7 +270,7 @@ const toggleExpand = (id: number) => {
 .projected-text {
   display: block;
   margin-top: 12rpx;
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   text-align: center;
 }
@@ -280,7 +280,7 @@ const toggleExpand = (id: number) => {
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   display: block;
@@ -311,7 +311,7 @@ const toggleExpand = (id: number) => {
 }
 
 .alert-icon {
-  font-size: 32rpx;
+  font-size: var(--text-title);
 }
 
 .alert-info {
@@ -319,14 +319,14 @@ const toggleExpand = (id: number) => {
 }
 
 .alert-name {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   display: block;
 }
 
 .alert-detail {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   display: block;
   margin-top: 4rpx;
@@ -338,7 +338,7 @@ const toggleExpand = (id: number) => {
 }
 
 .alert-more text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
 }
 
@@ -362,7 +362,7 @@ const toggleExpand = (id: number) => {
 }
 
 .category-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -374,12 +374,12 @@ const toggleExpand = (id: number) => {
 }
 
 .category-amount {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .category-arrow {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -388,7 +388,7 @@ const toggleExpand = (id: number) => {
 }
 
 .category-remaining {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -399,7 +399,7 @@ const toggleExpand = (id: number) => {
 }
 
 .expand-text {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 </style>

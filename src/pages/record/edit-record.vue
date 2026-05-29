@@ -279,7 +279,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 4rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-inverse, #FFFFFF);
 }
 
@@ -289,20 +289,20 @@ onMounted(() => {
 }
 
 .edit-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-inverse, #FFFFFF);
 }
 
 .delete-btn {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: rgba(255, 255, 255, 0.85);
 }
 
 .loading-state {
   padding: 200rpx 0;
   text-align: center;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -353,7 +353,7 @@ onMounted(() => {
   height: 56rpx;
   border-radius: 50%;
   color: var(--color-text-inverse, #FFFFFF);
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -365,7 +365,7 @@ onMounted(() => {
 }
 
 .loading-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }

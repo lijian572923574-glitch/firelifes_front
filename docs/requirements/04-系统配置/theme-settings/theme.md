@@ -166,6 +166,48 @@ src/
 
 ---
 
+## 3+. 字号 Token 体系（v1.6 新增）
+
+在颜色 Token 之外，新增字号 Token 体系，统一全项目文字大小。
+
+### 3+.1 为何需要字号 Token
+
+与颜色同样的问题：各页面硬编码 `font-size: 28rpx` / `32rpx`，同一语义（如"正文""标题"）在不同页面大小不一致。通过语义化 Token 统一管理。
+
+### 3+.2 字号 Token 清单
+
+```
+--text-caption: 20rpx;       标签：功能入口文字、徽章、最小辅助
+--text-note: 22rpx;          说明：图表标签、描述行、极弱提示
+--text-small: 24rpx;         小字：提示条、辅助说明、副标题
+--text-body: 28rpx;          正文：列表项、菜单按钮、段落
+--text-title: 32rpx;         标题：卡片标题、分类名、大号名称
+--text-nav: 34rpx;           导航：页面导航栏标题
+--text-number: 40rpx;        数字：账户余额、金额展示
+--text-number-lg: 48rpx;     大数字：重要金额
+--text-number-xl: 56rpx;     特大数字：净资产
+--text-number-hero: 72rpx;   极致数字：主打金额
+```
+
+### 3+.3 定义位置
+
+`src/theme/variables.css` 的 `:root` 中，与颜色 Token 同文件。
+
+### 3+.4 使用示例
+
+```css
+.card-title {
+  font-size: var(--text-title);
+  color: var(--color-text-primary);
+}
+.account-balance {
+  font-size: var(--text-number);
+  font-weight: 600;
+}
+```
+
+---
+
 ## 4. 预设主题方案
 
 ### 4.1 行业与品牌分析

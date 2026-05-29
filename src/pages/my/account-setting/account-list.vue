@@ -252,7 +252,7 @@ onShow(() => {
 }
 
 .nav-add-icon {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: $uni-text-color-inverse;
   font-weight: 300;
   line-height: 1;
@@ -354,14 +354,14 @@ onShow(() => {
 }
 
 .empty-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: $uni-text-color;
   margin-bottom: 12rpx;
 }
 
 .empty-subtitle {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: $uni-text-color-grey;
   margin-bottom: 48rpx;
 }
@@ -383,7 +383,7 @@ onShow(() => {
 }
 
 .empty-btn-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 500;
   color: $uni-text-color-inverse;
 }
@@ -404,7 +404,7 @@ onShow(() => {
 }
 
 .title-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   font-weight: 500;
   color: #94A3B8;
 }
@@ -471,7 +471,7 @@ onShow(() => {
 }
 
 .account-name {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 500;
   color: $uni-text-color;
   line-height: 1.2;
@@ -496,7 +496,7 @@ onShow(() => {
 }
 
 .badge-text {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: $uni-color-primary;
   font-weight: 500;
 }
@@ -506,7 +506,7 @@ onShow(() => {
 }
 
 .account-desc {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: #CBD5E1;
   margin-top: 4rpx;
   overflow: hidden;
@@ -522,7 +522,7 @@ onShow(() => {
 }
 
 .balance {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: $uni-text-color;
   margin-right: 8rpx;
@@ -533,7 +533,7 @@ onShow(() => {
 }
 
 .card-arrow {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: $uni-text-color-disable;
   font-weight: 300;
 }
@@ -560,7 +560,7 @@ onShow(() => {
 }
 
 .swipe-btn-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 500;
 }
 

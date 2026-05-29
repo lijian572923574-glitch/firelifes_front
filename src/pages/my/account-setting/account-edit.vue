@@ -596,7 +596,7 @@ onLoad((options: any) => {
 }
 
 .card-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   margin-bottom: 20rpx;
@@ -638,13 +638,13 @@ onLoad((options: any) => {
 }
 
 .icon-preview-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .icon-preview-desc {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -725,7 +725,7 @@ onLoad((options: any) => {
 }
 
 .type-card-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -739,7 +739,7 @@ onLoad((options: any) => {
 }
 
 .form-label {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   font-weight: 500;
   margin-bottom: 12rpx;
@@ -755,7 +755,7 @@ onLoad((options: any) => {
 }
 
 .balance-prefix {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
 }
@@ -799,13 +799,13 @@ onLoad((options: any) => {
 }
 
 .switch-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 
 .switch-desc {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -816,20 +816,20 @@ onLoad((options: any) => {
 }
 
 .liability-header {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-danger, #EF4444);
   margin-bottom: 24rpx;
 }
 
 .unit {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 8rpx;
 }
 
 .field-hint {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 8rpx;
   display: block;
@@ -855,7 +855,7 @@ onLoad((options: any) => {
 }
 
 .option-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -888,7 +888,7 @@ onLoad((options: any) => {
 }
 
 .day-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -907,17 +907,17 @@ onLoad((options: any) => {
 }
 
 .picker-value {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
 .picker-placeholder {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 
 .picker-arrow {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 
@@ -952,13 +952,13 @@ onLoad((options: any) => {
 }
 
 .picker-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .picker-cancel {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -988,12 +988,12 @@ onLoad((options: any) => {
 
 .picker-name {
   flex: 1;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
 .check-icon {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   font-weight: 600;
 }

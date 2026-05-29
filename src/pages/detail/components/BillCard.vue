@@ -102,7 +102,7 @@ const amountPrefix = (item: BillCardRecord) => {
 }
 
 .date-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -113,12 +113,12 @@ const amountPrefix = (item: BillCardRecord) => {
 }
 
 .day-income {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .day-expense {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -174,7 +174,7 @@ const amountPrefix = (item: BillCardRecord) => {
 }
 
 .bill-item-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--color-text-primary, #1E293B);
   overflow: hidden;
@@ -183,7 +183,7 @@ const amountPrefix = (item: BillCardRecord) => {
 }
 
 .bill-item-amount {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   flex-shrink: 0;
   margin-left: 20rpx;
@@ -204,7 +204,7 @@ const amountPrefix = (item: BillCardRecord) => {
 }
 
 .delete-btn-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--color-text-inverse, #FFFFFF);
 }

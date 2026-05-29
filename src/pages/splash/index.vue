@@ -68,6 +68,6 @@ onMounted(() => {
   color: white;
   padding: 16rpx 32rpx;
   border-radius: 40rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
 }
 </style>

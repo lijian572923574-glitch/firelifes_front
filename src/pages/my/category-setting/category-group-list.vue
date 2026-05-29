@@ -315,7 +315,7 @@ onShow(() => {
 }
 
 .nav-add-icon {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   color: var(--color-primary, #0D9488);
   font-weight: 300;
   line-height: 1;
@@ -343,7 +343,7 @@ onShow(() => {
 
 .loading-text,
 .empty-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   text-align: center;
   line-height: 1.6;
@@ -378,7 +378,7 @@ onShow(() => {
 }
 
 .drag-icon {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-tertiary, #CBD5E1);
   line-height: 1;
 }
@@ -438,7 +438,7 @@ onShow(() => {
 }
 
 .card-badge-text {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-inverse, #FFFFFF);
   font-weight: 500;
 }
@@ -450,13 +450,13 @@ onShow(() => {
 }
 
 .card-name {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .card-subtitle {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -469,7 +469,7 @@ onShow(() => {
 }
 
 .card-arrow {
-  font-size: 44rpx;
+  font-size: var(--text-number);
   color: var(--color-text-tertiary, #CBD5E1);
   line-height: 1;
 }
@@ -502,7 +502,7 @@ onShow(() => {
 }
 
 .swipe-btn-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-inverse, #FFFFFF);
   font-weight: 500;
 }

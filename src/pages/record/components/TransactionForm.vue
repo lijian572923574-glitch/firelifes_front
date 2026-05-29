@@ -351,13 +351,13 @@ const toggleDatePicker = () => {
 }
 
 .currency {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .amount {
-  font-size: 72rpx;
+  font-size: var(--text-number-hero);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
   letter-spacing: -1rpx;
@@ -389,7 +389,7 @@ const toggleDatePicker = () => {
 }
 
 .account-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 16rpx;
   min-width: 120rpx;
@@ -402,23 +402,23 @@ const toggleDatePicker = () => {
 }
 
 .account-value-icon {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   margin-right: 12rpx;
 }
 
 .account-value-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 
 .account-value.placeholder {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 
 .account-arrow {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   margin-left: 12rpx;
 }
@@ -446,7 +446,7 @@ const toggleDatePicker = () => {
 }
 
 .date-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 16rpx;
   min-width: 100rpx;
@@ -460,13 +460,13 @@ const toggleDatePicker = () => {
 }
 
 .date-value {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 
 .date-arrow {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -494,7 +494,7 @@ const toggleDatePicker = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-inverse, #FFFFFF);
   box-shadow: 0 4rpx 16rpx rgba(13, 148, 136, 0.3);
@@ -535,7 +535,7 @@ const toggleDatePicker = () => {
   align-items: center;
   justify-content: center;
   margin: 0 8rpx;
-  font-size: 40rpx;
+  font-size: var(--text-number);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
@@ -560,7 +560,7 @@ const toggleDatePicker = () => {
 
 .key-item.function {
   background: var(--color-border-light, #F1F5F9);
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -571,7 +571,7 @@ const toggleDatePicker = () => {
 .key-item.confirm {
   background: linear-gradient(135deg, var(--color-primary, #0D9488) 0%, var(--color-primary-dark, #0B7A70) 100%);
   color: var(--color-text-inverse, #FFFFFF);
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   box-shadow: 0 6rpx 20rpx rgba(13, 148, 136, 0.4);
 }
@@ -587,7 +587,7 @@ const toggleDatePicker = () => {
 }
 
 .date-text {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }

@@ -554,14 +554,14 @@ onMounted(async () => {
   margin-bottom: 16rpx;
 }
 .guide-title {
-  font-size: 34rpx;
+  font-size: var(--text-nav);
   font-weight: 700;
   color: var(--color-text-inverse, #FFFFFF);
   text-align: center;
   margin-bottom: 12rpx;
 }
 .guide-desc {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: rgba(255, 255, 255, 0.85);
   text-align: center;
   margin-bottom: 28rpx;
@@ -577,21 +577,21 @@ onMounted(async () => {
   margin-bottom: 20rpx;
 }
 .guide-currency {
-  font-size: 40rpx;
+  font-size: var(--text-number);
   font-weight: 700;
   color: var(--color-text-inverse, #FFFFFF);
   margin-right: 12rpx;
 }
 .guide-input {
   flex: 1;
-  font-size: 40rpx;
+  font-size: var(--text-number);
   font-weight: 700;
   color: var(--color-text-inverse, #FFFFFF);
   height: 56rpx;
 }
 .guide-input::placeholder {
   color: rgba(255, 255, 255, 0.5);
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 400;
 }
 .guide-suggestion {
@@ -607,18 +607,18 @@ onMounted(async () => {
   align-items: center;
 }
 .guide-suggestion-title {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 8rpx;
 }
 .guide-suggestion-amount {
-  font-size: 48rpx;
+  font-size: var(--text-number-lg);
   font-weight: 800;
   color: var(--color-warning, #F59E0B);
   margin-bottom: 6rpx;
 }
 .guide-suggestion-hint {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: rgba(255, 255, 255, 0.65);
 }
 .guide-actions {
@@ -632,7 +632,7 @@ onMounted(async () => {
   width: 100%;
   background: var(--color-text-inverse, #FFFFFF);
   color: var(--color-primary, #0D9488);
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 700;
   text-align: center;
   padding: 20rpx 0;
@@ -642,7 +642,7 @@ onMounted(async () => {
   transform: scale(0.98);
 }
 .btn-link {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: rgba(255, 255, 255, 0.8);
   padding: 8rpx 0;
 }
@@ -651,7 +651,7 @@ onMounted(async () => {
 .section-label {
   display: flex;
   align-items: center;
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
   padding: 36rpx 0 16rpx 8rpx;
@@ -677,7 +677,7 @@ onMounted(async () => {
   margin-bottom: 16rpx;
 }
 .card-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -689,7 +689,7 @@ onMounted(async () => {
   border-radius: 10rpx;
   padding: 16rpx 20rpx;
   margin-bottom: 20rpx;
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   line-height: 1.6;
 }
@@ -701,7 +701,7 @@ onMounted(async () => {
   margin-top: 2rpx;
 }
 .badge-soft {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   background: var(--color-border, #E2E8F0);
   padding: 4rpx 14rpx;
@@ -720,26 +720,26 @@ onMounted(async () => {
   border-color: var(--color-primary, #0D9488);
 }
 .currency {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
   margin-right: 8rpx;
 }
 .currency-sm {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 4rpx;
 }
 .currency-xs {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   font-weight: 600;
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 2rpx;
 }
 .budget-input {
   flex: 1;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   height: 56rpx;
 }
 
@@ -750,7 +750,7 @@ onMounted(async () => {
 }
 .progress-meta {
   display: block;
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 6rpx;
 }
@@ -766,12 +766,12 @@ onMounted(async () => {
   align-items: center;
 }
 .meta-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
   margin-right: 8rpx;
 }
 .meta-value {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -791,13 +791,13 @@ onMounted(async () => {
 .threshold-input {
   width: 56rpx;
   height: 40rpx;
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-primary, #0D9488);
   font-weight: 600;
   text-align: center;
 }
 .threshold-suffix {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-primary, #0D9488);
 }
 
@@ -806,14 +806,14 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 4rpx;
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   padding: 8rpx 20rpx;
   border: 1rpx solid var(--color-primary, #0D9488);
   border-radius: 20rpx;
 }
 .btn-add-icon {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 700;
 }
 .btn-add:active {
@@ -833,12 +833,12 @@ onMounted(async () => {
   margin-bottom: 12rpx;
 }
 .empty-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-bottom: 6rpx;
 }
 .empty-hint {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -853,12 +853,12 @@ onMounted(async () => {
   align-items: center;
 }
 .summary-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary-dark, #0B7A70);
   font-weight: 600;
 }
 .summary-warn {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-danger, #EF4444);
 }
 
@@ -883,7 +883,7 @@ onMounted(async () => {
   min-width: 0;
 }
 .category-icon-text {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   color: var(--color-primary, #0D9488);
   margin-right: 14rpx;
   flex-shrink: 0;
@@ -894,12 +894,12 @@ onMounted(async () => {
   min-width: 0;
 }
 .category-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 .category-meta {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 2rpx;
 }
@@ -921,11 +921,11 @@ onMounted(async () => {
 }
 .category-input {
   width: 120rpx;
-  font-size: 26rpx;
+  font-size: var(--text-small);
   height: 44rpx;
 }
 .delete-btn {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   padding: 8rpx;
   opacity: 0.5;
 }
@@ -952,12 +952,12 @@ onMounted(async () => {
   flex-direction: column;
 }
 .tune-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 .tune-default {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 4rpx;
 }
@@ -978,7 +978,7 @@ onMounted(async () => {
 }
 .tune-input {
   width: 120rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   height: 44rpx;
 }
@@ -1012,12 +1012,12 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 .picker-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--color-text-primary, #1E293B);
 }
 .picker-close {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   color: var(--color-text-secondary, #94A3B8);
   padding: 8rpx;
 }
@@ -1036,7 +1036,7 @@ onMounted(async () => {
   background: var(--color-primary-light, #E6F7F5);
 }
 .picker-item-icon {
-  font-size: 40rpx;
+  font-size: var(--text-number);
   color: var(--color-primary, #0D9488);
   margin-right: 18rpx;
   width: 48rpx;
@@ -1048,17 +1048,17 @@ onMounted(async () => {
   flex-direction: column;
 }
 .picker-item-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 .picker-item-group {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 2rpx;
 }
 .picker-item-arrow {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-primary, #0D9488);
   font-weight: 700;
   padding: 4rpx 8rpx;
@@ -1069,7 +1069,7 @@ onMounted(async () => {
   align-items: center;
   padding: 60rpx 0;
   color: var(--color-text-secondary, #94A3B8);
-  font-size: 26rpx;
+  font-size: var(--text-small);
 }
 .picker-empty-icon {
   width: 48rpx;

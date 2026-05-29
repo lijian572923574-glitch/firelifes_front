@@ -161,7 +161,7 @@ const goToLogin = () => {
 }
 
 .title {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -183,13 +183,13 @@ const goToLogin = () => {
 }
 
 .input-icon {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   margin-right: 16rpx;
 }
 
 .input {
   flex: 1;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -208,7 +208,7 @@ const goToLogin = () => {
 }
 
 .send-code-btn {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   background: var(--color-primary-light, #E6F7F5);
   padding: 12rpx 24rpx;
@@ -226,7 +226,7 @@ const goToLogin = () => {
 }
 
 .toggle-pwd {
-  font-size: 34rpx;
+  font-size: var(--text-nav);
   padding: 8rpx;
 }
 
@@ -238,7 +238,7 @@ const goToLogin = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-inverse, #FFFFFF);
   margin-top: 40rpx;
@@ -256,12 +256,12 @@ const goToLogin = () => {
 }
 
 .login-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .login-go {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   margin-left: 4rpx;
 }

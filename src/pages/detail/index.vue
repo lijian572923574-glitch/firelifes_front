@@ -468,7 +468,7 @@ onShow(() => {
 }
 
 .loading-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -532,7 +532,7 @@ onShow(() => {
 }
 
 .load-more-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -545,13 +545,13 @@ onShow(() => {
 }
 
 .empty-text {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-secondary, #94A3B8);
   margin-bottom: 20rpx;
 }
 
 .empty-hint {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 </style>

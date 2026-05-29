@@ -214,7 +214,7 @@ const onDragEnd = () => {
 }
 
 .hint-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #00BFFF);
   line-height: 1.5;
 }
@@ -242,13 +242,13 @@ const onDragEnd = () => {
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .section-sub {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -323,13 +323,13 @@ const onDragEnd = () => {
 }
 
 .function-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 
 .function-desc {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -339,7 +339,7 @@ const onDragEnd = () => {
   border-radius: 50%;
   background: var(--color-primary, #00BFFF);
   color: #FFFFFF;
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -348,7 +348,7 @@ const onDragEnd = () => {
 }
 
 .function-arrow {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-secondary, #94A3B8);
   flex-shrink: 0;
 }
@@ -370,7 +370,7 @@ const onDragEnd = () => {
 }
 
 .empty-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 </style>

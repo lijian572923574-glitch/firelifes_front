@@ -146,7 +146,7 @@ onMounted(() => {
   border-radius: 50%;
   background: var(--color-success, #10B981);
   color: var(--color-text-inverse, #FFFFFF);
-  font-size: 44rpx;
+  font-size: var(--text-number);
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -161,14 +161,14 @@ onMounted(() => {
 }
 
 .confirm-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   margin-top: 24rpx;
 }
 
 .confirm-amount {
-  font-size: 56rpx;
+  font-size: var(--text-number-xl);
   font-weight: 700;
   margin-top: 20rpx;
   color: var(--color-text-primary, #1E293B);
@@ -179,7 +179,7 @@ onMounted(() => {
 }
 
 .confirm-category {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 12rpx;
 }
@@ -193,7 +193,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -204,7 +204,7 @@ onMounted(() => {
 
 .confirm-asset-hint {
   margin-top: 16rpx;
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
 }
 
@@ -226,12 +226,12 @@ onMounted(() => {
 }
 
 .net-worth-label {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .net-worth-value {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--color-primary, #0D9488);
 }
@@ -259,7 +259,7 @@ onMounted(() => {
 }
 
 .fire-progress-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   font-weight: 600;
   min-width: 60rpx;
@@ -272,13 +272,13 @@ onMounted(() => {
 }
 
 .fire-gap-text {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .net-worth-loading {
   margin-top: 24rpx;
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -296,7 +296,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   transition: all 0.15s ease;
 }

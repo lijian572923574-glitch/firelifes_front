@@ -435,7 +435,7 @@ const goToLogin = () => {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: bold;
   color: var(--color-text-primary, #333);
 }
@@ -457,17 +457,17 @@ const goToLogin = () => {
 
 .input {
   flex: 1;
-  font-size: 30rpx;
+  font-size: var(--text-body);
 }
 
 .toggle-pwd {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #999);
   padding: 8rpx;
 }
 
 .send-code-btn {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   padding: 8rpx 16rpx;
   border: 1px solid var(--color-primary, #0D9488);
@@ -481,7 +481,7 @@ const goToLogin = () => {
 
 .agreement {
   padding: 32rpx 0;
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #666);
 }
 
@@ -501,7 +501,7 @@ const goToLogin = () => {
   text-align: center;
   padding: 28rpx;
   border-radius: 50rpx;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: bold;
   margin-bottom: 40rpx;
 }
@@ -512,7 +512,7 @@ const goToLogin = () => {
 
 .login-link {
   text-align: center;
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #666);
   margin-bottom: 30rpx;
 }
@@ -532,7 +532,7 @@ const goToLogin = () => {
 
 .divider-text {
   margin: 0 16rpx;
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #999);
 }
 
@@ -542,7 +542,7 @@ const goToLogin = () => {
   text-align: center;
   padding: 28rpx;
   border-radius: 50rpx;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -556,7 +556,7 @@ const goToLogin = () => {
 }
 
 .wechat-icon {
-  font-size: 36rpx;
+  font-size: var(--text-title);
 }
 
 .popup-overlay {
@@ -590,7 +590,7 @@ const goToLogin = () => {
 }
 
 .popup-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: bold;
   color: var(--color-text-primary, #333);
 }
@@ -607,7 +607,7 @@ const goToLogin = () => {
 }
 
 .popup-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   line-height: 1.8;
   white-space: pre-wrap;
@@ -624,7 +624,7 @@ const goToLogin = () => {
 }
 
 .close-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   width: 100%;
   text-align: center;
@@ -650,7 +650,7 @@ const goToLogin = () => {
 }
 
 .qrcode-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: bold;
   color: var(--color-text-primary, #1E293B);
 }
@@ -678,12 +678,12 @@ const goToLogin = () => {
 }
 
 .qrcode-placeholder-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .qrcode-tip {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   margin-top: 30rpx;
 }

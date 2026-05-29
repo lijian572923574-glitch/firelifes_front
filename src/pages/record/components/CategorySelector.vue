@@ -175,7 +175,7 @@ defineExpose({
 }
 
 .group-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 600;
 }
@@ -206,7 +206,7 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 44rpx;
+  font-size: var(--text-number);
   margin-bottom: 10rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
   color: var(--color-primary, #0D9488);
@@ -219,7 +219,7 @@ defineExpose({
 }
 
 .category-name {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
   text-align: center;
 }

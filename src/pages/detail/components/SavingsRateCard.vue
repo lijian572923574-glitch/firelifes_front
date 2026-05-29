@@ -72,12 +72,12 @@ const formatAmount = (val: number) => Math.abs(val).toFixed(2)
 }
 
 .savings-label {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .savings-amount {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -92,13 +92,13 @@ const formatAmount = (val: number) => Math.abs(val).toFixed(2)
 }
 
 .savings-rate {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--color-primary, #0D9488);
 }
 
 .savings-rate-label {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -124,7 +124,7 @@ const formatAmount = (val: number) => Math.abs(val).toFixed(2)
 }
 
 .savings-detail-text {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 </style>

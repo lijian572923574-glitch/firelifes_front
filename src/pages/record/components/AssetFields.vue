@@ -224,7 +224,7 @@ watch(() => props.initialData, (data) => {
 }
 
 .switch-label {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
@@ -288,7 +288,7 @@ watch(() => props.initialData, (data) => {
 }
 
 .form-label {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
   flex-shrink: 0;
   min-width: 140rpx;
@@ -302,12 +302,12 @@ watch(() => props.initialData, (data) => {
 }
 
 .form-value-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
 }
 
 .form-arrow {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
   margin-left: 12rpx;
 }
@@ -340,7 +340,7 @@ watch(() => props.initialData, (data) => {
 }
 
 .radio-text {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -349,7 +349,7 @@ watch(() => props.initialData, (data) => {
 }
 
 .depreciation-value {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-primary, #0D9488);
   font-weight: 600;
 }
@@ -357,7 +357,7 @@ watch(() => props.initialData, (data) => {
 .form-input {
   flex: 1;
   text-align: right;
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
   padding: 8rpx 0;
 }
@@ -373,7 +373,7 @@ watch(() => props.initialData, (data) => {
 }
 
 .input-suffix {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -384,7 +384,7 @@ watch(() => props.initialData, (data) => {
 }
 
 .input-prefix {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-primary, #1E293B);
   font-weight: 600;
 }
@@ -428,13 +428,13 @@ watch(() => props.initialData, (data) => {
 }
 
 .picker-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .picker-close {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-secondary, #94A3B8);
   padding: 8rpx;
 }
@@ -456,12 +456,12 @@ watch(() => props.initialData, (data) => {
 }
 
 .picker-option-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
 .picker-option-check {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   font-weight: 700;
 }

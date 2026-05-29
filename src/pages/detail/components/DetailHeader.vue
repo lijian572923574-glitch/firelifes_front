@@ -56,7 +56,7 @@ const formatAmount = (amount: number) => {
 }
 
 .app-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
 }
@@ -93,7 +93,7 @@ const formatAmount = (amount: number) => {
 }
 
 .summary-label {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -104,24 +104,24 @@ const formatAmount = (amount: number) => {
 }
 
 .summary-value {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   color: var(--color-text-inverse, #FFFFFF);
 }
 
 .month-num {
-  font-size: 40rpx;
+  font-size: var(--text-number);
 }
 
 .month-unit {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.7);
   margin-left: 2rpx;
 }
 
 .month-arrow {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: rgba(255, 255, 255, 0.6);
   margin-left: 4rpx;
 }

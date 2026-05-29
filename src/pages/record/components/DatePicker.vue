@@ -104,7 +104,7 @@ onMounted(() => {
 }
 
 .picker-cancel {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   font-weight: 500;
   padding: 8rpx 16rpx;
@@ -117,13 +117,13 @@ onMounted(() => {
 }
 
 .picker-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .picker-confirm {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-primary, #0D9488);
   font-weight: 600;
   padding: 8rpx 20rpx;

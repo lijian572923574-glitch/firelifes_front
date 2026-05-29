@@ -165,14 +165,14 @@ const handleLogout = () => {
 
 .nickname {
   color: var(--color-text-inverse, white);
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 700;
   margin-bottom: 8rpx;
 }
 
 .phone {
   color: rgba(255, 255, 255, 0.85);
-  font-size: 26rpx;
+  font-size: var(--text-small);
 }
 
 .menu-list {
@@ -216,19 +216,19 @@ const handleLogout = () => {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 36rpx;
+  font-size: var(--text-title);
   margin-right: 20rpx;
   color: var(--color-primary, #00BFFF);
 }
 
 .menu-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #333333);
   font-weight: 500;
 }
 
 .arrow {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   color: var(--color-text-tertiary, #CCCCCC);
 }
 
@@ -239,7 +239,7 @@ const handleLogout = () => {
   text-align: center;
   padding: 32rpx;
   border-radius: 20rpx;
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 500;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
   transition: all 150ms ease;

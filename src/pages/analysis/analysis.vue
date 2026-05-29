@@ -160,13 +160,11 @@ onShow(() => {
 
 .net-worth-card {
   background: linear-gradient(135deg, var(--color-primary, #0D9488), var(--color-primary-dark, #0B7A70));
-  margin: 20rpx;
-  border-radius: 20rpx;
-  padding: 40rpx 32rpx;
+  padding: calc(48rpx + env(safe-area-inset-top)) 32rpx 48rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10rpx;
+  gap: 12rpx;
   flex-shrink: 0;
 }
 
@@ -177,19 +175,20 @@ onShow(() => {
 }
 
 .nw-label {
-  font-size: 24rpx;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--text-body);
+  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 2rpx;
 }
 
 .nw-value {
-  font-size: 56rpx;
-  font-weight: 700;
+  font-size: var(--text-number-hero);
+  font-weight: 800;
   color: var(--color-text-inverse, #FFFFFF);
-  letter-spacing: 1rpx;
+  letter-spacing: 2rpx;
 }
 
 .nw-loading {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -201,7 +200,7 @@ onShow(() => {
 }
 
 .section-title {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   margin-bottom: 20rpx;
@@ -235,18 +234,18 @@ onShow(() => {
 }
 
 .account-name {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   font-weight: 500;
 }
 
 .account-type {
-  font-size: 22rpx;
+  font-size: var(--text-note);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .account-balance {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -256,7 +255,7 @@ onShow(() => {
 }
 
 .account-arrow {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   color: var(--color-text-secondary, #CCCCCC);
   margin-left: 8rpx;
 }
@@ -274,12 +273,12 @@ onShow(() => {
 }
 
 .empty-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
 .empty-hint {
-  font-size: 24rpx;
+  font-size: var(--text-small);
   color: var(--color-text-tertiary, #CBD5E1);
 }
 

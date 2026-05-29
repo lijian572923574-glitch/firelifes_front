@@ -233,7 +233,7 @@ onMounted(() => {
 }
 
 .title {
-  font-size: 36rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -245,7 +245,7 @@ onMounted(() => {
 }
 
 .section-title {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
   margin-bottom: 20rpx;
@@ -278,12 +278,12 @@ onMounted(() => {
 }
 
 .preset-label {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   font-weight: 500;
 }
 
 .preset-check {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   position: absolute;
   top: 12rpx;
   right: 16rpx;
@@ -309,7 +309,7 @@ onMounted(() => {
 }
 
 .color-label {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -320,7 +320,7 @@ onMounted(() => {
 }
 
 .color-value-text {
-  font-size: 26rpx;
+  font-size: var(--text-small);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -345,7 +345,7 @@ onMounted(() => {
 }
 
 .reset-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--color-primary, #0D9488);
 }
@@ -378,7 +378,7 @@ onMounted(() => {
 }
 
 .picker-title {
-  font-size: 32rpx;
+  font-size: var(--text-title);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -391,7 +391,7 @@ onMounted(() => {
 }
 
 .picker-preview-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
 }
@@ -405,14 +405,14 @@ onMounted(() => {
 }
 
 .picker-label {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   margin-right: 16rpx;
 }
 
 .picker-input {
   flex: 1;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
   background: var(--color-bg-page, #F5F7FA);
   padding: 12rpx 16rpx;
@@ -446,7 +446,7 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 96rpx;
-  font-size: 32rpx;
+  font-size: var(--text-title);
 }
 
 .picker-cancel {

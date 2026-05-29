@@ -194,13 +194,13 @@ defineExpose({ openAdd, openEdit, close })
 }
 
 .popup-title {
-  font-size: 34rpx;
+  font-size: var(--text-nav);
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
 
 .popup-close {
-  font-size: 48rpx;
+  font-size: var(--text-number-lg);
   color: var(--color-text-secondary, #94A3B8);
   line-height: 1;
 }
@@ -219,7 +219,7 @@ defineExpose({ openAdd, openEdit, close })
 }
 
 .form-label {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
 }
 
@@ -228,7 +228,7 @@ defineExpose({ openAdd, openEdit, close })
   padding: 0 24rpx;
   background-color: var(--color-border-light, #F1F5F9);
   border-radius: 16rpx;
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-primary, #1E293B);
 }
 
@@ -256,7 +256,7 @@ defineExpose({ openAdd, openEdit, close })
 }
 
 .type-tag-text {
-  font-size: 28rpx;
+  font-size: var(--text-body);
   color: var(--color-text-secondary, #94A3B8);
   transition: color 0.2s ease;
 }
@@ -322,7 +322,7 @@ defineExpose({ openAdd, openEdit, close })
 }
 
 .footer-btn-text {
-  font-size: 30rpx;
+  font-size: var(--text-body);
   font-weight: 500;
   color: var(--color-text-secondary, #94A3B8);
 }

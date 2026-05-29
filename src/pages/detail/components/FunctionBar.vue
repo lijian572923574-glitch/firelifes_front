@@ -101,7 +101,7 @@ const handleMoreClick = () => {
 }
 
 .function-text {
-  font-size: 20rpx;
+  font-size: var(--text-caption);
   color: var(--color-text-secondary, #94A3B8);
 }
 </style>
