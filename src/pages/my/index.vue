@@ -211,13 +211,13 @@ const handleLogout = () => {
   width: 72rpx;
   height: 72rpx;
   border-radius: 20rpx;
-  background: var(--color-primary-light, rgba(0, 191, 255, 0.1));
+  background-color: var(--color-primary-light, rgba(0, 191, 255, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   font-size: 36rpx;
   margin-right: 20rpx;
-  flex-shrink: 0;
   color: var(--color-primary, #00BFFF);
 }
 
