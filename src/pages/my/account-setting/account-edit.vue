@@ -1,14 +1,11 @@
 <template>
   <view class="account-edit-page">
-    <WdNavbar
-      :title="isEdit ? '编辑账户' : '新增账户'"
-      leftArrow
-      fixed
-      placeholder
-      bordered
-      safeAreaInsetTop
-      @click-left="goBack"
-    />
+    <view class="settings-header">
+      <view class="header-back" @click="goBack">
+        <view class="header-back-icon category-icon-svg category-icon-chevron-left"></view>
+      </view>
+      <text class="header-title">{{ isEdit ? '编辑账户' : '新增账户' }}</text>
+    </view>
 
     <scroll-view class="content" scroll-y>
       <!-- 表单卡片：账户名称 + 账户余额 -->
@@ -591,6 +588,39 @@ onLoad((options: any) => {
   background-color: var(--color-bg-page, #F5F7FA);
   display: flex;
   flex-direction: column;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 20rpx) 30rpx 20rpx;
+  background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.header-back {
+  position: absolute;
+  left: 20rpx;
+  bottom: 14rpx;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-icon {
+  width: 40rpx;
+  height: 40rpx;
+  color: #fff;
+}
+
+.header-title {
+  font-size: var(--text-nav);
+  font-weight: 600;
+  color: #fff;
 }
 
 .content {

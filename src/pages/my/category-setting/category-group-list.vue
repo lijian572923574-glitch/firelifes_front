@@ -1,20 +1,14 @@
 <template>
   <view class="page-container">
-    <wd-navbar
-      title="分类设置"
-      left-arrow
-      fixed
-      placeholder
-      bordered
-      safe-area-inset-top
-      @click-left="goBack"
-    >
-      <template #right>
-        <view class="nav-add-btn" @click="openAddPopup">
-          <text class="nav-add-icon">+</text>
-        </view>
-      </template>
-    </wd-navbar>
+    <view class="settings-header">
+      <view class="header-back" @click="goBack">
+        <view class="header-back-icon category-icon-svg category-icon-chevron-left"></view>
+      </view>
+      <text class="header-title">分类设置</text>
+      <view class="header-right" @click="openAddPopup">
+        <text class="header-add-icon">+</text>
+      </view>
+    </view>
 
     <view class="content-scroll">
       <view v-if="loading" class="loading-state">
@@ -318,6 +312,50 @@ onShow(() => {
   font-size: var(--text-title);
   color: var(--color-primary, #0D9488);
   font-weight: 300;
+}
+
+/* 统一设置页标题栏 */
+.settings-header {
+  display: flex;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top) + 20rpx) 30rpx 20rpx;
+  background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
+  flex-shrink: 0;
+}
+
+.header-back {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-icon {
+  width: 40rpx;
+  height: 40rpx;
+  color: #fff;
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-nav);
+  font-weight: 600;
+  color: #fff;
+}
+
+.header-right {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-add-icon {
+  font-size: 48rpx;
+  color: #fff;
   line-height: 1;
 }
 

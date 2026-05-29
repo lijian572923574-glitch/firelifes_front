@@ -1,14 +1,11 @@
 <template>
   <view class="page">
-    <wd-navbar
-      title="预算设置"
-      left-arrow
-      fixed
-      placeholder
-      bordered
-      safe-area-inset-top
-      @click-left="goBack"
-    />
+    <view class="settings-header">
+      <view class="header-back" @click="goBack">
+        <view class="header-back-icon category-icon-svg category-icon-chevron-left"></view>
+      </view>
+      <text class="header-title">预算设置</text>
+    </view>
 
     <scroll-view class="content" scroll-y>
       <!-- Loading 骨架 -->
@@ -500,6 +497,39 @@ onMounted(async () => {
 .page {
   min-height: 100vh;
   background: var(--color-bg-page, #F5F7FA);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(env(safe-area-inset-top) + 20rpx) 30rpx 20rpx;
+  background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.header-back {
+  position: absolute;
+  left: 20rpx;
+  bottom: 14rpx;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-back-icon {
+  width: 40rpx;
+  height: 40rpx;
+  color: #fff;
+}
+
+.header-title {
+  font-size: var(--text-nav);
+  font-weight: 600;
+  color: #fff;
 }
 
 .content {

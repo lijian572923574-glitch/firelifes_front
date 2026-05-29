@@ -212,30 +212,32 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 40rpx 30rpx;
+  padding: calc(env(safe-area-inset-top) + 20rpx) 30rpx 20rpx;
+  background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
   position: relative;
 }
 
 .back-btn {
   position: absolute;
-  left: 30rpx;
+  left: 20rpx;
+  bottom: 14rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 60rpx;
   height: 60rpx;
-  color: var(--color-text-primary, #1E293B);
 }
 
 .back-icon {
-  width: 44rpx;
-  height: 44rpx;
+  width: 40rpx;
+  height: 40rpx;
+  color: #fff;
 }
 
 .title {
-  font-size: var(--text-title);
+  font-size: var(--text-nav);
   font-weight: 600;
-  color: var(--color-text-primary, #1E293B);
+  color: #fff;
 }
 
 .section {

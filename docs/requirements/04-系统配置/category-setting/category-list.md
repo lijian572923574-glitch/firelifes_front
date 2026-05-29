@@ -3,11 +3,12 @@
 > pages.json 路由：`pages/my/category-setting/category-list`（文件系统路径：`src/pages/my/category-setting/category-list.vue`）
 > 上级页面路由：`pages/my/category-setting/category-group-list`（文件系统路径：`src/pages/my/category-setting/category-group-list.vue`）
 
-> 版本：v1.3 | 状态：已完成 | 最后更新：2026-05-24
+> 版本：v1.4 | 状态：已完成 | 最后更新：2026-05-29
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.4 | 2026-05-29 | **标题栏统一**：替换 wd-navbar → 自定义 gradient 标题栏，全设置页统一样式（主题色渐变背景 + 白色文字 + 左侧返回） | AI-全栈 |
 | v1.3 | 2026-05-24 | 状态更新：全部功能已实现（含拖拽排序）；修正行业对标表 | AI |
 | v1.2 | 2026-05-23 | 补充分类列表排序规则（启用在上、禁用在下）；弹窗新增/编辑改为只读展示所属大类+收支类型；新增/编辑弹窗独立为 category-edit 文档 | AI |
 | v1.1 | 2026-05-23 | 需求整理：补充拖拽排序需求，规范左滑操作按钮，完善交互细节 | AI |

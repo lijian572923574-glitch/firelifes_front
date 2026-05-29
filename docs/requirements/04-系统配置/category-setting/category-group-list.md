@@ -3,11 +3,12 @@
 > pages.json 路由：`pages/my/category-setting/category-group-list`（文件系统路径：`src/pages/my/category-setting/category-group-list.vue`）
 > 子分类页 pages.json 路由：`pages/my/category-setting/category-list`（文件系统路径：`src/pages/my/category-setting/category-list.vue`）
 
-> 版本：v3.2 | 状态：设计中 | 最后更新：2026-05-24
+> 版本：v3.3 | 状态：已完成 | 最后更新：2026-05-29
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v3.3 | 2026-05-29 | **标题栏统一**：替换 wd-navbar → 自定义 gradient 标题栏，全设置页统一为 `linear-gradient(135deg, var(--color-primary) → var(--color-primary-dark))` 主题色渐变背景 + 白色文字 | AI-全栈 |
 | v3.2 | 2026-05-24 | 分类体系重构：支出/收入大类分区展示（10 支出 + 3 收入），页面结构新增分区 | AI |
 | v3.1 | 2026-05-22 | 实现拖拽排序（drag handle ）、左滑按钮规范对齐（70rpx）、设计图补充左滑区域 | AI |
 | v3.0 | 2026-05-22 | 行业对标更新：数据结构对齐代码、交互组件与实际代码一致、新增行业对标&测试清单、注释 pages.json 路由与文件路径的对应关系 | AI |
