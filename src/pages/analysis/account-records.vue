@@ -378,7 +378,7 @@ onShow(() => {
   flex-direction: column;
   height: 100vh;
   background: var(--color-bg-page, #F5F7FA);
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .account-header {
@@ -470,7 +470,7 @@ onShow(() => {
 
 .bill-wrapper {
   flex: 1;
-  margin: 0 20rpx;
+  margin: 20rpx;
   display: flex;
   flex-direction: column;
   overflow: hidden;
