@@ -213,6 +213,166 @@
                           "fontSize": 12
                         }
                       ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "freqItem5",
+                      "name": "外卖",
+                      "width": 78,
+                      "height": 64,
+                      "layout": "vertical",
+                      "alignItems": "center",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "freqIcon5",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 22,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "freqEmoji5",
+                              "fill": "#0D9488",
+                              "content": "",
+                              "fontFamily": "Inter",
+                              "fontSize": 20
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "freqName5",
+                          "fill": "#1E293B",
+                          "content": "外卖",
+                          "fontFamily": "Inter",
+                          "fontSize": 12
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "freqItem6",
+                      "name": "零食",
+                      "width": 78,
+                      "height": 64,
+                      "layout": "vertical",
+                      "alignItems": "center",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "freqIcon6",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 22,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "freqEmoji6",
+                              "fill": "#0D9488",
+                              "content": "",
+                              "fontFamily": "Inter",
+                              "fontSize": 20
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "freqName6",
+                          "fill": "#1E293B",
+                          "content": "零食",
+                          "fontFamily": "Inter",
+                          "fontSize": 12
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "freqItem7",
+                      "name": "加油",
+                      "width": 78,
+                      "height": 64,
+                      "layout": "vertical",
+                      "alignItems": "center",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "freqIcon7",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 22,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "freqEmoji7",
+                              "fill": "#0D9488",
+                              "content": "",
+                              "fontFamily": "Inter",
+                              "fontSize": 20
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "freqName7",
+                          "fill": "#1E293B",
+                          "content": "加油",
+                          "fontFamily": "Inter",
+                          "fontSize": 12
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "freqItem8",
+                      "name": "药品",
+                      "width": 78,
+                      "height": 64,
+                      "layout": "vertical",
+                      "alignItems": "center",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "freqIcon8",
+                          "width": 44,
+                          "height": 44,
+                          "fill": "#FFFFFF",
+                          "cornerRadius": 22,
+                          "justifyContent": "center",
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "freqEmoji8",
+                              "fill": "#0D9488",
+                              "content": "",
+                              "fontFamily": "Inter",
+                              "fontSize": 20
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "freqName8",
+                          "fill": "#1E293B",
+                          "content": "药品",
+                          "fontFamily": "Inter",
+                          "fontSize": 12
+                        }
+                      ]
                     }
                   ]
                 }

@@ -1,10 +1,11 @@
 # 常用分类智能置顶
-&gt; 文件：`category-pinned.md` | 中文名称：记账分类使用频率智能排序置顶功能 | 所属模块：记账省心
-&gt; 版本：v1.2 | 状态：已完成 | 最后更新：2026-05-24
+> 文件：`category-pinned.md` | 中文名称：记账分类使用频率智能排序置顶功能 | 所属模块：记账省心
+> 版本：v1.3 | 状态：已完成 | 最后更新：2026-05-29
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.3 | 2026-05-29 | 常用分类展示数量由 Top 4 提升至 Top 8 | AI |
 | v1.2 | 2026-05-24 | 新增 Pencil 设计稿 `designs/record/category-selector.pen`；「常用」组颜色统一为 Teal（#0D9488），与其他大类风格一致 | AI |
 | v1.1 | 2026-05-24 | 实现完成：新增 category-frequency.ts + CategorySelector 添加虚拟「常用」大类 | AI |
 | v1.0 | 2026-05-09 | 初始版本 | AI |
@@ -13,7 +14,7 @@
 
 ## 功能概述
 
-记账页分类选择器顶部新增**虚拟「常用」大类**，展示最近 30 天内使用频次最高的 4 个子分类。支出和收入 Tab 各自独立计算 Top 4。
+记账页分类选择器顶部新增**虚拟「常用」大类**，展示最近 30 天内使用频次最高的 8 个子分类。支出和收入 Tab 各自独立计算 Top 8。
 
 ### 核心规则
 
@@ -21,7 +22,7 @@
 |------|------|
 | 数据源 | 最近 30 天该类型（支出/收入）的记账记录 |
 | 统计维度 | 按 `typeId` 分组计数 |
-| 展示数量 | Top 4（不足 4 个则显示实际数量） |
+| 展示数量 | Top 8（不足 8 个则显示实际数量） |
 | 排序 | 频次降序 → 最近使用日期降序 |
 | 无数据时 | 不显示「常用」组 |
 | 切换 Tab | 支出/收入各自重新计算 |
@@ -40,7 +41,8 @@
 ┌────────────────────────────────────┐
 │  常用                     ← 主色标签│
 │  ────────────────────────────────  │
-│   餐饮    交通    购物    咖啡  │
+│   餐饮  交通  购物  咖啡     │
+│   外卖  零食  加油  药品     │
 │                                     │
 │  饮食消费                           │
 │  ────────────────────────────────  │
@@ -63,20 +65,20 @@
 |------|----------|------|
 | 有常用数据 | 近 30 天有 ≥1 条记录 | 「常用」组显示在列表顶部，橙色标签 |
 | 无常用数据 | 新用户 / 30 天无记录 | 「常用」组不渲染 |
-| 不足 4 个 | 近 30 天只用过 2 种分类 | 「常用」组仅显示 2 个 |
+| 不足 8 个 | 近 30 天只用过 2 种分类 | 「常用」组仅显示 2 个 |
 | 切换 Tab | 点击支出/收入 | 重新加载 + 重新计算 |
 
 ---
 
 ## 技术实现
 
-&gt;  **Pencil 设计稿**: `designs/record/category-selector.pen` — 在编辑器中使用 Pencil 插件打开，可视化查看「常用」虚拟大类 + 分类网格布局。
+>  **Pencil 设计稿**: `designs/record/category-selector.pen` — 在编辑器中使用 Pencil 插件打开，可视化查看「常用」虚拟大类 + 分类网格布局。
 
 ### 新增文件
 
 | 文件 | 说明 |
 |------|------|
-| `src/utils/category-frequency.ts` | 最近 30 天分类使用频次计算，返回 Top 4 typeId 列表 |
+| `src/utils/category-frequency.ts` | 最近 30 天分类使用频次计算，返回 Top 8 typeId 列表 |
 | `docs/designs/record/category-selector.pen` | Pencil 设计稿：分类选择器（支出 Tab 含常用） |
 
 ### 修改文件
@@ -99,28 +101,11 @@ CategorySelector.onMounted
         │
         ├── 按 typeId count 降序，count 相同时按 lastUsedAt 降序
         │
-        ├── 取 Top 4 → frequentCategoryIds
+        ├── 取 Top 8 → frequentCategoryIds
         │
         └── computed frequentGroup：
-              从 categoryGroups 所有 children 中匹配 Top 4 CategoryItem
-              → 构建虚拟 group: { id: -1, name: '常用', children: top4 }
-```
-
-### 核心代码
-
-```typescript
-// src/utils/category-frequency.ts
-export async function getFrequentCategoryIds(type: 'income' | 'expense') {
-  const res = await recordApi.getAllRecords()
-  const cutoff = 30 天前的日期字符串
-  const freqMap = new Map<number, { count: number; lastUsedAt: string }>()
-
-  for (const record of res.data) {
-    if (record.date < cutoff || record.type !== type) continue
-    // 计数 + 更新 lastUsedAt
-  }
-  // 排序：count DESC → lastUsedAt DESC → TOP 4
-}
+              从 categoryGroups 所有 children 中匹配 Top 8 CategoryItem
+              → 构建虚拟 group: { id: -1, name: '常用', children: top8 }
 ```
 
 ---
@@ -133,7 +118,7 @@ export async function getFrequentCategoryIds(type: 'income' | 'expense') {
 | 常用组标签文字 | `var(--color-primary)`（与其他大类一致） |
 | 常用组内子分类 | 与普通子分类完全一致 |
 
-- 分类网格：4 列 `grid-template-columns: repeat(4, 1fr)`
+- 分类网格：4 列 `grid-template-columns: repeat(4, 1fr)`（8 个图标分两行）
 - 间隔：`gap: 30rpx 20rpx`
 
 ---
@@ -153,9 +138,9 @@ export async function getFrequentCategoryIds(type: 'income' | 'expense') {
 
 | # | 场景 | 步骤 | 预期 |
 |---|------|------|------|
-| 1 | 常用展示 | 近 30 天记餐饮 5 笔、交通 3 笔、购物 2 笔、咖啡 1 笔 → 进入记账页 | 支出 Tab 顶部显示「常用」，含 4 个分类，按频次排序 |
+| 1 | 常用展示 | 近 30 天记餐饮 5 笔、交通 3 笔、购物 2 笔、咖啡 1 笔、外卖 1 笔、零食 1 笔、加油 1 笔、药品 1 笔 → 进入记账页 | 支出 Tab 顶部显示「常用」，含 8 个分类，按频次排序 |
 | 2 | 切换 Tab | 收入有工资 2 笔 → 切到收入 Tab | 收入 Tab 顶部显示「常用」，仅含"工资" |
-| 3 | 不足 4 个 | 近 30 天只记过餐饮、交通 | 「常用」组仅 2 个 |
+| 3 | 不足 8 个 | 近 30 天只记过餐饮、交通 | 「常用」组仅 2 个 |
 | 4 | 新用户 | 无任何记录 → 进入 | 不显示「常用」组 |
 | 5 | 超过 30 天 | 31 天前记过餐饮 → 今天 | 不纳入统计 |
 | 6 | 频次相同 | 餐饮 3 次、交通 3 次，交通最近使用 | 餐饮在前（先按频次），交通在后 |

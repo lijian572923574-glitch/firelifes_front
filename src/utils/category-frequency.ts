@@ -1,7 +1,7 @@
 import { recordApi, type RecordData } from '../api/record'
 
 const DAYS = 30
-const TOP_N = 4
+const TOP_N = 8
 const MONTH_PAGE_SIZE = 100
 
 export interface CategoryFrequency {
