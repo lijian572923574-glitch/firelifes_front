@@ -8,7 +8,7 @@
         @tap="handleItemClick(item)"
       >
         <view class="function-icon">
-          <text class="function-emoji">{{ getEmoji(item) }}</text>
+          <view class="function-icon-svg category-icon-svg" :class="getFunctionIconClass(item.key)"></view>
         </view>
         <text class="function-text">{{ item.text }}</text>
       </view>
@@ -17,7 +17,7 @@
         @tap="handleMoreClick"
       >
         <view class="function-icon">
-          <text class="function-emoji">⋯</text>
+          <view class="function-icon-svg category-icon-svg category-icon-gengduo"></view>
         </view>
         <text class="function-text">更多</text>
       </view>
@@ -27,6 +27,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { getFunctionIconClass } from '../../../utils/category-icon-map'
 
 export interface FunctionItem {
   key: string
@@ -57,18 +58,6 @@ const handleItemClick = (item: FunctionItem) => {
 
 const handleMoreClick = () => {
   emit('more-click')
-}
-
-const EMOJI_MAP: Record<string, string> = {
-  bill: '📊',
-  asset: '🏠',
-  fire: '🔥',
-  cashback: '🛒',
-}
-
-const getEmoji = (item: FunctionItem): string => {
-  if (item.emoji) return item.emoji
-  return EMOJI_MAP[item.key] || '📋'
 }
 </script>
 
@@ -105,9 +94,10 @@ const getEmoji = (item: FunctionItem): string => {
   margin-bottom: 8rpx;
 }
 
-.function-emoji {
-  font-size: 36rpx;
-  line-height: 1;
+.function-icon-svg {
+  width: 40rpx;
+  height: 40rpx;
+  color: var(--color-primary, #00BFFF);
 }
 
 .function-text {

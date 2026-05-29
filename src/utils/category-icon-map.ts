@@ -86,4 +86,15 @@ export function getSystemIconClass(name: string): string {
   return SYSTEM_ICON_MAP[name] || 'category-icon-qita'
 }
 
-export { CATEGORY_ICON_MAP, SYSTEM_ICON_MAP }
+const FUNCTION_ICON_MAP: Record<string, string> = {
+  bill: 'category-icon-zhangdan',
+  asset: 'category-icon-zichan',
+  fire: 'category-icon-huoyan',
+  cashback: 'category-icon-fanxian',
+}
+
+export function getFunctionIconClass(key: string): string {
+  return FUNCTION_ICON_MAP[key] || 'category-icon-zhangdan'
+}
+
+export { CATEGORY_ICON_MAP, SYSTEM_ICON_MAP, FUNCTION_ICON_MAP }

@@ -16,7 +16,7 @@
     />
 
     <view class="hint-bar">
-      <view class="hint-icon">💡</view>
+      <view class="hint-icon category-icon-svg category-icon-dengpao"></view>
       <text class="hint-text">拖拽左侧手柄可排序，前 4 个将展示在明细页</text>
     </view>
 
@@ -49,7 +49,7 @@
             </view>
           </view>
           <view class="function-icon" :style="{ background: item.bg || 'rgba(0, 191, 255, 0.08)' }">
-            <text class="function-emoji">{{ getEmoji(item) }}</text>
+            <view class="function-icon-svg category-icon-svg" :class="getFunctionIconClass(item.key)"></view>
           </view>
           <view class="function-info">
             <text class="function-name">{{ item.text }}</text>
@@ -88,7 +88,7 @@
             </view>
           </view>
           <view class="function-icon" :style="{ background: item.bg || 'rgba(108, 92, 231, 0.08)' }">
-            <text class="function-emoji">{{ getEmoji(item) }}</text>
+            <view class="function-icon-svg category-icon-svg" :class="getFunctionIconClass(item.key)"></view>
           </view>
           <view class="function-info">
             <text class="function-name">{{ item.text }}</text>
@@ -100,7 +100,7 @@
     </view>
 
     <view v-if="!localItems.length" class="empty-state">
-      <text class="empty-icon">📋</text>
+      <view class="empty-icon category-icon-svg category-icon-zhangdan"></view>
       <text class="empty-text">暂无功能入口</text>
     </view>
   </view>
@@ -109,6 +109,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useFunctionItemsStore, type FunctionItem } from '../../stores/functionItems'
+import { getFunctionIconClass } from '../../utils/category-icon-map'
 
 const store = useFunctionItemsStore()
 const localItems = ref<FunctionItem[]>([])
@@ -117,18 +118,6 @@ const dragIndex = ref(-1)
 const dragStartY = ref(0)
 const dragOffsetY = ref(0)
 const ITEM_HEIGHT = 96
-
-const EMOJI_MAP: Record<string, string> = {
-  bill: '📊',
-  asset: '🏠',
-  fire: '🔥',
-  cashback: '🛒',
-}
-
-const getEmoji = (item: FunctionItem): string => {
-  if (item.emoji) return item.emoji
-  return EMOJI_MAP[item.key] || '📋'
-}
 
 const topItems = computed(() => localItems.value.slice(0, 4))
 const restItems = computed(() => localItems.value.slice(4))
@@ -212,48 +201,48 @@ const onDragEnd = () => {
 .hint-bar {
   display: flex;
   align-items: center;
-  margin: 20rpx 24rpx;
-  padding: 16rpx 20rpx;
-  background: linear-gradient(135deg, var(--color-primary-light, #E6F7F5), var(--color-border-light, #F1F5F9));
-  border-radius: 12rpx;
-  border: 1rpx solid var(--color-primary-light, #E6F7F5);
+  padding: 20rpx 30rpx;
+  background: var(--color-primary-light, #E6F7F5);
+  gap: 12rpx;
 }
 
 .hint-icon {
-  font-size: 28rpx;
-  margin-right: 12rpx;
+  width: 36rpx;
+  height: 36rpx;
+  color: var(--color-primary, #00BFFF);
+  flex-shrink: 0;
 }
 
 .hint-text {
   font-size: 24rpx;
-  color: var(--color-text-secondary, #94A3B8);
+  color: var(--color-primary, #00BFFF);
   line-height: 1.5;
 }
 
 .section {
-  margin-bottom: 8rpx;
+  margin: 20rpx;
 }
 
 .section-header {
   display: flex;
   align-items: center;
-  padding: 24rpx 24rpx 12rpx;
+  gap: 12rpx;
+  padding: 20rpx 0 16rpx;
 }
 
 .section-dot {
   width: 8rpx;
-  height: 8rpx;
-  border-radius: 50%;
-  background: var(--color-primary, #0D9488);
-  margin-right: 12rpx;
+  height: 28rpx;
+  border-radius: 4rpx;
+  background: var(--color-primary, #00BFFF);
 }
 
 .section-dot.secondary {
-  background: var(--color-info, #3B82F6);
+  background: var(--color-text-secondary, #94A3B8);
 }
 
 .section-title {
-  font-size: 26rpx;
+  font-size: 28rpx;
   font-weight: 600;
   color: var(--color-text-primary, #1E293B);
 }
@@ -261,111 +250,107 @@ const onDragEnd = () => {
 .section-sub {
   font-size: 22rpx;
   color: var(--color-text-secondary, #94A3B8);
-  margin-left: 12rpx;
 }
 
 .function-grid {
-  padding: 0 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
 }
 
 .function-card {
   display: flex;
   align-items: center;
+  padding: 16rpx 20rpx;
   background: var(--color-bg-card, #FFFFFF);
   border-radius: 16rpx;
-  padding: 22rpx 20rpx;
-  margin-bottom: 14rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  gap: 20rpx;
+  transition: transform 0.2s ease;
   position: relative;
 }
 
-.function-card.is-dragging {
-  box-shadow: 0 8rpx 30rpx rgba(0, 0, 0, 0.12);
+.function-card.top-card {
+  border: 1rpx solid rgba(0, 191, 255, 0.15);
 }
 
-.function-card.top-card {
-  border-left: 6rpx solid var(--color-primary, #0D9488);
+.function-card.is-dragging {
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
 }
 
 .drag-handle {
-  width: 52rpx;
-  height: 52rpx;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 14rpx;
-  flex-shrink: 0;
-  border-radius: 10rpx;
-  background: rgba(0, 0, 0, 0.02);
+  flex-direction: column;
+  gap: 6rpx;
+  padding: 8rpx;
+  touch-action: none;
 }
 
 .drag-dots {
   display: flex;
   flex-direction: column;
   gap: 4rpx;
-  align-items: center;
 }
 
 .drag-dot {
   width: 6rpx;
   height: 6rpx;
   border-radius: 50%;
-  background: var(--color-text-tertiary, #CBD5E1);
+  background: var(--color-text-secondary, #94A3B8);
+  opacity: 0.4;
 }
 
 .function-icon {
   width: 72rpx;
   height: 72rpx;
-  border-radius: 18rpx;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 18rpx;
   flex-shrink: 0;
 }
 
-.function-emoji {
-  font-size: 36rpx;
-  line-height: 1;
+.function-icon-svg {
+  width: 40rpx;
+  height: 40rpx;
+  color: var(--color-primary, #00BFFF);
 }
 
 .function-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  gap: 4rpx;
 }
 
 .function-name {
   font-size: 28rpx;
-  font-weight: 500;
   color: var(--color-text-primary, #1E293B);
+  font-weight: 500;
 }
 
 .function-desc {
   font-size: 22rpx;
   color: var(--color-text-secondary, #94A3B8);
-  margin-top: 4rpx;
 }
 
 .rank-badge {
   width: 36rpx;
   height: 36rpx;
   border-radius: 50%;
-  background: var(--color-primary-light, #E6F7F5);
-  color: var(--color-primary, #0D9488);
-  font-size: 22rpx;
+  background: var(--color-primary, #00BFFF);
+  color: #FFFFFF;
+  font-size: 20rpx;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 8rpx;
+  flex-shrink: 0;
 }
 
 .function-arrow {
   font-size: 32rpx;
-  color: var(--color-text-tertiary, #CBD5E1);
+  color: var(--color-text-secondary, #94A3B8);
+  flex-shrink: 0;
 }
 
 .empty-state {
@@ -373,12 +358,15 @@ const onDragEnd = () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 120rpx 0;
+  padding: 160rpx 0;
+  gap: 16rpx;
 }
 
 .empty-icon {
-  font-size: 64rpx;
-  margin-bottom: 16rpx;
+  width: 80rpx;
+  height: 80rpx;
+  color: var(--color-text-secondary, #94A3B8);
+  opacity: 0.4;
 }
 
 .empty-text {
