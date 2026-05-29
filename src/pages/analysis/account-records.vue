@@ -2,18 +2,16 @@
   <view class="page">
     <view class="account-header">
       <view class="nav-bar">
-        <view class="back-btn" @click="goBack">
-          <text class="back-arrow">←</text>
-        </view>
+        <text class="back-btn" @click="goBack">← 返回</text>
         <text class="nav-title">账户交易明细</text>
       </view>
-      <view class="account-info-row">
+      <view class="account-row">
         <view class="account-icon category-icon-svg" :class="getAccountIconClass(accountInfo.icon, accountInfo.type)"></view>
         <text class="account-name">{{ accountInfo.name }}</text>
+        <text class="account-balance" :class="{ negative: accountInfo.balance < 0 }">
+          {{ formatAmount(accountInfo.balance) }}
+        </text>
       </view>
-      <text class="account-balance" :class="{ negative: accountInfo.balance < 0 }">
-        {{ formatAmount(accountInfo.balance) }}
-      </text>
       <view class="monthly-summary">
         <view class="summary-item">
           <text class="summary-label">本月收入</text>
@@ -405,10 +403,9 @@ onShow(() => {
 
 .account-header {
   background: linear-gradient(135deg, var(--color-primary, #00BFFF) 0%, var(--color-primary-dark, #0099CC) 100%);
-  padding: 16rpx 32rpx 32rpx;
+  padding: 16rpx 32rpx 24rpx;
   display: flex;
   flex-direction: column;
-  align-items: center;
   flex-shrink: 0;
 }
 
@@ -426,16 +423,9 @@ onShow(() => {
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-arrow {
-  font-size: 40rpx;
+  font-size: 28rpx;
   color: #FFFFFF;
+  padding: 8rpx 0;
 }
 
 .nav-title {
@@ -444,11 +434,11 @@ onShow(() => {
   font-weight: 600;
 }
 
-.account-info-row {
+.account-row {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-bottom: 16rpx;
+  width: 100%;
+  padding-bottom: 20rpx;
 }
 
 .account-icon {
@@ -462,13 +452,18 @@ onShow(() => {
   font-size: 32rpx;
   color: #FFFFFF;
   font-weight: 500;
+  margin-left: 16rpx;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .account-balance {
-  font-size: 48rpx;
+  font-size: 40rpx;
   color: #FFFFFF;
   font-weight: 700;
-  margin-bottom: 24rpx;
+  flex-shrink: 0;
 }
 
 .account-balance.negative {
@@ -478,6 +473,7 @@ onShow(() => {
 .monthly-summary {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 40rpx;
 }
 
