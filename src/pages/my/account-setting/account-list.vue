@@ -238,8 +238,8 @@ onShow(() => {
 }
 
 .header-back {
-  width: 60rpx;
-  height: 60rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,15 +260,15 @@ onShow(() => {
 }
 
 .header-right {
-  width: 60rpx;
-  height: 60rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .header-add-icon {
-  font-size: 48rpx;
+  font-size: 40rpx;
   color: #fff;
   line-height: 1;
 }

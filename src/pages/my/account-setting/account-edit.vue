@@ -604,8 +604,8 @@ onLoad((options: any) => {
   position: absolute;
   left: 20rpx;
   bottom: 14rpx;
-  width: 60rpx;
-  height: 60rpx;
+  width: 72rpx;
+  height: 72rpx;
   display: flex;
   align-items: center;
   justify-content: center;

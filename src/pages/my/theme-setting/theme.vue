@@ -224,8 +224,8 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60rpx;
-  height: 60rpx;
+  width: 72rpx;
+  height: 72rpx;
 }
 
 .back-icon {
