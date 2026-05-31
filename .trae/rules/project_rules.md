@@ -532,3 +532,106 @@ syncThemeToServer()       // 主题变更时同步到服务端
 6.  不要修改其他智能体负责的功能模块
 7.  不要创建根目录下的非必要文件（除非明确要求）
 8.  API 接口不要改动已有字段的类型和名称
+
+---
+
+## 11. 已知踩坑经验 (2025-05-31 汇总)
+
+> **目的**: 记录今天联调中反复踩坑的根因和最终方案，后续智能体/大模型读到这一段能快速定位同类问题。
+
+### 11.1 登录接口 body 为空 → `"请提供完整的登录信息"`
+
+**现象**: POST `/api/auth/login` 返回 `{"success":false,"message":"请提供完整的登录信息"}`，controller 中 `ctx.request.body` 为 `undefined` 或 `{}`。
+
+**根因**: Midway.js v4 (`@midwayjs/koa` v4) **不会自动设置** `ctx.request.body`。`@Body()` 装饰器从 `ctx.request.body` 取值，但没有中间件负责解析请求体，所以永远是空的。
+
+**错误尝试**:
+| 尝试 | 失败原因 |
+|------|---------|
+| `import * as bodyParser from 'koa-bodyparser'` | 项目 `tsconfig.json` 无 `esModuleInterop`，TS 编译后 `bodyParser` 是 `{ default: fn }` namespace 而非函数，运行时报 `bodyParser is not a function` |
+| `import bodyParser from 'koa-bodyparser'` | 同上，无 `esModuleInterop`，import default 同样失败 |
+| 手写 `ctx.req.on('data')` / `ctx.req.on('end')` | 中间件链中流已被消费，事件永不触发 → **请求卡死** |
+| `getRawBody(ctx.req)` (raw-body 库) | 流状态不可靠，且会干扰 TypeORM DI |
+
+**最终方案**:
+1. 用 `const bodyParser = require('koa-bodyparser')` — CJS require 直接拿到函数，不受 TS 模块解析影响
+2. 在 `src/configuration.ts` 的 `onReady()` 中**第一个**调用 `this.app.use(bodyParser())`，确保在任何其他中间件前解析 body
+3. Controller 用 `@Body() body: any` 接收参数 — 与 `register`/`send-sms` 一致
+
+```ts
+// src/configuration.ts — import 区域
+const bodyParser = require('koa-bodyparser');
+
+// onReady() 中 — 必须是第一个中间件
+async onReady(container: IMidwayContainer) {
+  this.app.use(bodyParser());  // ← 第一个，解析 JSON body
+  // ... CORS, ReportMiddleware, JwtMiddleware ...
+}
+```
+
+```ts
+// src/controller/auth/auth.controller.ts
+@Post('/login')
+async login(@Body() body: any): Promise<IApiResponse> {
+  // body 现在有值了
+}
+```
+
+### 11.2 端口冲突 → `EADDRINUSE: address already in use :::7001`
+
+**现象**: 运行 `npm run dev` 或 `npm run dev:sit` 时终端报 `Error: listen EADDRINUSE`。
+
+**根因 (两个层面)**:
+1. **首次启动**: 上次 `mwtsc --watch` 的 wrap.js 子进程未退出，持续占用 7001
+2. **热重载 (watch 模式)**: 文件变更后 mwtsc 重新编译并执行 `--run @midwayjs/mock/app.js`，新的 wrap.js 在旧 wrap.js 退出前就尝试 bind 7001 → EADDRINUSE。`kill-port.js` 只在 `npm run dev` 启动前执行一次，管不了 watch 内部的每次重启。
+
+**错误尝试**:
+| 尝试 | 失败原因 |
+|------|---------|
+| bash `pkill -f` + `lsof` + `xargs kill` | 转义问题、macOS 兼容性、`exit 0` 中断 `&&` 链 |
+| `node scripts/kill-port.js` | 只跑一次，管不了 watch 内重启 |
+| `mwtsc --run scripts/run-with-kill.js` wrapper | 破坏了 mwtsc 的运行上下文，Midway DI 容器初始化失败 |
+
+**最终方案**: 在 `src/config/config.default.ts` 的 koa 配置中添加：
+
+```ts
+koa: {
+  port: 7001,
+  listenOptions: {
+    reuseAddr: true,  // Node.js 24 原生支持，允许端口复用
+  },
+},
+```
+
+`@midwayjs/koa` v4 框架代码将 `config.listenOptions` 展开到 `server.listen()` 参数中，设置 `SO_REUSEADDR`。即使旧 socket 仍在 TIME_WAIT，新进程也能立即绑定同一端口。
+
+**辅助脚本**: `scripts/kill-port.js` 保留用于 `npm run dev` 启动前清理旧进程（pkill + 多轮 lsof 确认）。
+
+### 11.3 沙箱 (Trae) 运行占用用户端口
+
+**现象**: 用户终端运行后端报 `EADDRINUSE`，但 `lsof` 显示端口被沙箱终端中的 node 进程占用。
+
+**根因**: AI Agent 在沙箱终端（`trae-sandbox`）中执行 `npm run dev` 等长时间运行命令，`node` 子进程持续占用 7001 端口。用户自己的终端无法绑定同一端口。
+
+**解决方案**:
+- AI Agent 启动后端服务后，务必在验证完成后 `pkill` 清理沙箱中的进程
+- 不要用沙箱终端代替用户启动后端，只做一次性验证
+- 如果用户报告端口被占用，首先检查沙箱进程: `ps aux | grep "wrap.js\|mwtsc\|midway" | grep -v grep`
+
+### 11.4 TypeORM DataSource 初始化时序问题 (框架缺陷)
+
+**现象**: Body 解析成功后出现 `Cannot read properties of undefined (reading 'getDataSource')`。
+
+**根因**: `mwtsc --watch --run` 模式下，HTTP 服务器可能先于 TypeORM DataSource 完成初始化就开始接受请求，导致 `@InjectEntityModel()` 注入的 Repository 尚未就绪。这是 Midway.js v4 在 watch 模式下的已知缺陷。
+
+**绕过方案**:
+- 生产/测试环境用 `npm start` / `npm start:sit` 兜底，生命周期顺序正确
+- 或者 `npx mwtsc --cleanOutDir && cp bootstrap.js dist/ && node dist/bootstrap.js`
+
+### 11.5 核心教训总结
+
+1. **不要改 `@midwayjs/koa` 的请求处理链路** — body 解析必须用标准 koa 中间件方式，手写 `ctx.req.on('data')` 会导致流竞争和请求卡死
+2. **CJS 模块用 `require()`** — 项目没有 `esModuleInterop` 时，`import *` 和 `import default` 都可能拿不到正确的导出值
+3. **端口问题从 TCP 层面解决** — `reuseAddr` 比杀进程脚本更根本、更可靠
+4. **不要在沙箱终端启动用户的服务器** — 验证完就杀进程
+5. **TypeORM 初始化时序** — watch 模式下可能不正常，用生产模式启动可绕过
