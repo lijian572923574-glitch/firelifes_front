@@ -31,7 +31,7 @@
                 :model-value="balanceInput"
                 @update:model-value="onBalanceInput"
                 type="text"
-                :placeholder="formData.type === 'liability' ? '-0.00' : '0.00'"
+                :placeholder="formData.type === 'liability' || formData.type === 'credit_card' ? '-0.00' : '0.00'"
                 customStyle="background: transparent; border: none; padding: 0;"
               />
             </view>
@@ -123,106 +123,19 @@
         </view>
       </view>
 
-      <!-- 负债类账户专用字段 -->
-      <view v-if="formData.type === 'liability'" class="card liability-form">
-        <view class="liability-header">贷款参数</view>
+      <!-- 负债类贷款参数组件 -->
+      <LiabilityForm
+        v-if="formData.type === 'liability'"
+        v-model="liabilityFields"
+        :linked-account-name="linkedAccountName"
+        @pick-asset-account="showAccountPicker = true"
+      />
 
-        <view class="form-row">
-          <text class="form-label">原始贷款总本金</text>
-          <WdInput
-            v-model.number="formData.originalPrincipal"
-            type="digit"
-            placeholder="请输入原始贷款总额"
-            customStyle="background: var(--color-border-light, #F1F5F9); border-radius: 10rpx;"
-          >
-            <template #suffix>
-              <text class="unit">元</text>
-            </template>
-          </WdInput>
-        </view>
-
-        <view class="form-row">
-          <text class="form-label">贷款年利率</text>
-          <WdInput
-            v-model.number="formData.annualInterestRate"
-            type="digit"
-            placeholder="4.9"
-            customStyle="background: var(--color-border-light, #F1F5F9); border-radius: 10rpx;"
-          >
-            <template #suffix>
-              <text class="unit">%</text>
-            </template>
-          </WdInput>
-          <text class="field-hint">灵活还款填0表示无息</text>
-        </view>
-
-        <view class="form-row">
-          <text class="form-label">还款方式</text>
-          <view class="option-grid">
-            <view
-              v-for="method in repaymentMethods"
-              :key="method.value"
-              class="option-item"
-              :class="{ active: formData.repaymentMethod === method.value }"
-              @click="formData.repaymentMethod = method.value"
-            >
-              <text class="option-text">{{ method.label }}</text>
-            </view>
-          </view>
-        </view>
-
-        <view class="form-row">
-          <text class="form-label">总还款期数</text>
-          <WdInput
-            v-model.number="formData.totalMonths"
-            type="number"
-            placeholder="请输入总期数"
-            customStyle="background: var(--color-border-light, #F1F5F9); border-radius: 10rpx;"
-          >
-            <template #suffix>
-              <text class="unit">月</text>
-            </template>
-          </WdInput>
-        </view>
-
-        <view class="form-row">
-          <text class="form-label">剩余还款期数</text>
-          <WdInput
-            v-model.number="formData.remainingMonths"
-            type="number"
-            placeholder="请输入剩余期数"
-            customStyle="background: var(--color-border-light, #F1F5F9); border-radius: 10rpx;"
-          >
-            <template #suffix>
-              <text class="unit">月</text>
-            </template>
-          </WdInput>
-        </view>
-
-        <view class="form-row">
-          <text class="form-label">每月还款日</text>
-          <view class="day-grid">
-            <view
-              v-for="day in 28"
-              :key="day"
-              class="day-item"
-              :class="{ active: formData.repaymentDay === day }"
-              @click="formData.repaymentDay = day"
-            >
-              <text class="day-text">{{ day }}</text>
-            </view>
-          </view>
-        </view>
-
-        <view class="form-row">
-          <text class="form-label">关联资产账户（可选）</text>
-          <view class="account-picker" @click="showAccountPicker = true">
-            <text v-if="linkedAccountName" class="picker-value">{{ linkedAccountName }}</text>
-            <text v-else class="picker-placeholder">选择关联的固定资产账户</text>
-            <text class="picker-arrow">›</text>
-          </view>
-        </view>
-      </view>
+      <!-- 信用卡参数组件 -->
+      <CreditCardForm
+        v-if="formData.type === 'credit_card'"
+        v-model="creditCardFields"
+      />
 
       <view class="safe-bottom"></view>
     </scroll-view>
@@ -275,15 +188,15 @@
           v-for="account in assetAccounts"
           :key="account.id"
           class="picker-item"
-          :class="{ selected: formData.linkedAssetAccountId === account.id }"
+          :class="{ selected: liabilityFields.linkedAssetAccountId === account.id }"
           @click="selectLinkedAccount(account.id)"
         >
           <view class="picker-icon category-icon-svg" :class="getAccountIconClass(account.icon, account.type)"></view>
           <text class="picker-name">{{ account.name }}</text>
-          <text v-if="formData.linkedAssetAccountId === account.id" class="check-icon">✓</text>
+          <text v-if="liabilityFields.linkedAssetAccountId === account.id" class="check-icon">✓</text>
         </view>
         <view
-          v-if="formData.linkedAssetAccountId"
+          v-if="liabilityFields.linkedAssetAccountId"
           class="picker-item picker-clear"
           @click="clearLinkedAccount"
         >
@@ -300,8 +213,11 @@ import { onLoad } from '@dcloudio/uni-app'
 import { getAccountDetail, createAccount, updateAccount, getAccountList } from '../../../api/account'
 import { recordApi } from '../../../api/record'
 import { navigateBack } from '../../../utils/navigate'
-import type { Account, AccountRequest, AccountType, RepaymentMethod } from '../../../types/account'
+import type { Account, AccountRequest, AccountType, CreditCardFields } from '../../../types/account'
 import { ACCOUNT_ICONS, getAccountIconClass } from '../../../types/account'
+import LiabilityForm from './components/LiabilityForm.vue'
+import type { LiabilityFormData } from './components/LiabilityForm.vue'
+import CreditCardForm from './components/CreditCardForm.vue'
 
 const accountId = ref<string | null>(null)
 const isEdit = computed(() => !!accountId.value)
@@ -315,32 +231,46 @@ const TYPE_CONFIG: Record<AccountType, { color: string; svgIcon: string; label: 
   investment:   { color: '#FF9800', svgIcon: 'account-icon-trending', label: '投资类', activeBg: 'rgba(255,152,0,0.06)' },
   fixed_asset:  { color: '#9C27B0', svgIcon: 'account-icon-house', label: '固定资产类', activeBg: 'rgba(156,39,176,0.06)' },
   depreciable_asset: { color: '#00BCD4', svgIcon: 'account-icon-mobile', label: '折旧资产类', activeBg: 'rgba(0,188,212,0.06)' },
-  liability:    { color: '#FA3534', svgIcon: 'account-icon-credit-card', label: '负债类', activeBg: 'rgba(250,53,52,0.06)' },
+  liability:    { color: '#FA3534', svgIcon: 'account-icon-loan', label: '负债类', activeBg: 'rgba(250,53,52,0.06)' },
+  credit_card:  { color: '#7C3AED', svgIcon: 'account-icon-credit-card', label: '信用卡类', activeBg: 'rgba(124,58,237,0.06)' },
 }
 
 const typeRow1 = computed(() =>
   (['cash', 'investment', 'fixed_asset'] as AccountType[]).map(v => ({ value: v, ...TYPE_CONFIG[v] }))
 )
 const typeRow2 = computed(() =>
-  (['depreciable_asset', 'liability'] as AccountType[]).map(v => ({ value: v, ...TYPE_CONFIG[v] }))
+  (['depreciable_asset', 'liability', 'credit_card'] as AccountType[]).map(v => ({ value: v, ...TYPE_CONFIG[v] }))
 )
-
-const repaymentMethods: { value: RepaymentMethod; label: string }[] = [
-  { value: 'equal_principal_interest', label: '等额本息' },
-  { value: 'equal_principal', label: '等额本金' },
-  { value: 'interest_first', label: '先息后本' },
-]
 
 const assetAccounts = ref<Account[]>([])
 const showAccountPicker = ref(false)
 
 const canSetDefault = computed(() => {
-  return formData.value.type === 'cash' || formData.value.type === 'liability'
+  return formData.value.type === 'cash' || formData.value.type === 'liability' || formData.value.type === 'credit_card'
+})
+
+const liabilityFields = ref<LiabilityFormData>({
+  autoRepaymentEnabled: false,
+  originalPrincipal: undefined,
+  annualInterestRate: 4.9,
+  repaymentMethod: 'equal_principal_interest',
+  totalMonths: undefined,
+  remainingMonths: undefined,
+  repaymentDay: undefined,
+  linkedAssetAccountId: undefined,
+})
+
+const creditCardFields = ref<CreditCardFields>({
+  billingDay: 5,
+  dueDay: 25,
+  creditLimit: undefined,
+  minPaymentRate: 10,
+  dailyInterestRate: 0.05,
 })
 
 const linkedAccountName = computed(() => {
-  if (!formData.value.linkedAssetAccountId) return ''
-  const account = assetAccounts.value.find(a => a.id === formData.value.linkedAssetAccountId)
+  if (!liabilityFields.value.linkedAssetAccountId) return ''
+  const account = assetAccounts.value.find(a => a.id === liabilityFields.value.linkedAssetAccountId)
   return account?.name || ''
 })
 
@@ -352,13 +282,6 @@ const formData = ref<AccountRequest>({
   description: '',
   isDefaultExpense: false,
   isDefaultIncome: false,
-  originalPrincipal: undefined,
-  annualInterestRate: 4.9,
-  repaymentMethod: 'equal_principal_interest',
-  totalMonths: undefined,
-  remainingMonths: undefined,
-  repaymentDay: undefined,
-  linkedAssetAccountId: undefined,
 })
 
 const balanceInput = ref('')
@@ -381,7 +304,7 @@ const loadAccountDetail = async (id: string) => {
       account.value = res.data
       oldBalance.value = res.data.balance
       let displayBalance = res.data.balance
-      if (res.data.type === 'liability' && res.data.balance > 0) {
+      if ((res.data.type === 'liability' || res.data.type === 'credit_card') && res.data.balance > 0) {
         displayBalance = -Math.abs(res.data.balance)
       }
       formData.value = {
@@ -392,13 +315,27 @@ const loadAccountDetail = async (id: string) => {
         description: res.data.description,
         isDefaultExpense: res.data.isDefaultExpense || false,
         isDefaultIncome: res.data.isDefaultIncome || false,
-        originalPrincipal: res.data.originalPrincipal,
-        annualInterestRate: res.data.annualInterestRate ?? 4.9,
-        repaymentMethod: res.data.repaymentMethod || 'equal_principal_interest',
-        totalMonths: res.data.totalMonths,
-        remainingMonths: res.data.remainingMonths,
-        repaymentDay: res.data.repaymentDay,
-        linkedAssetAccountId: res.data.linkedAssetAccountId,
+      }
+      if (res.data.type === 'liability') {
+        liabilityFields.value = {
+          autoRepaymentEnabled: !!(res.data.originalPrincipal || res.data.totalMonths || res.data.repaymentDay),
+          originalPrincipal: res.data.originalPrincipal,
+          annualInterestRate: res.data.annualInterestRate ?? 4.9,
+          repaymentMethod: res.data.repaymentMethod || 'equal_principal_interest',
+          totalMonths: res.data.totalMonths,
+          remainingMonths: res.data.remainingMonths,
+          repaymentDay: res.data.repaymentDay,
+          linkedAssetAccountId: res.data.linkedAssetAccountId,
+        }
+      }
+      if (res.data.type === 'credit_card' && res.data.creditCardFields) {
+        creditCardFields.value = {
+          billingDay: res.data.creditCardFields.billingDay ?? 5,
+          dueDay: res.data.creditCardFields.dueDay ?? 25,
+          creditLimit: res.data.creditCardFields.creditLimit,
+          minPaymentRate: res.data.creditCardFields.minPaymentRate ?? 10,
+          dailyInterestRate: res.data.creditCardFields.dailyInterestRate ?? 0.05,
+        }
       }
       balanceInput.value = displayBalance.toString()
       loadAssetAccounts()
@@ -415,12 +352,16 @@ const onTypeChange = (type: AccountType) => {
   const oldType = formData.value.type
   formData.value.type = type
 
-  if (type !== 'cash' && type !== 'liability') {
+  if (type !== 'cash' && type !== 'liability' && type !== 'credit_card') {
     formData.value.isDefaultExpense = false
     formData.value.isDefaultIncome = false
   }
 
-  if (type === 'liability' && oldType !== 'liability') {
+  const negativeTypes: AccountType[] = ['liability', 'credit_card']
+  const wasNegative = negativeTypes.includes(oldType)
+  const isNegative = negativeTypes.includes(type)
+
+  if (isNegative && !wasNegative) {
     if (balanceInput.value !== '' && !balanceInput.value.startsWith('-')) {
       const num = parseFloat(balanceInput.value) || 0
       if (num > 0) {
@@ -428,7 +369,7 @@ const onTypeChange = (type: AccountType) => {
         formData.value.balance = -num
       }
     }
-  } else if (type !== 'liability' && oldType === 'liability') {
+  } else if (!isNegative && wasNegative) {
     if (balanceInput.value.startsWith('-')) {
       const num = parseFloat(balanceInput.value) || 0
       balanceInput.value = balanceInput.value.slice(1)
@@ -438,13 +379,13 @@ const onTypeChange = (type: AccountType) => {
 }
 
 const onBalanceInput = (value: string) => {
-  const isLiability = formData.value.type === 'liability'
-  const regex = isLiability ? /^-?\d*\.?\d{0,2}$/ : /^\d*\.?\d{0,2}$/
+  const isNegative = formData.value.type === 'liability' || formData.value.type === 'credit_card'
+  const regex = isNegative ? /^-?\d*\.?\d{0,2}$/ : /^\d*\.?\d{0,2}$/
 
   if (regex.test(value) || value === '') {
     if (value !== '') {
       const num = parseFloat(value) || 0
-      if (isLiability && num > 0 && !value.startsWith('-')) {
+      if (isNegative && num > 0 && !value.startsWith('-')) {
         balanceInput.value = '-' + value
         formData.value.balance = -num
       } else {
@@ -495,7 +436,7 @@ const createAdjustmentRecord = async (
 const handleSave = async () => {
   if (!canSave.value || saving.value) return
 
-  if (formData.value.type === 'liability' && formData.value.balance > 0) {
+  if ((formData.value.type === 'liability' || formData.value.type === 'credit_card') && formData.value.balance > 0) {
     formData.value.balance = -Math.abs(formData.value.balance)
     if (balanceInput.value && !balanceInput.value.startsWith('-')) {
       balanceInput.value = '-' + balanceInput.value
@@ -504,8 +445,24 @@ const handleSave = async () => {
 
   saving.value = true
   try {
+    const payload: AccountRequest = {
+      ...formData.value,
+    }
+    if (formData.value.type === 'liability') {
+      payload.originalPrincipal = liabilityFields.value.originalPrincipal
+      payload.annualInterestRate = liabilityFields.value.annualInterestRate
+      payload.repaymentMethod = liabilityFields.value.repaymentMethod
+      payload.totalMonths = liabilityFields.value.totalMonths
+      payload.remainingMonths = liabilityFields.value.remainingMonths
+      payload.repaymentDay = liabilityFields.value.repaymentDay
+      payload.linkedAssetAccountId = liabilityFields.value.linkedAssetAccountId
+    }
+    if (formData.value.type === 'credit_card') {
+      payload.creditCardFields = { ...creditCardFields.value }
+    }
+
     if (isEdit.value && accountId.value) {
-      const res = await updateAccount(accountId.value, formData.value)
+      const res = await updateAccount(accountId.value, payload)
       if (res.success) {
         const diff = formData.value.balance - oldBalance.value
         if (diff !== 0) {
@@ -520,7 +477,7 @@ const handleSave = async () => {
         uni.showToast({ title: res.message || '修改失败', icon: 'none' })
       }
     } else {
-      const res = await createAccount(formData.value)
+      const res = await createAccount(payload)
       if (res.success) {
         const newId = res.data.id
         if (formData.value.balance !== 0) {
@@ -559,12 +516,12 @@ const loadAssetAccounts = async () => {
 }
 
 const selectLinkedAccount = (id: string) => {
-  formData.value.linkedAssetAccountId = id
+  liabilityFields.value.linkedAssetAccountId = id
   showAccountPicker.value = false
 }
 
 const clearLinkedAccount = () => {
-  formData.value.linkedAssetAccountId = undefined
+  liabilityFields.value.linkedAssetAccountId = undefined
   showAccountPicker.value = false
 }
 

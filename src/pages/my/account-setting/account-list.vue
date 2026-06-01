@@ -125,7 +125,7 @@ const deleteTarget = ref<Account | null>(null)
 
 const groupedAccounts = computed(() => {
   const groups: { type: AccountType; accounts: Account[] }[] = []
-  const typeOrder: AccountType[] = ['cash', 'investment', 'fixed_asset', 'depreciable_asset', 'liability']
+  const typeOrder: AccountType[] = ['cash', 'investment', 'fixed_asset', 'depreciable_asset', 'liability', 'credit_card']
   typeOrder.forEach(type => {
     const typeAccounts = accounts.value.filter(a => a.type === type)
     if (typeAccounts.length > 0) {
@@ -148,7 +148,8 @@ const getTypeIconClass = (type: AccountType): string => {
     investment: 'account-icon-trending',
     fixed_asset: 'account-icon-house',
     depreciable_asset: 'account-icon-mobile',
-    liability: 'account-icon-credit-card',
+    liability: 'account-icon-loan',
+    credit_card: 'account-icon-credit-card',
   }
   return map[type] || 'account-icon-wallet'
 }

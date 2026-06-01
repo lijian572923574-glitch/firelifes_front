@@ -1,8 +1,31 @@
 // 账户类型枚举
-export type AccountType = 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability';
+export type AccountType = 'cash' | 'investment' | 'fixed_asset' | 'depreciable_asset' | 'liability' | 'credit_card';
 
 // 还款方式类型
-export type RepaymentMethod = 'equal_principal_interest' | 'equal_principal' | 'interest_first';
+export type RepaymentMethod = 'equal_principal_interest' | 'equal_principal' | 'interest_first' | 'flexible';
+
+// 信用卡还款方式
+export type CreditCardPaymentType = 'full' | 'minimum' | 'custom';
+
+// 信用卡专用字段
+export interface CreditCardFields {
+  billingDay: number;
+  dueDay: number;
+  creditLimit?: number;
+  minPaymentRate?: number;
+  dailyInterestRate?: number;
+}
+
+// 信用卡还款计算结果
+export interface CreditCardRepaymentResult {
+  billAmount: number;
+  minPayment: number;
+  repaymentAmount: number;
+  unpaidAmount: number;
+  dailyInterest: number;
+  newBalance: number;
+  paymentType: CreditCardPaymentType;
+}
 
 // 账户数据结构
 export interface Account {
@@ -13,16 +36,19 @@ export interface Account {
   type: AccountType;
   balance: number;
   description?: string;
-  isDefaultExpense: boolean;     // 是否为默认支出账户
-  isDefaultIncome: boolean;      // 是否为默认收入账户
+  isDefaultExpense: boolean;
+  isDefaultIncome: boolean;
   // 负债类账户专用字段
-  originalPrincipal?: number;         // 原始贷款总本金
-  annualInterestRate?: number;        // 贷款年利率
-  repaymentMethod?: RepaymentMethod;  // 还款方式
-  totalMonths?: number;               // 总还款期数
-  remainingMonths?: number;            // 剩余还款期数
-  repaymentDay?: number;               // 每月还款日
-  linkedAssetAccountId?: string;       // 关联资产账户ID
+  originalPrincipal?: number;
+  annualInterestRate?: number;
+  repaymentMethod?: RepaymentMethod;
+  totalMonths?: number;
+  remainingMonths?: number;
+  repaymentDay?: number;
+  linkedAssetAccountId?: string;
+  lastRepaymentDate?: string;
+  // 信用卡专用字段
+  creditCardFields?: CreditCardFields;
   order: number;
   isVisible: boolean;
   isDeleted: boolean;
@@ -47,6 +73,8 @@ export interface AccountRequest {
   remainingMonths?: number;
   repaymentDay?: number;
   linkedAssetAccountId?: string;
+  // 信用卡专用字段
+  creditCardFields?: CreditCardFields;
 }
 
 // 默认账户配置
@@ -95,7 +123,8 @@ export const ACCOUNT_TYPE_OPTIONS = [
   { value: 'investment' as AccountType, label: '投资类' },
   { value: 'fixed_asset' as AccountType, label: '固定资产类' },
   { value: 'depreciable_asset' as AccountType, label: '折旧资产类' },
-  { value: 'liability' as AccountType, label: '负债类' }
+  { value: 'liability' as AccountType, label: '负债类' },
+  { value: 'credit_card' as AccountType, label: '信用卡类' },
 ]
 
 // 预设图标 (SVG 图标类名，与 category-icons.css 中的 .account-icon-* 对应)
@@ -117,6 +146,9 @@ export const ACCOUNT_ICONS = [
   'account-icon-coins',
   'account-icon-scan',
   'account-icon-shield',
+  'account-icon-loan',
+  'account-icon-visa-card',
+  'account-icon-card-chip',
 ]
 
 // 获取账户类型的余额颜色
@@ -124,10 +156,19 @@ export const getBalanceColor = (type: AccountType, balance?: number): string => 
   if (balance !== undefined && balance < 0) {
     return '#FA3534'
   }
-  if (type === 'liability') {
+  if (type === 'liability' || type === 'credit_card') {
     return '#FA3534'
   }
   return '#19BE6B'
+}
+
+// 计算信用卡免息期
+export const calculateInterestFreePeriod = (billingDay: number, dueDay: number): { min: number; max: number } => {
+  const min = dueDay > billingDay
+    ? dueDay - billingDay
+    : dueDay + 30 - billingDay
+  const max = min + 30
+  return { min, max }
 }
 
 /**
@@ -165,7 +206,8 @@ const DEFAULT_ICON_BY_TYPE: Record<AccountType, string> = {
   investment: 'account-icon-trending',
   fixed_asset: 'account-icon-house',
   depreciable_asset: 'account-icon-mobile',
-  liability: 'account-icon-credit-card',
+  liability: 'account-icon-loan',
+  credit_card: 'account-icon-credit-card',
 }
 
 /**
