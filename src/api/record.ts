@@ -274,4 +274,17 @@ export const recordApi = {
       method: 'GET',
     })
   },
+
+  /**
+   * 获取最近的有数据月份（跳过空月份）
+   * @param yearMonth 起始年月（YYYY-MM）
+   * @param direction prev=向前查找, next=向后查找
+   */
+  getNearestMonth: (yearMonth: string, direction: 'prev' | 'next') => {
+    return request<string | null>({
+      url: '/api/record/nearest-month',
+      method: 'GET',
+      data: { yearMonth, direction },
+    })
+  },
 }

@@ -363,14 +363,12 @@ const switchToNextMonth = async () => {
   const currentYearNum = today.getFullYear()
   const currentMonthNum = today.getMonth() + 1
 
-  // 计算下一个月
   month++
   if (month > 12) {
     month = 1
     year++
   }
 
-  // 检查是否是未来月份
   if (year > currentYearNum || (year === currentYearNum && month > currentMonthNum)) {
     uni.showToast({
       title: '已经是最新月份了',
@@ -380,11 +378,18 @@ const switchToNextMonth = async () => {
   }
 
   const nextYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
+  const isCurrentMonth = (year === currentYearNum && month === currentMonthNum)
 
   try {
     const checkRes = await recordApi.getRecordsByMonth(nextYearMonth, 1, 1)
 
     if (checkRes.success && checkRes.data && checkRes.data.list.length > 0) {
+      transitionDirection.value = 'next'
+      await new Promise((resolve) => setTimeout(resolve, 50))
+      currentYear.value = year.toString()
+      currentMonth.value = month.toString().padStart(2, '0')
+      await loadMonthData()
+    } else if (isCurrentMonth) {
       transitionDirection.value = 'next'
       await new Promise((resolve) => setTimeout(resolve, 50))
       currentYear.value = year.toString()
@@ -402,26 +407,15 @@ const switchToNextMonth = async () => {
 }
 
 const switchToPrevMonth = async () => {
-  let year = parseInt(currentYear.value)
-  let month = parseInt(currentMonth.value)
-
-  // 计算上一个月
-  month--
-  if (month < 1) {
-    month = 12
-    year--
-  }
-
-  const prevYearMonth = `${year.toString()}-${month.toString().padStart(2, '0')}`
-
+  const currentYM = `${currentYear.value}-${currentMonth.value}`
   try {
-    const checkRes = await recordApi.getRecordsByMonth(prevYearMonth, 1, 1)
-
-    if (checkRes.success && checkRes.data && checkRes.data.list.length > 0) {
+    const nearestRes = await recordApi.getNearestMonth(currentYM, 'prev')
+    if (nearestRes.success && nearestRes.data) {
       transitionDirection.value = 'prev'
       await new Promise((resolve) => setTimeout(resolve, 50))
-      currentYear.value = year.toString()
-      currentMonth.value = month.toString().padStart(2, '0')
+      const [y, m] = nearestRes.data.split('-')
+      currentYear.value = y
+      currentMonth.value = m.padStart(2, '0')
       await loadMonthData()
     } else {
       uni.showToast({
@@ -430,7 +424,11 @@ const switchToPrevMonth = async () => {
       })
     }
   } catch (error) {
-    console.error('[detail] 检查上一个月数据失败', error)
+    console.error('[detail] 查找上月数据失败', error)
+    uni.showToast({
+      title: '已经到底了，没有更多数据了',
+      icon: 'none'
+    })
   }
 }
 
@@ -485,8 +483,21 @@ const handleDeleteRecord = (record: BillCardRecord) => {
   })
 }
 
-onMounted(() => {
-  loadMonthData()
+onMounted(async () => {
+  const currentYM = `${currentYear.value}-${currentMonth.value}`
+  try {
+    const nearestRes = await recordApi.getNearestMonth(currentYM, 'prev')
+    if (nearestRes.success && nearestRes.data && nearestRes.data !== currentYM) {
+      const [y, m] = nearestRes.data.split('-')
+      currentYear.value = y
+      currentMonth.value = m.padStart(2, '0')
+      selectedYearMonth.value = nearestRes.data
+    } else {
+      await loadMonthData()
+    }
+  } catch {
+    await loadMonthData()
+  }
 })
 
 onShow(() => {

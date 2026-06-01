@@ -2,11 +2,12 @@
 > 文件：`detail-month-switch.md` | 中文名称：明细页（账单明细首页） | 所属模块：记账省心
 > 页面路径：`src/pages/detail/index.vue`
 
-> 版本：v1.4 | 状态：已完成 | 最后更新：2026-05-29
+> 版本：v1.5 | 状态：已完成 | 最后更新：2026-06-01
 
 ## 版本历史
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|---------|------|
+| v1.5 | 2026-06-01 | 空月份自动跳转最近有数据的月份 + 月份切换跳过空月份(新增 getNearestMonth API) | AI-全栈 |
 | v1.4 | 2026-05-29 | 记录行点击分离：图标点击弹出分类选择器快速修改分类，其余区域跳转编辑页；新增 CategorySelectPopup 组件 | AI-全栈 |
 | v1.3 | 2026-05-21 | 新增 Pencil 设计稿：`designs/detail-index.pen`，可视化页面布局与组件层级 | AI-UI设计 |
 | v1.2 | 2026-05-21 | 修复 CATEGORY_ICON_MAP：补全 26 个数据库已有分类的 iconfont 映射，修复 statistics 页 20 个错误图标类名 | AI |
@@ -225,7 +226,10 @@
 
 ### 3.1 页面初始化
 ```
-onMounted → loadMonthData()
+onMounted → 判断当前月份是否需要自动跳转
+├── GET /api/record/nearest-month?yearMonth=YYYY-MM&direction=prev
+│   ├── 返回非空且不等于当前月 → 直接设置目标月份（无闪动）
+│   └── 返回空或等于当前月 → 保持当前月份
 ├── loadCategoriesOnce()          // 首次加载：获取支出/收入分类 + 用户自定义图标
 │   ├── GET /api/category/user (expense)
 │   ├── GET /api/category/user (income)
@@ -296,7 +300,7 @@ interface BillCardRecord {
 | 方式 | 手势 | 行为 | 限制 |
 |------|------|------|------|
 | 下拉刷新 | scroll-view 顶部下拉 | 切换到下一月（如5月→6月） | 不超当前月 |
-| 上拉加载 | scroll-view 滚动到底 | 切换到上一月（如5月→4月） | 无数据时提示 |
+| 上拉加载 | scroll-view 滚动到底 | 切换到最近有数据的上一月（跳过空月） | 无更多数据时提示 |
 | 选择器 | 点击头部年月 | 弹出 YearMonthPicker 直接跳转 | 不超当前月 |
 
 ### 4.2 切换逻辑
@@ -308,15 +312,18 @@ interface BillCardRecord {
     2. 检查是否超过当前月份 → 是则 toast「已经是最新月份了」
     3. GET /api/record/page 检查是否有数据
     4. 有数据 → transitionDirection='next' → 更新 year/month → loadMonthData()
-    5. 无数据 → toast「已经是最新月份了」
+    5. 无数据但目标月是当前月份 → 允许展示空状态（用户可看到当前月）
+    6. 无数据且不是当前月 → toast「已经是最新月份了」
 
 上拉加载 → handleReachBottom()
   → switchToPrevMonth()    （带锁防重复，1秒冷却）
-    1. 计算 year/month--
-    2. 检查是否有数据
-    3. 有数据 → transitionDirection='prev' → 更新 year/month → loadMonthData()
-    4. 无数据 → toast「已经到底了，没有更多数据了」
+    1. GET /api/record/nearest-month?yearMonth=YYYY-MM&direction=prev
+       → 后端单条SQL查找最近的有数据月份（跳过所有空月份）
+    2. 查到结果 → transitionDirection='prev' → 更新 year/month → loadMonthData()
+    3. 查不到 → toast「已经到底了，没有更多数据了」
 ```
+
+> `getNearestMonth` 使用 `TO_CHAR(date, 'YYYY-MM') + GROUP BY + LIMIT 1` 单条 SQL 查询，高效跳过间隔的空月份。例如5月有数据、4月空、3月有数据：从5月查询 → 直接返回3月。
 
 ### 4.3 切换动画
 
@@ -369,6 +376,7 @@ interface BillCardRecord {
 |------|------|------|------|------|
 | getRecordsByMonth | GET | `/api/record/page` | `yearMonth`, `page`, `pageSize` | 分页获取月度记录 |
 | getMonthSummary | GET | `/api/record/month-summary` | `yearMonth` | 获取月度汇总 |
+| getNearestMonth | GET | `/api/record/nearest-month` | `yearMonth`, `direction`(prev/next) | 查找最近的有数据月份（跳过空月） |
 | getUserCategories | GET | `/api/category/user` | `type`（expense/income） | 获取用户分类 |
 | getUserIcons | GET | `/api/category/user-icons` | - | 获取用户自定义图标 |
 | updateRecord | PUT | `/api/record/:id` | `{ typeId }` (仅修改分类时) | 仅更新记录的 typeId（v1.4 新增用途） |
@@ -400,11 +408,13 @@ interface BillCardRecord {
 ## 八、边界情况
 
 1. **未来月份限制**：不能切换到超过当前月份的月份
-2. **空月份**：如果目标月无数据，toast 提示「已经到底了」或「已经是最新月份了」
-3. **快速切换**：上拉加载有锁机制（`loadPrevMonthLock`），1秒冷却防重复请求
-4. **静默刷新**：`onShow` 时更新月度汇总和记录数据，不影响当前滚动位置
-5. **分类未加载**：首次进入时 `loadCategoriesOnce()` 只执行一次（`categoriesLoaded` 标记）
-6. **分类图标兜底**：分类名不在映射表 → 尝试用户自定义图标 → 兜底 `icon-qita`
+2. **空月份自动跳转**：首次进入时若当前月无数据，自动跳转到最近有数据的月份（通过 `getNearestMonth` API，不经过空状态）
+3. **间隔空月跳过**：月份切换时自动跳过空月份。例如5月有数据→4月空→3月有数据：从5月切换到3月，不提示"已经到底了"
+4. **当前月份可访问**：即使当前月无数据，下拉刷新仍可切换到当前月（展示空状态），用户可确认当前月确实没有记账
+5. **快速切换**：上拉加载有锁机制（`loadPrevMonthLock`），1秒冷却防重复请求
+6. **静默刷新**：`onShow` 时更新月度汇总和记录数据，不影响当前滚动位置
+7. **分类未加载**：首次进入时 `loadCategoriesOnce()` 只执行一次（`categoriesLoaded` 标记）
+8. **分类图标兜底**：分类名不在映射表 → 尝试用户自定义图标 → 兜底 `icon-qita`
 
 ---
 
