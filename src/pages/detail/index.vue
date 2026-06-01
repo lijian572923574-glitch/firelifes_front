@@ -52,7 +52,7 @@
             />
           </view>
 
-          <view v-if="sortedDates.length > 0" class="load-more">
+          <view class="load-more">
             <text class="load-more-text">{{ loadMoreText }}</text>
           </view>
         </view>
@@ -501,8 +501,7 @@ onMounted(async () => {
 })
 
 onShow(() => {
-  loadMonthSummary()
-  loadFirstPageDates()
+  loadMonthData()
 })
 </script>
 
@@ -596,6 +595,7 @@ onShow(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-height: 80vh;
   padding: 100rpx 0;
 }
 
